@@ -1,0 +1,3 @@
+  man könnte den Stundenplan mit Buttons konstruieren und wenn man die Knöpfe drückt, dann werden alle kommenden Items für das Fach angezeigt
+  
+  
