@@ -1,0 +1,14 @@
+- Tests und HA editieren können
+ 
+- Sortieren nach:
+     - Datum
+     - Fach
+     - Lernziele
+      
+- nach bald kommenden Augaben und Tests abfragen können 
+
+- Private Aufgaben eintragen und individuell ausgeben können (also für Gruppenarbeiten, EF-arbeiten, ind. Vorträge etc.)
+
+- Stundenplan ausgeben können (auch nach indiv. Anpassung)
+
+- Wenn jemand zu einem Test eine Zusammenfassung oder ein Quizlet oder so macht, dann kann man die Nachricht beim Bot eintragen
