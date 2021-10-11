@@ -4,7 +4,8 @@ Alltables = "testitems", "items"
 Itemtable = "testitems"
 tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
-"""Hie wird aues punkto kommunikation zur datebank ghandlet. Wie genau me ds mues mitder datebank mache weisi no nid. 
+"""
+Hie wird aues punkto kommunikation zur datebank ghandlet. Wie genau me ds mues mitder datebank mache weisi no nid. 
 Weder d datebank nid heit downloadet, müesst dir zersch die commands usfüere:
     file = sqlite3.connect("ItemFiles.db") 
     file.cursor().ececute("CREATE TABLE testitems (id INTEGER, datum TEXT, fach TEXT, aufgabe TEXT)
