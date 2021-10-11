@@ -23,28 +23,20 @@ wieme cha gseh isch ds momentane programm no nid mit discord integriert. Ds isch
 fürs programm würdi euch empfähle, euch usenang ds setzte, wie me d sqlite3-library bruucht (me mues se nid separat installiere)
 """
 
-
-
 import datetime
 import json
+import Item
 from Item import newItem, searchItems
 import encoding
 
 
 
+
 def datesort(elem):
-
-
     print(elem)
     sortedList = sorted(elem, key=lambda x: x[1])
 
     return sortedList
-
-
-
-
-
-
 
 
 
@@ -62,17 +54,21 @@ while True:
 
     elif inp.lower().startswith("outlook"):
         for i in searchItems(search=inp[8:]):
-            print(datesort(i))
-            #print(i)
+
+            sortedData = datesort(i)
+            print('sorted Data: ', sortedData)
+
+            for item in sortedData:
+                layoutedData = Item.layout(item)
+                print(layoutedData)
 
     else:
         print("Befehl nicht erkannt")
     allitems = encoding.getallitems()
-
 
     for item in allitems:
         (year, month, day) = item[1].split("-")
         if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
             encoding.deleteitem(item[0])
 
-            #ufgabe oder teschts wo scho düre si wärde glöschet
+            # ufgabe oder teschts wo scho düre si wärde glöschet
