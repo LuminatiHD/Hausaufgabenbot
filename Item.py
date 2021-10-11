@@ -11,6 +11,7 @@ weekdays = ["Montag",
 
 
 
+
 def newItem(category):
     error = 1
     while error == 1:
@@ -26,7 +27,7 @@ def newItem(category):
             print("ungültiges Datum")
             continue
 
-    fach = input("Welches Fach? ").lower().capitalize()
+    fach = input("Welches Fach? ").lower().capitalize()                 #evt. bruchts .lower() garnid
     if fach == "Französisch":
         fach = "Franz"
 
@@ -35,6 +36,7 @@ def newItem(category):
 
     elif input("Schon Lernziele? ").lower != "ja":
         aufgabe = None
+
     else:
         aufgabe = input("Lernziele: ")
 
@@ -42,11 +44,13 @@ def newItem(category):
 
 def searchItems(search=None):
     results = []
-    itemcounter = 0 #Mit jedem ausgedruckten Item wird es 1 grösser. Wenn am ende der counter==0, dann hat das programm nihts gefunden
+    itemcounter = 0 #Mit jedem ausgedruckten Item wird es 1 grösser. Wenn am ende der counter==0, dann hat das programm nichts gefunden
 
     items = encoding.getallitems()
+
     if search == "":
         results = items
+
     else:
         for keyword in search.split(" "):
             for item in items:
@@ -58,13 +62,19 @@ def searchItems(search=None):
         yield "keine resultate gefunden"
 
     else:
-        for item in results:
-            (year, month, day) = item[1].split("-")
+        yield results
 
 
-            yield f"{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
-                  f"{item[2].capitalize()} {item[3]}" \
-                  f"\n{item[4]}\n"
+        # for item in results:
+        #     (year, month, day) = item[1].split("-")
+        #     print('year:', year, 'month:', month, 'day:', day)
+        #
+        #
+        #     yield f"{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
+        #           f"{item[2].capitalize()} {item[3]}" \
+        #           f"\n{item[4]}\n" \
+        #           f"\n{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n"
+
 
             # ersti zile git wuchetag sowie datum zrügg.
             # die 2ti git kategorie und fach zrügg (kategorie isch entweder "Test" oder "Hausaufgabe")

@@ -31,8 +31,24 @@ from Item import newItem, searchItems
 import encoding
 
 
+
 def datesort(elem):
-    return elem["Datum"]  # wird nur gebraucht für das sortieren der Liste nach Datum
+
+
+    print(elem)
+    sortedList = sorted(elem, key=lambda x: x[1])
+
+    return sortedList
+
+
+
+
+
+
+
+
+
+
 
 tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
@@ -41,16 +57,18 @@ while True:
     if inp.lower() == "neue aufgabe":
         newItem("Hausaufgabe")
 
-    if inp.lower() == "neuer test":
+    elif inp.lower() == "neuer test":
         newItem("Test")
 
-    if inp.lower().startswith("outlook"):
+    elif inp.lower().startswith("outlook"):
         for i in searchItems(search=inp[8:]):
-            print(i)
+            print(datesort(i))
+            #print(i)
 
     else:
         print("Befehl nicht erkannt")
     allitems = encoding.getallitems()
+
 
     for item in allitems:
         (year, month, day) = item[1].split("-")
