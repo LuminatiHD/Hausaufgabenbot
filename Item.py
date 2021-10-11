@@ -14,7 +14,7 @@ def newItem(category):
     error = 1
     while error == 1:
         try:
-            dateraw = input("Wann? ")
+            dateraw = input("Wann ist der Test oder die Aufgabe fällig? ")
             date = str(datetime.date(int(dateraw.split(".")[2]),
                                      int(dateraw.split(".")[1]),
                                      int(dateraw.split(".")[0])))
@@ -25,9 +25,17 @@ def newItem(category):
             print("ungültiges Datum")
             continue
 
+
     fach = input("Welches Fach? ").lower().capitalize()  # evt. bruchts .lower() garnid
     if fach == "Französisch":
         fach = "Franz"
+    elif fach == 'Englisch':
+        fach = 'English'
+    elif fach == 'Biologie':
+        fach = 'Bio'
+    elif fach == 'Geschichte':
+        fach = 'History'
+
 
     if category == "Hausaufgabe":
         aufgabe = input("Aufgabe: ")
@@ -71,8 +79,7 @@ def layout(item):
     return f"\n{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
            f"{item[2].capitalize()} {item[3]}" \
            f"\n{item[4]}\n" \
-
-
+ \
     # ersti zile git wuchetag sowie datum zrügg.
     # die 2ti git kategorie und fach zrügg (kategorie isch entweder "Test" oder "Hausaufgabe")
     # die 3tti git d ufgab zrügg (oder d lernziu weses ä tescht isch)

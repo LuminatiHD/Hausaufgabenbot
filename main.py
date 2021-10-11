@@ -4,13 +4,14 @@
 #       - Datum
 #       - Fach
 #       - Lernziele
-#  - nach bald kommenden Augaben und Tests abfragen können (
+#  - nach bald kommenden Aufgaben und Tests abfragen können (
 #  - Reminders vor Tests
 #  - Private Aufgaben eintragen und individuell ausgeben können
 #    (also für Gruppenarbeiten, EF-arbeiten, ind. Vorträge etc.)
 #  - Stundenplan ausgeben können (auch nach indiv. Anpassung)
 #  - Wenn jemand zu einem Test eine Zusammenfassung oder ein Quizlet oder so macht, dann kann man die Nachricht beim Bot eintragen
 #  - Better Design with Colors
+#  - option to delete things on request
 
 
 # IDEAS:
@@ -31,7 +32,6 @@ import encoding
 
 
 
-
 def datesort(elem):
     print(elem)
     sortedList = sorted(elem, key=lambda x: x[1])
@@ -39,36 +39,43 @@ def datesort(elem):
     return sortedList
 
 
-
-
-
 tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
-while True:
-    inp = input("Input: ")
-    if inp.lower() == "neue aufgabe":
-        newItem("Hausaufgabe")
+def options():
+    while True:
+        inp = input(f' Was möchtes du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
+        if inp.lower() == 'neue aufgabe'  or inp.lower() == 'a':
+            print('hausaufgabe')
+            newItem("Hausaufgabe")
 
-    elif inp.lower() == "neuer test":
-        newItem("Test")
 
-    elif inp.lower().startswith("outlook"):
-        for i in searchItems(search=inp[8:]):
+        elif inp.lower() == "neuer test" or inp.lower() == 'b':
+            print('test')
+            newItem("Test")
 
-            sortedData = datesort(i)
-            print('sorted Data: ', sortedData)
 
-            for item in sortedData:
-                layoutedData = Item.layout(item)
-                print(layoutedData)
+        elif inp.lower().startswith("outlook") or inp.lower() == 'c':
+            print('outlook')
+            for i in searchItems(search=inp[8:]):
 
-    else:
-        print("Befehl nicht erkannt")
-    allitems = encoding.getallitems()
+                sortedData = datesort(i)
+                print('sorted Data: ', sortedData)
 
-    for item in allitems:
-        (year, month, day) = item[1].split("-")
-        if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
-            encoding.deleteitem(item[0])
+                for item in sortedData:
+                    layoutedData = Item.layout(item)
+                    print(layoutedData)
 
-            # ufgabe oder teschts wo scho düre si wärde glöschet
+        else:
+            print("Befehl nicht erkannt")
+        allitems = encoding.getallitems()
+
+        for item in allitems:
+            (year, month, day) = item[1].split("-")
+            if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
+                encoding.deleteitem(item[0])
+
+                # ufgabe oder teschts wo scho düre si wärde glöschet
+
+
+
+options()
