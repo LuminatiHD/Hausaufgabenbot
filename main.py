@@ -44,43 +44,42 @@ def datesort(elem):
 tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
 def options():
-    while True:
-        inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
-        if inp.lower() == 'neue aufgabe'  or inp.lower() == 'a':
-            print('hausaufgabe')
-            newItem("Hausaufgabe")
+    inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
+    if inp.lower() == 'neue aufgabe'  or inp.lower() == 'a':
+        print('hausaufgabe')
+        newItem("Hausaufgabe")
 
 
-        elif inp.lower() == "neuer test" or inp.lower() == 'b':
-            print('test')
-            newItem("Test")
+    elif inp.lower() == "neuer test" or inp.lower() == 'b':
+        print('test')
+        newItem("Test")
 
 
-        elif inp.lower().startswith("outlook") or inp.lower() == 'c':
-            print('outlook')
-            for i in searchItems(search=inp[8:]):
+    elif inp.lower().startswith("outlook") or inp.lower() == 'c':
+        print('outlook')
+        for i in searchItems(search=inp[8:]):
 
-                sortedData = datesort(i)
-                print('sorted Data: ', sortedData)
+            sortedData = datesort(i)
+            print('sorted Data: ', sortedData)
 
-                for item in sortedData:
-                    layoutedData = Item.layout(item)
-                    print(layoutedData)
+            for item in sortedData:
+                layoutedData = Item.layout(item)
+                print(layoutedData)
 
-        elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
-            encoding.wipetable()
+    elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
+        encoding.wipetable()
 
-        else:
-            print("Befehl nicht erkannt")
-        allitems = encoding.getallitems()
+    else:
+        print("Befehl nicht erkannt")
+    allitems = encoding.getallitems()
 
-        for item in allitems:
-            (year, month, day) = item[1].split("-")
-            if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
-                encoding.deleteitem(item[0])
+    for item in allitems:
+        (year, month, day) = item[1].split("-")
+        if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
+            encoding.deleteitem(item[0])
 
                 # ufgabe oder teschts wo scho düre si wärde glöschet
 
 
-
-options()
+while True:
+    options()
