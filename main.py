@@ -29,8 +29,8 @@ import json
 import Item
 from Item import newItem, searchItems
 import encoding
-import discord
-from discord.ext import commands, tasks
+import nextcord
+from nextcord.ext import commands, tasks
 
 
 
@@ -45,7 +45,7 @@ tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
 def options():
     while True:
-        inp = input(f' Was möchtes du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
+        inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
         if inp.lower() == 'neue aufgabe'  or inp.lower() == 'a':
             print('hausaufgabe')
             newItem("Hausaufgabe")
@@ -66,6 +66,8 @@ def options():
                 for item in sortedData:
                     layoutedData = Item.layout(item)
                     print(layoutedData)
+        elif inp.lower() == "wipe":
+            encoding.wipetable()
 
         else:
             print("Befehl nicht erkannt")

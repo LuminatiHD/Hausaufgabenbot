@@ -40,3 +40,9 @@ def deleteitem(id):
     file.cursor().execute(f"DELETE FROM {Itemtable} WHERE {tablecategories[0]} = {id}")
     file.commit()
 
+def wipetable():
+    if input(f"Wollen Sie wirklich die Tabelle {Itemtable} leeren? ").lower() == "ja":
+        file = sqlite3.connect(Itemfile)
+        file.cursor().execute(f"DROP TABLE {Itemtable}")
+        file.cursor().execute(f"CREATE TABLE {Itemtable} (id INTEGER, datum TEXT, fach TEXT, aufgabe TEXT)")
+        file.commit()
