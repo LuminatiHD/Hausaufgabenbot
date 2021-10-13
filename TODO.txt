@@ -1,11 +1,13 @@
+- Programm mit Discord integrieren
+
 - Tests und HA editieren können
- 
+
 - Sortieren nach:
      - Datum
      - Fach
      - Lernziele
       
-- nach bald kommenden Augaben und Tests abfragen können 
+- nach bald kommenden Aufgaben und Tests abfragen können
 
 - Private Aufgaben eintragen und individuell ausgeben können (also für Gruppenarbeiten, EF-arbeiten, ind. Vorträge etc.)
 
