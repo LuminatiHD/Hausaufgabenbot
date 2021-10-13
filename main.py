@@ -50,7 +50,10 @@ def options():
 
     elif inp.lower().startswith("outlook") or inp.lower() == 'c':
         for i in searchItems(search=inp[8:]):
-            print(Item.layout(i))
+            try:
+                print(Item.layout(i))
+            except:
+                print("Nichts gefunden")
 
     elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
         encoding.wipetable()

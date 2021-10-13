@@ -73,7 +73,8 @@ def searchItems(search=None):
         yield "keine resultate gefunden"
 
     else:
-        yield results
+        for elem in results:
+            yield elem
 
 
 def layout(item):
