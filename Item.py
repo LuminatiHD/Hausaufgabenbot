@@ -54,6 +54,7 @@ def searchItems(search=None):
     itemcounter = 0  # Mit jedem ausgedruckten Item wird es 1 grösser. Wenn am ende der counter==0, dann hat das programm nichts gefunden
 
     items = encoding.getallitems()
+    items.sort(key=lambda elem: elem[1])
 
     if search == "":
         results = items
