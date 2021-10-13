@@ -7,7 +7,20 @@ weekdays = ["Montag",
             "Donnerstag",
             "Freitag",
             "Samstag",
-            "Sonntag"]  # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh, allerdings nur aus integer. Ds isch für ds formatting
+            "Sonntag"]  # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh,
+                        # allerdings nur aus integer. Ds isch für ds formatting.
+
+def changefachname(fach): # so isches übersichtlecher
+    if fach == "Französisch":
+        fach = "Franz"
+    elif fach == 'Englisch':
+        fach = 'English'
+    elif fach == 'Biologie':
+        fach = 'Bio'
+    elif fach == 'Geschichte':
+        fach = 'History'
+
+    return fach
 
 
 def newItem(category):
@@ -24,17 +37,9 @@ def newItem(category):
         except:
             print("ungültiges Datum")
             continue
+            # fragt nachemne valid input bis ä valid input gäh wird.
 
-
-    fach = input("Welches Fach? ").lower().capitalize()  # evt. bruchts .lower() garnid
-    if fach == "Französisch":
-        fach = "Franz"
-    elif fach == 'Englisch':
-        fach = 'English'
-    elif fach == 'Biologie':
-        fach = 'Bio'
-    elif fach == 'Geschichte':
-        fach = 'History'
+    fach = changefachname(input("Welches Fach? ").capitalize())
 
 
     if category == "Hausaufgabe":
@@ -51,10 +56,8 @@ def newItem(category):
 
 def searchItems(search=None):
     results = []
-    itemcounter = 0  # Mit jedem ausgedruckten Item wird es 1 grösser. Wenn am ende der counter==0, dann hat das programm nichts gefunden
-
     items = encoding.getallitems()
-    items.sort(key=lambda elem: elem[1])
+    items.sort(key=lambda elem: elem[1]) # sortiert die liste item nach datum
 
     if search == "":
         results = items
@@ -62,9 +65,9 @@ def searchItems(search=None):
     else:
         for keyword in search.split(" "):
             for item in items:
+                keyword = changefachname(keyword)  # mues für input und output ou so si
                 if keyword.lower().capitalize() in item:
                     results.append(item)
-                    itemcounter += 1
 
     if results == []:
         yield "keine resultate gefunden"
@@ -79,8 +82,8 @@ def layout(item):
 
     return f"\n{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
            f"{item[2].capitalize()} {item[3]}" \
-           f"\n{item[4]}\n" \
- \
+           f"\n{item[4]}\n"
+
     # ersti zile git wuchetag sowie datum zrügg.
     # die 2ti git kategorie und fach zrügg (kategorie isch entweder "Test" oder "Hausaufgabe")
     # die 3tti git d ufgab zrügg (oder d lernziu weses ä tescht isch)

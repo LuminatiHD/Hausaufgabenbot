@@ -34,18 +34,11 @@ from nextcord.ext import commands, tasks
 
 
 
-def datesort(elem):
-    print(elem)
-    sortedList = sorted(elem, key=lambda x: x[1])
-
-    return sortedList
-
-
 tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 
 def options():
     inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
-    if inp.lower() == 'neue aufgabe'  or inp.lower() == 'a':
+    if inp.lower() == 'neue aufgabe' or inp.lower() == 'a':
         print('hausaufgabe')
         newItem("Hausaufgabe")
 
@@ -56,15 +49,8 @@ def options():
 
 
     elif inp.lower().startswith("outlook") or inp.lower() == 'c':
-        print('outlook')
         for i in searchItems(search=inp[8:]):
-
-            sortedData = datesort(i)
-            print('sorted Data: ', sortedData)
-
-            for item in sortedData:
-                layoutedData = Item.layout(item)
-                print(layoutedData)
+            print(Item.layout(i))
 
     elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
         encoding.wipetable()

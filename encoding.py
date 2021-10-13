@@ -46,3 +46,4 @@ def wipetable():
         file.cursor().execute(f"DROP TABLE {Itemtable}")
         file.cursor().execute(f"CREATE TABLE {Itemtable} (id INTEGER, datum TEXT, fach TEXT, aufgabe TEXT)")
         file.commit()
+# tuet d tabäue {Itemtable} lääre (meh d tabäue lösche und neu ersteue, isch ds gliiche basically
