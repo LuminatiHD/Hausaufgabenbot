@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import datetime
 import json
 import Item
-import main
+#import main
 from Item import newItem, searchItems
 import encoding
 
@@ -18,20 +18,29 @@ async def on_ready():
 
 
 @client.command()
-async def hey(ctx):
-    await ctx.send('hey')
-
-@client.command()
 async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
 
 
+
 @client.command()
 async def hw(ctx):
-    main.options()
+    await ctx.send(f' Was möchtes du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n')
 
+    def check(msg):
+        print('hey')
+        return msg.content == 'neue aufgabe' or msg.content == 'a'
 
+    msg = await client.wait_for('message', check=check)
+    print('msg: ', msg)
 
+    if msg.content == 'neue aufgabe' or msg.content == 'a':
+        await ctx.send('hausaufgabe')
+        #newItem("Hausaufgabe")
+
+    elif msg.content() == "neuer test" or msg.content() == 'b':
+        await ctx.send('test')
+        #newItem("Test")
 
 
 
