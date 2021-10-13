@@ -66,7 +66,8 @@ def options():
                 for item in sortedData:
                     layoutedData = Item.layout(item)
                     print(layoutedData)
-        elif inp.lower() == "wipe":
+
+        elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
             encoding.wipetable()
 
         else:
