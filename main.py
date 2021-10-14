@@ -59,10 +59,11 @@ def options():
         print("Befehl nicht erkannt")
     allitems = encoding.getallitems()
 
+
     for item in allitems:
-        (year, month, day) = item[1].split("-")
+        (year, month, day) = item[0].split("-")
         if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
-            encoding.deleteitem(item[0])
+            encoding.deleteitem(item[4])
 
                 # ufgabe oder teschts wo scho düre si wärde glöschet
 

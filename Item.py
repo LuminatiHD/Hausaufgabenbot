@@ -1,5 +1,6 @@
 import datetime
 import encoding
+import sqlite3
 
 weekdays = ["Montag",
             "Dienstag",
@@ -57,7 +58,7 @@ def newItem(category):
 def searchItems(search=None):
     results = []
     items = encoding.getallitems()
-    items.sort(key=lambda elem: elem[1]) # sortiert die liste item nach datum
+    items.sort(key=lambda elem: elem[0]) # sortiert die liste item nach datum
 
     if search == "":
         results = items
@@ -80,11 +81,11 @@ def searchItems(search=None):
 
 
 def layout(item):
-    (year, month, day) = item[1].split("-")
+    (year, month, day) = item[0].split("-")
 
     return f"\n{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
-           f"{item[2].capitalize()} {item[3]}" \
-           f"\n{item[4]}\n"
+           f"{item[1].capitalize()} {item[2]}" \
+           f"\n{item[3]}\n"
 
     # ersti zile git wuchetag sowie datum zrügg.
     # die 2ti git kategorie und fach zrügg (kategorie isch entweder "Test" oder "Hausaufgabe")

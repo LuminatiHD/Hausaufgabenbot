@@ -2,7 +2,7 @@ import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "testitems"
-tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
+tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
 
 """
 Hie wird aues punkto kommunikation zur datebank ghandlet. Wie genau me ds mues mitder datebank mache weisi no nid. 
@@ -22,28 +22,28 @@ de müesster eifach när die tabäue wider neu kreiere.
 
 def getallitems():
     file = sqlite3.connect(Itemfile)
-    return file.cursor().execute(f"SELECT * FROM {Itemtable}").fetchall()
+    return file.cursor().execute(f"SELECT *, rowid FROM {Itemtable}").fetchall()
+
 
 def newitem(datum, kategorie, fach, aufgabe):
     file = sqlite3.connect(Itemfile)
-    itemid = len(file.cursor().execute(f"SELECT * FROM {Itemtable}").fetchall())
-    file.cursor().execute(f"INSERT INTO {Itemtable} VALUES ({itemid}, '{datum}', '{kategorie}', '{fach}', '{aufgabe}')")
+    file.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{datum}', '{kategorie}', '{fach}', '{aufgabe}')")
     file.commit()
 
 def edititem(kategorie, new, itemid):
     file = sqlite3.connect(Itemfile)
-    file.cursor().execute(f"UPDATE {Itemtable} SET {kategorie} = '{new}' WHERE {tablecategories[0]} = '{itemid}'")
+    file.cursor().execute(f"UPDATE {Itemtable} SET {kategorie} = '{new}' WHERE rowid = '{itemid}'")
     file.commit()
 
 def deleteitem(id):
     file = sqlite3.connect(Itemfile)
-    file.cursor().execute(f"DELETE FROM {Itemtable} WHERE {tablecategories[0]} = {id}")
+    file.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {id}")
     file.commit()
 
 def wipetable():
     if input(f"Wollen Sie wirklich die Tabelle {Itemtable} leeren? ").lower() == "ja":
         file = sqlite3.connect(Itemfile)
-        file.cursor().execute(f"DROP TABLE {Itemtable}")
-        file.cursor().execute(f"CREATE TABLE {Itemtable} ({tablecategories[0]} INTEGER, {tablecategories[1]} TEXT, {tablecategories[2]} TEXT, {tablecategories[3]} TEXT, {tablecategories[4]} TEXT)")
+        for elem in file.cursor().execute(f"SELECT rowid FROM {Itemtable}").fetchall():
+            deleteitem(elem[0])
         file.commit()
 # tuet d tabäue {Itemtable} lääre (meh d tabäue lösche und neu ersteue, isch ds gliiche basically
