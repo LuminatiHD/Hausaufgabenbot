@@ -39,21 +39,18 @@ tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
 def options():
     inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
     if inp.lower() == 'neue aufgabe' or inp.lower() == 'a':
-        print('hausaufgabe')
+        print('Hausaufgabe')
         newItem("Hausaufgabe")
 
 
     elif inp.lower() == "neuer test" or inp.lower() == 'b':
-        print('test')
+        print('Test')
         newItem("Test")
 
 
     elif inp.lower().startswith("outlook") or inp.lower() == 'c':
-        for i in searchItems(search=inp[8:]):
-            try:
-                print(Item.layout(i))
-            except:
-                print("Nichts gefunden")
+        print(searchItems(search=inp[8:]))
+
 
     elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
         encoding.wipetable()
@@ -71,4 +68,6 @@ def options():
 
 
 while True:
+    print("=============================")
     options()
+    print("\n") #gseht när mitem formattiere besser uus

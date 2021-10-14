@@ -65,21 +65,22 @@ def searchItems(search=None):
     else:
         for keyword in search.split(" "):
             for item in items:
-                keyword = changefachname(keyword)  # mues für input und output ou so si
-                if keyword.lower().capitalize() in item:
+                keyword = changefachname(keyword.capitalize())  # mues für input und output ou so si
+                if keyword.lower().capitalize() in item and item not in results:
                     results.append(item)
 
     if results == []:
-        yield "keine resultate gefunden"
+        return "Keine resultate gefunden"
 
     else:
-        for elem in results:
-            yield elem
+        output = ""
+        for i in results:
+            output += layout(i)
+        return output
 
 
 def layout(item):
     (year, month, day) = item[1].split("-")
-    print('year:', year, 'month:', month, 'day:', day)
 
     return f"\n{str(weekdays[datetime.date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n" \
            f"{item[2].capitalize()} {item[3]}" \

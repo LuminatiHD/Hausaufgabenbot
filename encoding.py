@@ -44,6 +44,6 @@ def wipetable():
     if input(f"Wollen Sie wirklich die Tabelle {Itemtable} leeren? ").lower() == "ja":
         file = sqlite3.connect(Itemfile)
         file.cursor().execute(f"DROP TABLE {Itemtable}")
-        file.cursor().execute(f"CREATE TABLE {Itemtable} (id INTEGER, datum TEXT, fach TEXT, aufgabe TEXT)")
+        file.cursor().execute(f"CREATE TABLE {Itemtable} ({tablecategories[0]} INTEGER, {tablecategories[1]} TEXT, {tablecategories[2]} TEXT, {tablecategories[3]} TEXT, {tablecategories[4]} TEXT)")
         file.commit()
 # tuet d tabäue {Itemtable} lääre (meh d tabäue lösche und neu ersteue, isch ds gliiche basically
