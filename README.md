@@ -3,9 +3,14 @@ Husibot füre discord server
 
 __HIIWIIS: TÜET BITTE DAS WODER PROGRAMMIERET KOMMENTIERE. SO CHÖISES DIE ANDERE OU EIFACH VERSTAH.__
 
-_das isch für integration mit discord. Ds heimer nonid aagfange:_
+fürs Programm wäri nice weder wüsset wieme mit dr SQLite3-library cha umgah 
+(sqlite isch scho teil vor python standart-library, aso me mues importe aber nid installiere).
+für Tutorials chani öich das empfähle:
 
-Discord.py wird nümme aktualisiert, drum bruche mir nextcord. 
+https://www.youtube.com/watch?v=byHcYRpMgI4
+
+
+für Integration mit Discord: Discord.py wird nümme aktualisiert, drum bruche mir nextcord. 
 Nextcord isch ä fork vo discord.py. Ds heisst, me cha drmit 
 genau ds gliiche mache wie mit discord.py, me muess eifach 
 bines paar sache statt discord nextcord häreschriibe. nextcord.py 
@@ -19,3 +24,5 @@ installiere. schüschtigi informatione zu nextcord finget dir hie: https://nextc
 
 und hie:
 https://github.com/nextcord/nextcord
+
+_das isch für integration mit discord. Ds heimer nonid aagfange:_
