@@ -28,24 +28,27 @@ import datetime
 import json
 import Item
 from Item import newItem, searchItems
-import encoding
+import sqlite3
 import nextcord
 from nextcord.ext import commands, tasks
 
 
-
-tablecategories = ("id", "datum", "kagegorie", "fach", "aufgabe")
+Itemfile = "ItemFiles.db"
+Alltables = "testitems", "items"
+Itemtable = "testitems"
+tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
+database = sqlite3.connect(Itemfile)
 
 def options():
     inp = input(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test \n C: outlook \n\n')
     if inp.lower() == 'neue aufgabe' or inp.lower() == 'a':
         print('Hausaufgabe')
-        newItem("Hausaufgabe")
+        newItem("Hausaufgabe", database)
 
 
     elif inp.lower() == "neuer test" or inp.lower() == 'b':
         print('Test')
-        newItem("Test")
+        newItem("Test", database)
 
 
     elif inp.lower().startswith("outlook") or inp.lower() == 'c':
@@ -53,22 +56,25 @@ def options():
 
 
     elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)
-        encoding.wipetable()
+        database.cursor().execute(f"DELETE FROM {Itemtable}")
+
+    elif inp.lower() == "exit":
+        database.close()
+        exit()
 
     else:
         print("Befehl nicht erkannt")
-    allitems = encoding.getallitems()
 
+    # ufgabe oder teschts wo scho düre si wärde glöschet
+    allitems = database.cursor().execute(f"SELECT datum, rowid FROM {Itemtable} ORDER BY datum").fetchall()
 
     for item in allitems:
-        (year, month, day) = item[0].split("-")
-        if datetime.date.today() > datetime.date(int(year), int(month), int(day)):
-            encoding.deleteitem(item[4])
-
-                # ufgabe oder teschts wo scho düre si wärde glöschet
+        if str(datetime.date.today()) > item[0]:
+            database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {item[1]}")
 
 
 while True:
     print("=============================")
     options()
-    print("\n") #gseht när mitem formattiere besser uus
+    database.commit()
+

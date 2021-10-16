@@ -1,6 +1,10 @@
 import datetime
 import encoding
 import sqlite3
+Itemfile = "ItemFiles.db"
+Alltables = "testitems", "items"
+Itemtable = "testitems"
+tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
 
 weekdays = ["Montag",
             "Dienstag",
@@ -11,7 +15,8 @@ weekdays = ["Montag",
             "Sonntag"]  # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh,
                         # allerdings nur aus integer. Ds isch für ds formatting.
 
-def changefachname(fach): # so isches übersichtlecher
+
+def changefachname(fach):  # so isches übersichtlecher
     if fach == "Französisch":
         fach = "Franz"
     elif fach == 'Englisch':
@@ -24,7 +29,7 @@ def changefachname(fach): # so isches übersichtlecher
     return fach
 
 
-def newItem(category):
+def newItem(category, database):
     error = 1
     while error == 1:
         try:
@@ -52,13 +57,13 @@ def newItem(category):
     else:
         aufgabe = input("Lernziele: ")
 
-    encoding.newitem(datum=date, kategorie=category, fach=fach, aufgabe=aufgabe)
+    database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}')")
+    database.commit()
 
 
 def searchItems(search=None):
     results = []
     items = encoding.getallitems()
-    items.sort(key=lambda elem: elem[0]) # sortiert die liste item nach datum
 
     if search == "":
         results = items
@@ -71,13 +76,14 @@ def searchItems(search=None):
                     results.append(item)
 
     if results == []:
-        return "Keine resultate gefunden"
+        output =  "Keine resultate gefunden"
 
     else:
         output = ""
         for i in results:
             output += layout(i)
-        return output
+
+    return output
 
 
 def layout(item):
@@ -98,4 +104,3 @@ def layout(item):
     # I üsem fau isch das:
     #   [Itemid, datum, kategorie, fach, ufgab].
 
-    # Darum bruchi ou kei "i[0]", wöu für das isch d Itemid irrelevant. d ID wäri dänkt für kommunikation innerhaub vom programm.

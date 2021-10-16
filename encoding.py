@@ -22,7 +22,7 @@ de müesster eifach när die tabäue wider neu kreiere.
 
 def getallitems():
     file = sqlite3.connect(Itemfile)
-    return file.cursor().execute(f"SELECT *, rowid FROM {Itemtable}").fetchall()
+    return file.cursor().execute(f"SELECT *, rowid FROM {Itemtable} ORDER BY datum").fetchall()
 
 
 def newitem(datum, kategorie, fach, aufgabe):
@@ -43,7 +43,6 @@ def deleteitem(id):
 def wipetable():
     if input(f"Wollen Sie wirklich die Tabelle {Itemtable} leeren? ").lower() == "ja":
         file = sqlite3.connect(Itemfile)
-        for elem in file.cursor().execute(f"SELECT rowid FROM {Itemtable}").fetchall():
-            deleteitem(elem[0])
+        file.cursor().execute(f"DELETE FROM {Itemtable}")
         file.commit()
 # tuet d tabäue {Itemtable} lääre (meh d tabäue lösche und neu ersteue, isch ds gliiche basically
