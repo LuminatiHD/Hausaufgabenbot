@@ -52,7 +52,7 @@ def options():
 
 
     elif inp.lower().startswith("outlook") or inp.lower() == 'c':
-        print(searchItems(search=inp[8:]))
+        print(searchItems(database, search=inp[8:]))
 
 
     elif inp.lower() == "wipe": # leert die Tabelle (braucht noch weitere bestätigung, wird in encoding gehandlet)

@@ -1,5 +1,4 @@
 import datetime
-import encoding
 import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
@@ -61,9 +60,9 @@ def newItem(category, database):
     database.commit()
 
 
-def searchItems(search=None):
+def searchItems(database, search=None):
     results = []
-    items = encoding.getallitems()
+    items = database.cursor().execute(f"SELECT * FROM {Itemtable}")
 
     if search == "":
         results = items
