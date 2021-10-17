@@ -1,13 +1,6 @@
-Mit Discord nach Items suchen können
+- Nach Datum suchen können (bis [DATUM], ab [DATUM] und [DATUM]
 
 - Tests und HA editieren können
-
-- Sortieren nach:
-     - Datum
-     - Fach
-     - Lernziele
-      
-- nach bald kommenden Aufgaben und Tests abfragen können
 
 - Private Aufgaben eintragen und individuell ausgeben können (also für Gruppenarbeiten, EF-arbeiten, ind. Vorträge etc.)
 
