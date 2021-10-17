@@ -19,7 +19,7 @@ weekdays = ["Montag",
 
 database = sqlite3.connect(Itemfile)
 
-entryingusers = []  # da drmit sech d lüt nid gägesiitig düe sache gäh
+enteringusers = []  # da drmit sech d lüt nid gägesiitig düe sache gäh
 
 
 def changefachname(fach):  # so isches übersichtlecher
@@ -55,59 +55,70 @@ def layout(item):
     #   [Itemid, datum, kategorie, fach, ufgab].
 
 
-
-class ItemCog(commands.Cog):
+class newItem(commands.Cog):
     def __init__(self, bot:commands.Bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if self.bot.user != message.author and message.author not in entryingusers:
-            entryingusers.append(message.author)
-            if message.content == 'neue aufgabe' or message.content == 'a':
-                category = 'Hausaufgabe'
+    @commands.command()
+    async def new(self, ctx:Context):
+        if self.bot.user != ctx.author and ctx.author not in entryingusers:
+            error = True
+            while error:
+                await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test")
+                enteringusers.append(ctx.author)
+                category = await self.bot.wait_for("message", check=lambda msg:msg.author == ctx.author)
+                category = category.content.lower()
+                if category == 'neue aufgabe' or category == 'a':
+                    category = 'Hausaufgabe'
+                    error = False
+                elif category == "neuer test" or category == 'b':
+                    category = 'Test'
+                    error = False
+                else:
+                    await ctx.reply("ungültige Eingabe")
+                    error = True
 
-            elif message.content == "neuer test" or message.content == 'b':
-                category = 'Test'
 
-            await message.reply("Wann ist der Test oder die Aufgabe fällig?")
-            error = 1
-            while error == 1:
+
+            error = True
+            while error:
+                await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
                 try:
-                    dateraw = await self.bot.wait_for("message", check = lambda msg: msg.author == message.author)
+                    dateraw = await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author)
                     date = str(datetime.date(int(dateraw.content.split(".")[2]),
                                              int(dateraw.content.split(".")[1]),
                                              int(dateraw.content.split(".")[0])))
                     # datetime.date nimmt daten nur in der Form YY/MM/DD an
-                    error = 0
+                    error = False
                 except:
-                    await message.reply("ungültiges Datum")
+                    await ctx.reply("ungültiges Datum")
                     continue
                     # fragt nachemne valid input bis ä valid input gäh wird.
 
-            await message.reply("Welches Fach? ")
-            fach = changefachname(await self.bot.wait_for("message", check = lambda msg: msg.author == message.author))
+            await ctx.reply("Welches Fach? ")
+            fach = changefachname(await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author))
 
 
             if category == "Hausaufgabe":
-                await message.reply("Aufgabe: ")
-                aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == message.author)
+                await ctx.reply("Aufgabe: ")
+                aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 aufgabe = aufgabe.content
             else:
-                await message.reply("Schon Lernziele? ")
+                await ctx.reply("Schon Lernziele? ")
 
-                yesno = await self.bot.wait_for("message", check=lambda msg: msg.author == message.author)
+                yesno = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 if yesno.content.lower() == "ja":
-                    message.reply("Lernziele:")
-                    aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == message.author)
+                    await ctx.reply("Lernziele:")
+                    aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     aufgabe = aufgabe.content
                 else:
-                    await message.reply("Keine aufgabe")
+                    await ctx.reply("Keine aufgabe")
                     aufgabe = None
 
-            await message.reply(f"{category}, {date}, {fach}, {aufgabe}")
+            await ctx.reply(f"{category}, {date}, {fach}, {aufgabe}")
             database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}')")
             database.commit()
 
+
 def setup(client):
-    client.add_cog(ItemCog(client))
+    client.add_cog(newItem(client))

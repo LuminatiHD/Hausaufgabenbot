@@ -21,19 +21,8 @@ async def on_ready():
     print('Bot is ready.')
 
 
-@client.command()
-async def new(ctx):
-    await ctx.send(f' Was möchtest du machen? \n A: Neue Aufgabe \n B: Neuer Test')
-    client.load_extension("cogs.newItem")
-
-    # if msg.content == 'neue aufgabe' or msg.content == 'a':
-    #     await ctx.send('Hausaufgabe:')
-    #
-    # elif msg.content() == "neuer test" or msg.content() == 'b':
-    #     await ctx.send('Test:')
-    #
-    # elif msg.content().lower() == "outlook" or msg.content().lower() == "c":
-    #     searchItems(msg, database, search = msg.content().lower()[8:])
+client.load_extension("cogs.newItem")
+client.load_extension("cogs.searchItem")
 
 
 
