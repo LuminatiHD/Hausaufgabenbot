@@ -1,4 +1,4 @@
-- Programm mit Discord integrieren
+Mit Discord nach Items suchen können
 
 - Tests und HA editieren können
 
