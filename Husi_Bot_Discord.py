@@ -1,9 +1,5 @@
-import asyncio
 import nextcord
 from nextcord.ext import commands, tasks
-import datetime
-import json
-from Item import newItem, searchItems
 import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"

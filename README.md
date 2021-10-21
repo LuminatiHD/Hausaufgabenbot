@@ -25,4 +25,3 @@ installiere. schüschtigi informatione zu nextcord finget dir hie: https://nextc
 und hie:
 https://github.com/nextcord/nextcord
 
-_das isch für integration mit discord. Ds heimer nonid aagfange:_
