@@ -18,7 +18,7 @@ isch aber nid compatible mit discord.py, aso weder scho discord.py heit,
 de düet ds bitte deinstallliere. Weder nextcord no nid heit, 
 de chöiter ses eifach mit 
 
-`< python3 -m pip install -U nextcord >` 
+`python3 -m pip install -U nextcord` 
 
 installiere. schüschtigi informatione zu nextcord finget dir hie: https://nextcord.readthedocs.io/en/latest/
 

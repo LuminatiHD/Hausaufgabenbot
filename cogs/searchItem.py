@@ -13,10 +13,37 @@ weekdays = ["Montag",
             "Mittwoch",
             "Donnerstag",
             "Freitag",
-            "Samstag", # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh,
+            "Samstag",  # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh,
             "Sonntag"]  # allerdings nur aus integer. Ds isch für ds formatting.
 
 database = sqlite3.connect(Itemfile)
+
+
+class PageButtons(nextcord.ui.View):  # buttons für d siitene
+    def __init__(self, results, currentpage):
+        super().__init__(timeout=120.0)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
+        self.currentpage = currentpage
+        self.results = results
+        self.left = False
+        self.right = False
+
+    @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary)
+    async def left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.currentpage -= 1
+        self.left = True
+        self.stop()
+
+    @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)
+    async def right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.currentpage += 1
+        self.right = True
+        self.stop()
+
+    # was hie no chli es problem isch, isch wieme dr button tuet disable, aso weme uf dr site 0 isch sött me nid
+    # chönne witer nach links gah. Mä cha dr button Disable, aso so mache, das dr button nid drück wird, indäm
+    # me bim button-invoke-decorator (da @nextcord.ui.button) tuet aus argumänt no "disabled" häretue. mä cha
+    # aber nid argumänt usem __init__ oder so dritue. ds eizige wone chönnt mache wär mit if-else-statements,
+    # aber da wäri z fuu grad + i bimer sicher dases ä bessere wäg git.
 
 
 def layout(items, footer):
@@ -45,7 +72,7 @@ def layout(items, footer):
             output.add_field(name="__Innerhalb von 60 Tagen:__", value=f"(Bis zum {date.today()+timedelta(60)})")
             month_2 = True
 
-        if date.today()+timedelta(60) <=date(int(year), int(month), int(day)) and not future:
+        if date.today()+timedelta(60) <= date(int(year), int(month), int(day)) and not future:
             lastitem = items[-1][0].split("-")
             output.add_field(name="__Später als 60 Tage:__", value=f"(Bis zum {date(int(lastitem[0]), int(lastitem[1]), int(lastitem[2]))})")
             future = True
@@ -86,7 +113,7 @@ class Itemsearch(commands.Cog):
             if search == "":
                 search=None
             items = database.cursor().execute(f"SELECT * FROM {Itemtable} ORDER BY datum").fetchall()
-            results = [i for i in items] # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
+            results = [i for i in items]  # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
             if search is not None:
                 for keyword in search.split(", "):
                     for item in items:
@@ -94,12 +121,17 @@ class Itemsearch(commands.Cog):
                         if keyword.lower().capitalize() not in item and item in results:
                             results.remove(item)
             if results: # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
-                await ctx.reply(embed=layout(results[:5], footer=f"Seite {1}/{len(results)//5+1}"))
-            elif ctx.message.content not in ["!outlook", "!new"]:  # programm het irgendwie problem drmit gha, dueses mau so fixe, wirde hoffentlech no meh luege
-                await ctx.reply("Keine resultate gefunden")
+                begin = datetime.datetime.now()
+                buttons = PageButtons(results, 0)
+                outputmsg = await ctx.reply(embed=layout(results[:5], footer=f"Seite {1}/{len(results) // 5 + 1}"), view=buttons)
+                while datetime.datetime.now() < begin+datetime.timedelta(minutes=2):
+                    await buttons.wait()  # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber, dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
+                    currentpage = buttons.currentpage
+                    buttons = PageButtons(results, currentpage)
+                    await outputmsg.edit(embed=layout(results[currentpage*5:(currentpage+1)*5], footer=f"Seite {currentpage+1}/{len(results)//5+1}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
 
-            for a in range(len(results)//5+1):
-                selection = await self.bot.wait_for("message", check=lambda msg:msg.author==ctx.author)
+            else:
+                await ctx.reply("Keine Resultate gefunden.")
 
                 if selection.content.startswith("outlook page"):
                     await ctx.reply(embed=layout(results[5*(int(selection.content[13:])-1):], footer=f"Seite {int(selection.content[13:])}/{len(results)//5+1}"))
