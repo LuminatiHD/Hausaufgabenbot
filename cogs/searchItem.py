@@ -30,13 +30,13 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         self.right = False
 
     @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary)
-    async def left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def leftbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.currentpage -= 1
         self.left = True
         self.stop()
 
     @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)
-    async def right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def rightbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.currentpage += 1
         self.right = True
         self.stop()
@@ -125,11 +125,15 @@ class Itemsearch(commands.Cog):
             if results: # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
                 begin = datetime.datetime.now()
                 buttons = PageButtons(results, 0)
+                buttons.leftbutton.disabled = True
+                buttons.rightbutton.disabled = 1 >= len(results) / 5  # mit [BUTTON].disabled chame d disability vomne button wächsle. det machi hie für dasme nit cha out of bounds gah.
                 outputmsg = await ctx.reply(embed=layout(results[:5], footer=f"Seite {1}/{len(results) // 5 + 1}"), view=buttons)
                 while datetime.datetime.now() < begin+datetime.timedelta(minutes=2):
                     await buttons.wait()  # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber, dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
                     currentpage = buttons.currentpage
                     buttons = PageButtons(results, currentpage)
+                    buttons.leftbutton.disabled = currentpage==0
+                    buttons.rightbutton.disabled = (currentpage+1) >= len(results)/5
                     await outputmsg.edit(embed=layout(results[currentpage*5:(currentpage+1)*5], footer=f"Seite {currentpage+1}/{len(results)//5+1}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
 
             else:
