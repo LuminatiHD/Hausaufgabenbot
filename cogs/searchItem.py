@@ -1,3 +1,5 @@
+import datetime
+
 import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
@@ -133,10 +135,6 @@ class Itemsearch(commands.Cog):
             else:
                 await ctx.reply("Keine Resultate gefunden.")
 
-                if selection.content.startswith("outlook page"):
-                    await ctx.reply(embed=layout(results[5*(int(selection.content[13:])-1):], footer=f"Seite {int(selection.content[13:])}/{len(results)//5+1}"))
 
-                elif selection.content.startswith("outlook select"):
-                    await ctx.reply(embed=layout([results[int(selection.content[15:])]], footer=None))
 def setup(client):
     client.add_cog(Itemsearch(client))
