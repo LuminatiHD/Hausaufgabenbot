@@ -1,5 +1,4 @@
 import datetime
-
 import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
@@ -99,19 +98,16 @@ class Itemsearch(commands.Cog):
                 begin = datetime.datetime.now()
                 buttons = Buttons.PageButtons(results, 0)
                 currentpage = 1
-                buttons.leftbutton.disabled = True
-                buttons.rightbutton.disabled = 1 >= len(results) / 5  # mit [BUTTON].disabled chame d disability vomne button wächsle. det machi hie für dasme nit cha out of bounds gah.
                 selection = results[:5]
                 outputmsg = await ctx.reply(embed=layout(selection, footer=f"Seite {1}/{len(results) // 5 + 1}"), view=buttons)
                 while datetime.datetime.now() < begin+datetime.timedelta(minutes=2):
                     await buttons.wait()  # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber, dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
                     if buttons.left or buttons.right: # luegt öb d pagetaschte si drücket worde. schüsch weiser dasme möcht selecte.
                         currentpage = buttons.currentpage
+
                         selection = results[currentpage*5:(currentpage+1)*5]
                         buttons = Buttons.PageButtons(results, currentpage)
-                        buttons.leftbutton.disabled = currentpage==0
-                        buttons.rightbutton.disabled = (currentpage+1) >= len(results)/5
-                        await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage+1}/{len(results)//5+1}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
+                        await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage+1}/{int(len(results)/5) + (len(results) % 5>0)}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
 
                     else:
                         selecteditem = selection[buttons.select]

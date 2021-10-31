@@ -8,6 +8,14 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         self.left = False
         self.right = False
         self.select = 0
+        self.bigleft.disabled = self.currentpage == 0
+        self.leftbutton.disabled = self.currentpage == 0
+        self.rightbutton.disabled = (self.currentpage + 1) >= len(results) / 5 # mit [BUTTON].disabled chame d disability vomne button wächsle. det machi hie für dasme nit cha out of bounds gah.
+        self.bigright.disabled = (self.currentpage + 1) >= len(results) / 5
+        for button in self.children:
+            label = button.__str__().split(" ")[5].split("=")[1][1:-1]
+            if label not in ["<<", "<", ">", ">>"] and int(label) > len(results)-(currentpage*5): # wider zum prevente das me out of bounds geit, i däm fau das me nid iwie ds item 4 selected wo gar nid da isch.
+                 button.disabled = True
 
     @nextcord.ui.button(label="1", style=nextcord.ButtonStyle.primary)
     async def Select1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -34,6 +42,12 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         self.select = 4
         self.stop()
 
+    @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.primary)
+    async def bigleft(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.currentpage = 0
+        self.left = True
+        self.stop()
+
     @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary)
     async def leftbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.currentpage -= 1
@@ -43,6 +57,12 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
     @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)
     async def rightbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.currentpage += 1
+        self.right = True
+        self.stop()
+
+    @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.primary)
+    async def bigright(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.currentpage = int(len(self.results)/5) + (len(self.results) % 5>0)-1
         self.right = True
         self.stop()
 
@@ -77,4 +97,34 @@ class Confirmdelete(nextcord.ui.View):
     @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.green)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.delete = False
+        self.stop()
+
+
+class EditButtons(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=120.0)
+        self.edit = []
+
+    @nextcord.ui.button(label="Kategorie", style=nextcord.ButtonStyle.primary)
+    async def kategorie(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.edit.append("kategorie")
+        self.kategorie.disabled = True
+
+    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
+    async def aufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.edit.append("aufgabe")
+        self.aufgabe.disabled = True
+
+    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
+    async def datum(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.edit.append("datum")
+        self.datum.disabled = True
+
+    @nextcord.ui.button(label="fach", style=nextcord.ButtonStyle.primary)
+    async def fach(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.edit.append("aufgabe")
+        self.datum.disabled = True
+
+    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.stop()

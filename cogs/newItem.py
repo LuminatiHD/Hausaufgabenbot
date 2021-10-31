@@ -61,7 +61,7 @@ class newItem(commands.Cog):
 
     @commands.command()
     async def new(self, ctx:Context):
-        if self.bot.user != ctx.author and ctx.author not in entryingusers:
+        if self.bot.user != ctx.author and ctx.author not in enteringusers:
             error = True
             while error:
                 await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test")
