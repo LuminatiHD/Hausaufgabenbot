@@ -34,28 +34,32 @@ def layout(items, footer):
         (year, month, day) = item[0].split("-")
 
         if date(int(year), int(month), int(day)) <= date.today() + timedelta(7) and not week_1:  # week_1 teschtet öb ds scho isch vergäh worde, wenn nid de machter das häre
-            output.add_field(name="__Bis nächste Woche:__", value=f"(Bis zum {date.today() + timedelta(7)})",inline=False)
+            output.add_field(name="__BIS NÄCHSTE WOCHE:__", value=f"(Bis zum {date.today() + timedelta(7)})",inline=False)
             week_1 = True
 
         if date.today() + timedelta(7) <= date(int(year), int(month), int(day)) <= date.today() + timedelta(14) and not week_2:
-            output.add_field(name="__Nächste 2 Wochen:__", value=f"(Bis zum {date.today() + timedelta(14)})")
+            output.add_field(name="__NÄCHSTE 2 WOCHEN:__", value=f"(Bis zum {date.today() + timedelta(14)})")
             week_2 = True
 
         if date.today() + timedelta(14) <= date(int(year), int(month), int(day)) <= date.today() + timedelta(30) and not month_1:
-            output.add_field(name="__Innerhalb von 30 Tagen:__", value=f"(Bis zum {date.today() + timedelta(30)})")
+            output.add_field(name="__INNERHALB VON 30 TAGEN:__", value=f"(Bis zum {date.today() + timedelta(30)})")
             month_1 = True
 
         if date.today() + timedelta(30) <= date(int(year), int(month), int(day)) <= date.today() + timedelta(60) and not month_2:
-            output.add_field(name="__Innerhalb von 60 Tagen:__", value=f"(Bis zum {date.today() + timedelta(60)})")
+            output.add_field(name="__INNERHALB VON 60 TAGEN:__", value=f"(Bis zum {date.today() + timedelta(60)})")
             month_2 = True
 
         if date.today() + timedelta(60) <= date(int(year), int(month), int(day)) and not future:
             lastitem = items[-1][0].split("-")
-            output.add_field(name="__Später als 60 Tage:__", value=f"(Bis zum {date(int(lastitem[0]), int(lastitem[1]), int(lastitem[2]))})")
+            output.add_field(name="__SPÄTER ALS 60 TAGE:__", value=f"(Bis zum {date(int(lastitem[0]), int(lastitem[1]), int(lastitem[2]))})")
             future = True
 
+        desc = item[3]
+        if len(desc)>20:
+            desc = item[3][:20]+"..." # wöu schüsch chasch du lernziele ha wo viu ds läng si.
+
         output.add_field(name=f" {item[1].capitalize()} {item[2]}", value=f" {str(weekdays[date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n"
-                               f" {item[3]}\n ", inline=False)
+                               f" {desc}\n ", inline=False)
         output.set_footer(text=footer)
     return output
 

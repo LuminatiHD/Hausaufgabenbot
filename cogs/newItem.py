@@ -67,35 +67,41 @@ class newItem(commands.Cog):
             await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test", view = button)
             await button.wait()
             category = button.choice
-
+            exitcommand = False
             error = True
             while error:
                 await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
                 try:
                     dateraw = await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author)
+                    exitcommand = dateraw.content in ["break", "exit", "stop"]
+                    if exitcommand:
+                        error = False
+                        break
                     date = str(datetime.date(int(dateraw.content.split(".")[2]),
                                              int(dateraw.content.split(".")[1]),
                                              int(dateraw.content.split(".")[0])))
                     # datetime.date nimmt daten nur in der Form YY/MM/DD an
                     error = False
-                except:
+                except (ValueError, IndexError):  # IndexError wöu ja dr input no gsplittet und indexet wird.
                     await ctx.reply("ungültiges Datum")
                     continue
                     # fragt nachemne valid input bis ä valid input gäh wird.
 
-            await ctx.reply("Welches Fach? ")
-            fach = changefachname(await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author))
+            if not exitcommand:
+                await ctx.reply("Welches Fach? ")
+                fach = changefachname(await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author))
+                exitcommand = fach in ["Break", "Exit", "Stop"]
 
-
-            if category == "Hausaufgabe":
+            if category == "Hausaufgabe" and not exitcommand:
                 await ctx.reply("Aufgabe: ")
                 aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 aufgabe = aufgabe.content
-            else:
-                await ctx.reply("Schon Lernziele? ")
-
-                yesno = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-                if yesno.content.lower() == "ja":
+                exitcommand = aufgabe in ["break", "exit", "stop"]
+            elif not exitcommand:
+                yesno = Buttons.Confirm()
+                await ctx.reply("Schon Lernziele? ", view=yesno)
+                await yesno.wait()
+                if yesno.confirm:
                     await ctx.reply("Lernziele:")
                     aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     aufgabe = aufgabe.content
@@ -103,9 +109,10 @@ class newItem(commands.Cog):
                     await ctx.reply("Keine aufgabe")
                     aufgabe = None
 
-            await ctx.reply(f"{category}, {date}, {fach}, {aufgabe}")
-            database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}')")
-            database.commit()
+            if not exitcommand:
+                database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}')")
+                await ctx.channel.send(f"{category} wurde eingetragen")
+                database.commit()
 
 
 def setup(client):

@@ -2,8 +2,12 @@ import nextcord
 
 
 class PageButtons(nextcord.ui.View):  # buttons für d siitene
+    """"Diese Buttons sind für den outlook-command. Dabei hat es 5 select-buttons (mit welchen man ein bestimmtes
+    Element vom Outlook auswählen kann), sowie 4 Buttons fürs blättern. Dabei gibt es jeweils einen knopf für 1 Seite
+    weiter zurück, sowie je einen Knopf für ganz nach hinten/vorne."""
+
     def __init__(self, results, currentpage):
-        super().__init__(timeout=120.0)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
+        super().__init__(timeout=None)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
         self.currentpage = currentpage
         self.results = results
         self.left = False
@@ -69,6 +73,11 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
 
 
 class Selectionmode(nextcord.ui.View):
+    """
+    Wenn man ein Item mit den obrigen knöpfen ausgewählt hat, kann man hier auswählen, was man mite dem Item tun will.
+    Es gibt einen Knopf, um das Element zu löschen, einen um es zu editieren und einen zum wieder zur outlook-sicht
+    zurückzugelangen."""
+
     def __init__(self):
         super().__init__(timeout=120.0)
         self.edit = False
@@ -92,25 +101,32 @@ class Selectionmode(nextcord.ui.View):
 
 
 class Confirm(nextcord.ui.View):
+    """
+    Fragt nach einer Bestätigung für etw.
+    """
     def __init__(self):
         super().__init__(timeout=120.0)
         self.confirm = False
 
-    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label="Ja", style=nextcord.ButtonStyle.green)
     async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.confirm = True
         self.stop()
 
-    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label="Nein", style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.confirm = False
         self.stop()
 
 
 class EditButtons(nextcord.ui.View):
+    """Das ist für das Editieren eines Items. Mit den unteren Knöpfen fragt man nach, was man genau editieren möchte."""
+
     def __init__(self):
         super().__init__(timeout=120.0)
         self.edit = []
+        self.goback = False
+
     @nextcord.ui.button(label="Kategorie", style=nextcord.ButtonStyle.primary)
     async def kategorie(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.edit.append("kategorie")
@@ -131,7 +147,16 @@ class EditButtons(nextcord.ui.View):
         self.edit.append("fach")
         self.stop()
 
+    @nextcord.ui.button(label="Zurück", style=nextcord.ButtonStyle.gray)
+    async def fach(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.goback = True
+        self.stop()
+
+
 class TestOrHA(nextcord.ui.View):
+    """Diese Knöpfe sind da für wenn man ein neues Item erstellen will. Diese beiden Buttons fragen nach, ob man einen
+    Test oder eine Hausaufgabe eintragen will."""
+
     def __init__(self):
         super().__init__(timeout=120.0)
         self.choice = "Hausaufgabe"
