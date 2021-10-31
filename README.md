@@ -11,17 +11,19 @@ https://www.youtube.com/watch?v=byHcYRpMgI4
 
 
 für Integration mit Discord: Discord.py wird nümme aktualisiert, drum bruche mir nextcord. 
-Nextcord isch ä fork vo discord.py. Ds heisst, me cha drmit 
+Nextcord isch ä fork vo discord.py, heisst, me cha drmit 
 genau ds gliiche mache wie mit discord.py, me muess eifach 
 bines paar sache statt discord nextcord häreschriibe. nextcord.py 
 isch aber nid compatible mit discord.py, aso weder scho discord.py heit, 
-de düet ds bitte deinstallliere. Weder nextcord no nid heit, 
-de chöiter ses eifach mit 
+de müestme ds deinstallliere. Weder nextcord no nid heit, 
+de chöiter des eifach mit 
 
 `python3 -m pip install -U nextcord` 
 
-installiere. schüschtigi informatione zu nextcord finget dir hie: https://nextcord.readthedocs.io/en/latest/
+mache. schüschtigi informatione zu nextcord finget dir hie: https://nextcord.readthedocs.io/en/latest/
 
 und hie:
 https://github.com/nextcord/nextcord
 
+hie isch ou no dr discord-server vo Nextcord, dört chöiter ou frage steue und so:
+https://discord.com/invite/ZebatWssCB

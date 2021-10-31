@@ -20,34 +20,6 @@ weekdays = ["Montag",
 
 database = sqlite3.connect(Itemfile)
 
-
-class PageButtons(nextcord.ui.View):  # buttons für d siitene
-    def __init__(self, results, currentpage):
-        super().__init__(timeout=120.0)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
-        self.currentpage = currentpage
-        self.results = results
-        self.left = False
-        self.right = False
-
-    @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary)
-    async def leftbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.currentpage -= 1
-        self.left = True
-        self.stop()
-
-    @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)
-    async def rightbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.currentpage += 1
-        self.right = True
-        self.stop()
-
-    # was hie no chli es problem isch, isch wieme dr button tuet disable, aso weme uf dr site 0 isch sött me nid
-    # chönne witer nach links gah. Mä cha dr button Disable, aso so mache, das dr button nid drück wird, indäm
-    # me bim button-invoke-decorator (da @nextcord.ui.button) tuet aus argumänt no "disabled" häretue. mä cha
-    # aber nid argumänt usem __init__ oder so dritue. ds eizige wone chönnt mache wär mit if-else-statements,
-    # aber da wäri z fuu grad + i bimer sicher dases ä bessere wäg git.
-
-
 def layout(items, footer):
     week_1 = False
     week_2 = False
@@ -114,7 +86,7 @@ class Itemsearch(commands.Cog):
             search = ctx.message.content[9:]
             if search == "":
                 search=None
-            items = database.cursor().execute(f"SELECT * FROM {Itemtable} ORDER BY datum").fetchall()
+            items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} ORDER BY datum").fetchall()
             results = [i for i in items]  # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
             if search is not None:
                 for keyword in search.split(", "):
@@ -124,17 +96,41 @@ class Itemsearch(commands.Cog):
                             results.remove(item)
             if results: # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
                 begin = datetime.datetime.now()
-                buttons = PageButtons(results, 0)
+                buttons = Buttons.PageButtons(results, 0)
+                currentpage = 1
                 buttons.leftbutton.disabled = True
                 buttons.rightbutton.disabled = 1 >= len(results) / 5  # mit [BUTTON].disabled chame d disability vomne button wächsle. det machi hie für dasme nit cha out of bounds gah.
-                outputmsg = await ctx.reply(embed=layout(results[:5], footer=f"Seite {1}/{len(results) // 5 + 1}"), view=buttons)
+                selection = results[:5]
+                outputmsg = await ctx.reply(embed=layout(selection, footer=f"Seite {1}/{len(results) // 5 + 1}"), view=buttons)
                 while datetime.datetime.now() < begin+datetime.timedelta(minutes=2):
                     await buttons.wait()  # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber, dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
-                    currentpage = buttons.currentpage
-                    buttons = PageButtons(results, currentpage)
-                    buttons.leftbutton.disabled = currentpage==0
-                    buttons.rightbutton.disabled = (currentpage+1) >= len(results)/5
-                    await outputmsg.edit(embed=layout(results[currentpage*5:(currentpage+1)*5], footer=f"Seite {currentpage+1}/{len(results)//5+1}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
+                    if buttons.left or buttons.right: # luegt öb d pagetaschte si drücket worde. schüsch weiser dasme möcht selecte.
+                        currentpage = buttons.currentpage
+                        selection = results[currentpage*5:(currentpage+1)*5]
+                        buttons = Buttons.PageButtons(results, currentpage)
+                        buttons.leftbutton.disabled = currentpage==0
+                        buttons.rightbutton.disabled = (currentpage+1) >= len(results)/5
+                        await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage+1}/{len(results)//5+1}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
+
+                    else:
+                        selecteditem = selection[buttons.select]
+                        selected = nextcord.Embed(title = f"{selecteditem[1]} {selecteditem[2]} ")
+                        selected.add_field(name="Aufgabe:", value=selecteditem[3])
+                        (year, month, day) = selecteditem[0].split("-")
+                        selected.set_footer(text=f"Fällig bis: {str(weekdays[date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n")
+
+                        selectbtn = Buttons.Selectionmode()
+                        await outputmsg.edit(embed=selected, view=selectbtn)
+                        await selectbtn.wait()  # button.wait() wartet druf dasme öppis het drückt
+
+                        if selectbtn.delete:
+                            confirm = Buttons.Confirmdelete()
+                            await ctx.reply(content="Willst du wirklich das Item löschen?", view=confirm)
+                            await confirm.wait()
+                            if confirm.delete:
+                                database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {selecteditem[4]}")
+                                database.commit()
+                                await ctx.reply("Item wurde gelöscht")
 
             else:
                 await ctx.reply("Keine Resultate gefunden.")
