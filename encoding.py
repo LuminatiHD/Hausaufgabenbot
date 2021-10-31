@@ -2,13 +2,13 @@ import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "testitems"
-tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
+tablecategories = ("datum", "kategorie", "fach", "aufgabe")
 
 """
 Hie wird aues punkto kommunikation zur datebank ghandlet. Wie genau me ds mues mitder datebank mache weisi no nid. 
 Weder d datebank nid heit downloadet, müesst dir zersch die commands usfüere:
     file = sqlite3.connect("ItemFiles.db") 
-    file.cursor().ececute("CREATE TABLE testitems (id INTEGER, datum TEXT, fach TEXT, aufgabe TEXT)
+    file.cursor().ececute("CREATE TABLE testitems (datum TEXT, kategorie TEXT, fach TEXT, aufgabe TEXT)
 
 des tuet d tabäue ersteue, mit welem ds programm interagiert
 

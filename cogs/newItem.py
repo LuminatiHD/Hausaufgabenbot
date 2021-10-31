@@ -3,6 +3,7 @@ import sqlite3
 import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
+import Buttons
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "testitems"
@@ -62,23 +63,10 @@ class newItem(commands.Cog):
     @commands.command()
     async def new(self, ctx:Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
-            error = True
-            while error:
-                await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test")
-                enteringusers.append(ctx.author)
-                category = await self.bot.wait_for("message", check=lambda msg:msg.author == ctx.author)
-                category = category.content.lower()
-                if category == 'neue aufgabe' or category == 'a':
-                    category = 'Hausaufgabe'
-                    error = False
-                elif category == "neuer test" or category == 'b':
-                    category = 'Test'
-                    error = False
-                else:
-                    await ctx.reply("ungültige Eingabe")
-                    error = True
-
-
+            button = Buttons.TestOrHA()
+            await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test", view = button)
+            await button.wait()
+            category = button.choice
 
             error = True
             while error:

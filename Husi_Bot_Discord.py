@@ -14,7 +14,7 @@ client = commands.Bot(command_prefix='!')  # , help_command= CustomHelpCommand()
 @client.event
 async def on_ready():
     await client.change_presence(status=nextcord.Status.idle, activity=nextcord.Game('Hello there!'))
-    print('Bot is ready.')
+    print('Ready')
 
 
 client.load_extension("cogs.newItem")

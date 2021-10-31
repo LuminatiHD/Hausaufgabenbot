@@ -1,5 +1,6 @@
 import nextcord
 
+
 class PageButtons(nextcord.ui.View):  # buttons für d siitene
     def __init__(self, results, currentpage):
         super().__init__(timeout=120.0)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
@@ -72,8 +73,9 @@ class Selectionmode(nextcord.ui.View):
         super().__init__(timeout=120.0)
         self.edit = False
         self.delete = False
+        self.goback = False
 
-    @nextcord.ui.button(label="Edit", style=nextcord.ButtonStyle.primary, disabled=True)
+    @nextcord.ui.button(label="Edit", style=nextcord.ButtonStyle.primary)
     async def edit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.edit = True
         self.stop()
@@ -83,20 +85,25 @@ class Selectionmode(nextcord.ui.View):
         self.delete = True
         self.stop()
 
-
-class Confirmdelete(nextcord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=120.0)
-        self.delete = False
-
-    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.red)
-    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.delete = True
+    @nextcord.ui.button(label="Go back", style=nextcord.ButtonStyle.grey)
+    async def goback(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.goback = True
         self.stop()
 
-    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.green)
+
+class Confirm(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=120.0)
+        self.confirm = False
+
+    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.confirm = True
+        self.stop()
+
+    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.red)
     async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.delete = False
+        self.confirm = False
         self.stop()
 
 
@@ -104,27 +111,37 @@ class EditButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=120.0)
         self.edit = []
-
     @nextcord.ui.button(label="Kategorie", style=nextcord.ButtonStyle.primary)
     async def kategorie(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.edit.append("kategorie")
-        self.kategorie.disabled = True
+        self.stop()
 
-    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Aufgabe", style=nextcord.ButtonStyle.primary)
     async def aufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.edit.append("aufgabe")
-        self.aufgabe.disabled = True
+        self.stop()
 
-    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Datum", style=nextcord.ButtonStyle.primary)
     async def datum(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         self.edit.append("datum")
-        self.datum.disabled = True
+        self.stop()
 
-    @nextcord.ui.button(label="fach", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Fach", style=nextcord.ButtonStyle.primary)
     async def fach(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.edit.append("aufgabe")
-        self.datum.disabled = True
+        self.edit.append("fach")
+        self.stop()
 
-    @nextcord.ui.button(label="aufgabe", style=nextcord.ButtonStyle.primary)
-    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+class TestOrHA(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=120.0)
+        self.choice = "Hausaufgabe"
+
+    @nextcord.ui.button(label="A", style=nextcord.ButtonStyle.primary)
+    async def Hausaufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.choice = "Hausaufgabe"
+        self.stop()
+
+    @nextcord.ui.button(label="B", style=nextcord.ButtonStyle.primary)
+    async def Test(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.choice = "Test"
         self.stop()
