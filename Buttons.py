@@ -150,6 +150,7 @@ class EditButtons(nextcord.ui.View):
         self.edit = []
         self.goback = False
         self.ctx = ctx
+
     @nextcord.ui.button(label="Kategorie", style=nextcord.ButtonStyle.primary)
     async def kategorie(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -174,6 +175,12 @@ class EditButtons(nextcord.ui.View):
             self.edit.append("fach")
             self.stop()
 
+    @nextcord.ui.button(label="Zugriff", style=nextcord.ButtonStyle.primary)
+    async def access(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.edit.append("access")
+            self.stop()
+
     @nextcord.ui.button(label="Zurück", style=nextcord.ButtonStyle.gray)
     async def goback(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -189,6 +196,7 @@ class TestOrHA(nextcord.ui.View):
         super().__init__(timeout=120.0)
         self.choice = "Hausaufgabe"
         self.ctx = ctx
+
     @nextcord.ui.button(label="A", style=nextcord.ButtonStyle.primary)
     async def Hausaufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -200,3 +208,56 @@ class TestOrHA(nextcord.ui.View):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice = "Test"
             self.stop()
+
+
+class ManageItemAccess(nextcord.ui.View):
+    """Wird geregelt wer dieses Item sehen kann, aka ob es privat ist,
+    für alle, oder nur für die jeweiligen SF oder EF."""
+
+    def __init__(self, ctx):
+        super().__init__(timeout=120.0)
+        self.ctx = ctx
+        self.access = "all"
+
+        # wede diräkt mitem bot redisch, de chaner d ufgab nid uf SF oder EF restricte wöuer d serverdate nid het.
+        if self.ctx.channel.__str__().startswith("Direct Message"):
+            self.OnlyEF.disabled = True
+            self.OnlySF.disabled = True
+
+    @nextcord.ui.button(label="Für Alle", style=nextcord.ButtonStyle.primary)
+    async def All(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.access = "all"
+            self.stop()
+
+    @nextcord.ui.button(label="Für mein SF", style=nextcord.ButtonStyle.primary)
+    async def OnlySF(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            SF = "all"
+            for role in self.ctx.author.roles:
+                if role.name.lower().startswith("sf"):
+                    SF = role.name
+
+            self.access = SF
+            self.stop()
+
+    @nextcord.ui.button(label="Für mein EF", style=nextcord.ButtonStyle.primary)
+    async def OnlyEF(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            EF = "all"
+            for role in self.ctx.author.roles:
+                if role.name.lower().startswith("ef"):
+                    EF = role.name
+
+            self.access = EF
+            self.stop()
+
+            self.access = EF
+            self.stop()
+
+    @nextcord.ui.button(label="Nur für mich", style=nextcord.ButtonStyle.primary)
+    async def Private(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.access = "private"
+            self.stop()
+

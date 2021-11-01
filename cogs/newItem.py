@@ -6,8 +6,8 @@ from nextcord.ext.commands.context import Context
 import Buttons
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
-Itemtable = "testitems"
-tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
+Itemtable = "items"
+tablecategories = ("datum", "kagegorie", "fach", "aufgabe", "access")
 
 weekdays = ["Montag",
             "Dienstag",
@@ -110,7 +110,21 @@ class newItem(commands.Cog):
                     aufgabe = None
 
             if not exitcommand:
-                database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}')")
+                manageaccess = Buttons.ManageItemAccess(ctx)
+                await ctx.reply("Für wen soll dieses Item sichtbar sein?", view=manageaccess)
+                await manageaccess.wait()
+                if manageaccess.access == "all":
+                    access = "all"
+                elif manageaccess.access == "private":
+                    access = ctx.author.id
+
+                else:
+                    access = manageaccess
+
+
+
+            if not exitcommand:
+                database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}', '{access}')")
                 await ctx.channel.send(f"{category} wurde eingetragen")
                 database.commit()
 

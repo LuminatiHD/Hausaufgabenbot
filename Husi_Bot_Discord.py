@@ -4,7 +4,7 @@ import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "testitems"
-tablecategories = ("datum", "kagegorie", "fach", "aufgabe")
+tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access")
 database = sqlite3.connect(Itemfile)
 
 
