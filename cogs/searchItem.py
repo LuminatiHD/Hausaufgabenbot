@@ -103,7 +103,7 @@ class Itemsearch(commands.Cog):
                             results.remove(item)
             if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
                 begin = datetime.datetime.now()
-                buttons = Buttons.PageButtons(results, 0)
+                buttons = Buttons.PageButtons(results, 0, ctx)
                 currentpage = 0
                 selection = results[:5]
                 outputmsg = await ctx.reply(embed=layout(selection, footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
@@ -114,7 +114,7 @@ class Itemsearch(commands.Cog):
                         currentpage = buttons.currentpage
 
                         selection = results[currentpage * 5:(currentpage + 1) * 5]
-                        buttons = Buttons.PageButtons(results, currentpage)
+                        buttons = Buttons.PageButtons(results, currentpage, ctx)
                         await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"), view=buttons)  # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
 
                     else:
@@ -124,16 +124,16 @@ class Itemsearch(commands.Cog):
                         (year, month, day) = selecteditem[0].split("-")
                         selected.set_footer(text=f"Fällig bis: {str(weekdays[date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n")
 
-                        selectbtn = Buttons.Selectionmode()
+                        selectbtn = Buttons.Selectionmode(ctx)
                         await outputmsg.edit(embed=selected, view=selectbtn)
                         await selectbtn.wait()  # button.wait() wartet druf dasme öppis het drückt
 
                         if selectbtn.goback:
                             selection = results[currentpage * 5:(currentpage + 1) * 5]
-                            buttons = Buttons.PageButtons(results, currentpage)
+                            buttons = Buttons.PageButtons(results, currentpage, ctx)
                             await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"), view=buttons)
                         elif selectbtn.delete:
-                            confirm = Buttons.Confirm()
+                            confirm = Buttons.Confirm(ctx)
                             await ctx.reply(content="Willst du wirklich das Item löschen?", view=confirm)
                             await confirm.wait()
                             if confirm.confirm:
@@ -143,12 +143,12 @@ class Itemsearch(commands.Cog):
 
                         elif selectbtn.edit:
                             editor = await ctx.reply("Was genau möchtest du editieren?")
-                            editorbtn = Buttons.EditButtons()
+                            editorbtn = Buttons.EditButtons(ctx)
                             await editor.edit(view=editorbtn)
 
                             await editorbtn.wait()
                             if "kategorie" in editorbtn.edit:
-                                confirm = Buttons.Confirm()
+                                confirm = Buttons.Confirm(ctx)
                                 await editor.edit(
                                     content=f"Alte Kategorie ist {selecteditem[1]}. Möchtest du es zu {Itemkategorien[Itemkategorien.index(selecteditem[1]) - 1]} konvertieren?",
                                     view=confirm)
@@ -157,20 +157,20 @@ class Itemsearch(commands.Cog):
                                     database.cursor().execute(f"UPDATE {Itemtable} SET kategorie = '{Itemkategorien[Itemkategorien.index(selecteditem[1]) - 1]}'WHERE rowid = {selecteditem[4]}")
 
                             if "aufgabe" in editorbtn.edit:
-                                confirm = Buttons.Confirm()
+                                confirm = Buttons.Confirm(ctx)
                                 while not confirm.confirm:
-                                    confirm = Buttons.Confirm()
+                                    confirm = Buttons.Confirm(ctx)
                                     await ctx.reply("Aufgabe: ")
                                     newaufg = await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author)
                                     await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}.\nBestätigen?", view = confirm)
                                     await confirm.wait()
-                                database.cursor().execute(f"UPDATE {Itemtable} SET aufgabe = '{newaufg.content}'")
+                                database.cursor().execute(f"UPDATE {Itemtable} SET aufgabe = '{newaufg.content}' WHERE rowid = {selecteditem[4]}")
 
                             if "datum" in editorbtn.edit:
                                 error = True
-                                confirm = Buttons.Confirm()
+                                confirm = Buttons.Confirm(ctx)
                                 while error and not confirm.confirm:
-                                    confirm = Buttons.Confirm()
+                                    confirm = Buttons.Confirm(ctx)
                                     await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
                                     try:
                                         dateraw = await self.bot.wait_for("message",
@@ -180,23 +180,30 @@ class Itemsearch(commands.Cog):
                                                                  int(dateraw.content.split(".")[0])))
 
                                         await dateraw.reply(f"Altes Datum: {selecteditem[0]}\nNeues Datum: {datum}\nBestätigen?", view=confirm)
+                                        await confirm.wait()
                                         error = False
                                     except:
                                         await ctx.reply("ungültiges Datum")
                                         continue
-                                database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}'")
+                                database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}' WHERE rowid = {selecteditem[4]}")
                             if "fach" in editorbtn.edit:
-                                await ctx.reply("")
+                                confirm = Buttons.Confirm(ctx)
+                                while not confirm.confirm:
+                                    confirm = Buttons.Confirm(ctx)
+                                    await ctx.reply("Fach: ")
+                                    newfach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
 
-                            database.commit()
-                            buttons = Buttons.PageButtons(results, 0)
-                            currentpage = 1
-                            selection = results[:5]
-                            outputmsg = await ctx.reply(embed=layout(selection, footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"), view=buttons)
-
+                                    await newfach.reply(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
+                                                        f"{changefachname(newfach.content)}.\nBestätigen?", view=confirm)
+                                    await confirm.wait()
+                                database.cursor().execute(
+                                    f"UPDATE {Itemtable} SET fach = '{changefachname(newfach.content)}' WHERE rowid = {selecteditem[4]}")
+                            await ctx.channel.send("Änderungen wurden vorgenommen")
+                        database.commit()
 
             else:
                 await ctx.reply("Keine Resultate gefunden.")
+
 
 def setup(client):
     client.add_cog(Itemsearch(client))

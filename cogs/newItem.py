@@ -63,11 +63,11 @@ class newItem(commands.Cog):
     @commands.command()
     async def new(self, ctx:Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
-            button = Buttons.TestOrHA()
+            button = Buttons.TestOrHA(ctx)
             await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test", view = button)
             await button.wait()
             category = button.choice
-            exitcommand = False
+            exitcommand = False # isch da für weme möcht abbräche
             error = True
             while error:
                 await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
@@ -98,7 +98,7 @@ class newItem(commands.Cog):
                 aufgabe = aufgabe.content
                 exitcommand = aufgabe in ["break", "exit", "stop"]
             elif not exitcommand:
-                yesno = Buttons.Confirm()
+                yesno = Buttons.Confirm(ctx)
                 await ctx.reply("Schon Lernziele? ", view=yesno)
                 await yesno.wait()
                 if yesno.confirm:
