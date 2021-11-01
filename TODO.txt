@@ -1,7 +1,5 @@
 - Nach Datum suchen können (bis [DATUM], ab [DATUM] und [DATUM]
 
-- Private Aufgaben eintragen und individuell ausgeben können (also für Gruppenarbeiten, EF-arbeiten, ind. Vorträge etc.)
-
 - Stundenplan ausgeben können (auch nach indiv. Anpassung)
 
 - Wenn jemand zu einem Test eine Zusammenfassung oder ein Quizlet oder so macht, dann kann man die Nachricht beim Bot eintragen
