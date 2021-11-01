@@ -5,3 +5,7 @@
 - Stundenplan ausgeben können (auch nach indiv. Anpassung)
 
 - Wenn jemand zu einem Test eine Zusammenfassung oder ein Quizlet oder so macht, dann kann man die Nachricht beim Bot eintragen
+
+- Im Select-mode die jeweiligen Embeds färben nach den Fächern
+
+- Reminders bei Tests

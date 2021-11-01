@@ -90,14 +90,17 @@ class Itemsearch(commands.Cog):
     @commands.command()
     async def outlook(self, ctx: Context):
         if self.bot.user != ctx.author:
-            EF = "all"
-            SF = "all"
-            for role in ctx.author.roles:
-                if role.name.lower().startswith("ef"):
-                    EF = role.name
-                elif role.name.lower().startswith("sf"):
-                    SF = role.name
-
+            try:
+                EF = "all"
+                SF = "all"
+                for role in ctx.author.roles:
+                    if role.name.lower().startswith("ef"):
+                        EF = role.name
+                    elif role.name.lower().startswith("sf"):
+                        SF = role.name
+            except AttributeError:  # für DM-modus
+                SF = "all"
+                EF = "all"
             search = ctx.message.content[9:]
             if search == "":
                 search = None
