@@ -3,7 +3,7 @@
 #   und wenn man die Knöpfe drückt, dann werden alle kommenden Items für das Fach angezeigt
 
 import nextcord
-from nextcord.ext import commands, tasks
+from nextcord.ext import commands
 import sqlite3
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"

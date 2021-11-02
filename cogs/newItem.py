@@ -120,9 +120,7 @@ class newItem(commands.Cog):
                     access = ctx.author.id
 
                 else:
-                    access = manageaccess
-
-
+                    access = manageaccess.access
 
             if not exitcommand:
                 database.cursor().execute(f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}', '{access}')")
