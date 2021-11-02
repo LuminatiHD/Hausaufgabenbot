@@ -64,7 +64,7 @@ class newItem(commands.Cog):
     async def new(self, ctx:Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
             button = Buttons.TestOrHA(ctx)
-            await ctx.reply("Was möchtest du machen?\nA: Neue Aufgabe\nB: Neuer Test", view = button)
+            await ctx.reply("Welche Itemkategorie soll das Item haben?", view = button)
             await button.wait()
             category = button.choice
             exitcommand = False # isch da für weme möcht abbräche
@@ -92,11 +92,12 @@ class newItem(commands.Cog):
                 fach = changefachname(await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author))
                 exitcommand = fach in ["Break", "Exit", "Stop"]
 
-            if category == "Hausaufgabe" and not exitcommand:
-                await ctx.reply("Aufgabe: ")
+            if category != "Test" and not exitcommand:
+                await ctx.reply("Was zu tun ist: ")
                 aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 aufgabe = aufgabe.content
                 exitcommand = aufgabe in ["break", "exit", "stop"]
+
             elif not exitcommand:
                 yesno = Buttons.Confirm(ctx)
                 await ctx.reply("Schon Lernziele? ", view=yesno)

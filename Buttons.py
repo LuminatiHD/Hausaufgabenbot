@@ -197,16 +197,22 @@ class TestOrHA(nextcord.ui.View):
         self.choice = "Hausaufgabe"
         self.ctx = ctx
 
-    @nextcord.ui.button(label="A", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Hausaufgabe", style=nextcord.ButtonStyle.primary)
     async def Hausaufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice = "Hausaufgabe"
             self.stop()
 
-    @nextcord.ui.button(label="B", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Test", style=nextcord.ButtonStyle.primary)
     async def Test(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice = "Test"
+            self.stop()
+
+    @nextcord.ui.button(label="Unspezifisch", style=nextcord.ButtonStyle.primary)
+    async def Nocateg(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice = ""
             self.stop()
 
 

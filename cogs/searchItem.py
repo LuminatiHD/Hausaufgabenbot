@@ -5,12 +5,13 @@ from nextcord.ext.commands.context import Context
 import sqlite3
 from datetime import date, timedelta
 import Buttons
+from editItem import editItem
 
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access", ("rowid"))
-Itemkategorien = ("Test", "Aufgabe")
+Itemkategorien = ("Test", "Aufgabe", "")
 
 weekdays = ["Montag",
             "Dienstag",
@@ -81,7 +82,8 @@ def changefachname(fach):  # so isches übersichtlecher
 class Itemsearch(commands.Cog):
     for item in database.cursor().execute( f"SELECT datum, rowid FROM {Itemtable}"):  # aui elemänt lösche wo scho düre si
         if str(date.today()) > item[0]:
-            database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {item[5]}")
+            database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {item[1]}")  # 1 wöu ds tuple het nur ds datum und d id
+
     database.commit()
 
     def __init__(self, bot: commands.Bot):
@@ -130,9 +132,14 @@ class Itemsearch(commands.Cog):
 
                     else:
                         selecteditem = selection[buttons.select]
+                        try: # we dr zuegriff aus userid iigspicheret isch, de versuechters z näh. weses nid geit, isches nid ä userid.
+                            access = await self.bot.fetch_user(selecteditem[4])
+                        except nextcord.errors.HTTPException:
+                            access = selecteditem[4]
+
                         selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ")
-                        selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=True)
-                        selected.add_field(name="Zugriff: ", value=selecteditem[4], inline=True)
+                        selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=False)
+                        selected.add_field(name="Zugriff: ", value=access, inline=False)
                         (year, month, day) = selecteditem[0].split("-")
                         selected.set_footer(text=f"Fällig bis: {str(weekdays[date(int(year), int(month), int(day)).weekday()])}, {day}.{month}.{year}\n")
 
@@ -146,85 +153,15 @@ class Itemsearch(commands.Cog):
                             await outputmsg.edit(embed=layout(selection, footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"), view=buttons)
                         elif selectbtn.delete:
                             confirm = Buttons.Confirm(ctx)
-                            await ctx.reply(content="Willst du wirklich das Item löschen?", view=confirm)
+                            confirmmsg = await ctx.reply(content="Willst du wirklich das Item löschen?", view=confirm)
                             await confirm.wait()
                             if confirm.confirm:
                                 database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {selecteditem[5]}")
                                 database.commit()
-                                await ctx.reply("Item wurde gelöscht")
+                                await confirmmsg.edit(content="Item wurde gelöscht", view=None)
 
                         elif selectbtn.edit:
-                            editor = await ctx.reply("Was genau möchtest du editieren?")
-                            editorbtn = Buttons.EditButtons(ctx)
-                            await editor.edit(view=editorbtn)
-                            await editorbtn.wait()
-                            if "kategorie" in editorbtn.edit:
-                                confirm = Buttons.Confirm(ctx)
-                                await editor.edit(
-                                    content=f"Alte Kategorie ist {selecteditem[1]}. Möchtest du es zu {Itemkategorien[Itemkategorien.index(selecteditem[1]) - 1]} konvertieren?",
-                                    view=confirm)
-                                await confirm.wait()
-                                if confirm.confirm:
-                                    database.cursor().execute(f"UPDATE {Itemtable} SET kategorie = '{Itemkategorien[Itemkategorien.index(selecteditem[1]) - 1]}'WHERE rowid = {selecteditem[5]}")
-
-                            if "aufgabe" in editorbtn.edit:
-                                confirm = Buttons.Confirm(ctx)
-                                while not confirm.confirm:
-                                    confirm = Buttons.Confirm(ctx)
-                                    await ctx.reply("Aufgabe: ")
-                                    newaufg = await self.bot.wait_for("message", check = lambda msg: msg.author == ctx.author)
-                                    await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}.\nBestätigen?", view = confirm)
-                                    await confirm.wait()
-                                database.cursor().execute(f"UPDATE {Itemtable} SET aufgabe = '{newaufg.content}' WHERE rowid = {selecteditem[5]}")
-
-                            if "datum" in editorbtn.edit:
-                                error = True
-                                confirm = Buttons.Confirm(ctx)
-                                while error and not confirm.confirm:
-                                    confirm = Buttons.Confirm(ctx)
-                                    await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
-                                    try:
-                                        dateraw = await self.bot.wait_for("message",
-                                                                          check=lambda msg: msg.author == ctx.author)
-                                        datum = str(datetime.date(int(dateraw.content.split(".")[2]),
-                                                                 int(dateraw.content.split(".")[1]),
-                                                                 int(dateraw.content.split(".")[0])))
-
-                                        await dateraw.reply(f"Altes Datum: {selecteditem[0]}\nNeues Datum: {datum}\nBestätigen?", view=confirm)
-                                        await confirm.wait()
-                                        error = False
-                                    except:
-                                        await ctx.reply("ungültiges Datum")
-                                        continue
-                                database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}' WHERE rowid = {selecteditem[5]}")
-                            if "fach" in editorbtn.edit:
-                                confirm = Buttons.Confirm(ctx)
-                                while not confirm.confirm:
-                                    confirm = Buttons.Confirm(ctx)
-                                    await ctx.reply("Fach: ")
-                                    newfach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-
-                                    await newfach.reply(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
-                                                        f"{changefachname(newfach.content)}.\nBestätigen?", view=confirm)
-                                    await confirm.wait()
-                                database.cursor().execute(
-                                    f"UPDATE {Itemtable} SET fach = '{changefachname(newfach.content)}' WHERE rowid = {selecteditem[5]}")
-
-                            if "access" in editorbtn.edit:
-                                confirm = Buttons.Confirm(ctx)
-                                newacc = Buttons.ManageItemAccess(ctx)
-                                while not confirm.confirm:
-                                    confirm = Buttons.Confirm(ctx)
-                                    await editor.reply("Zugriff: ", view=newacc)
-                                    await newacc.wait()
-
-                                    await editor.reply(f"Alter Zugriff: {selecteditem[4]}\nNeuer Zugriff: "
-                                                        f"{newacc.access}.\nBestätigen?", view=confirm)
-                                    await confirm.wait()
-                                database.cursor().execute(
-                                    f"UPDATE {Itemtable} SET access = '{newacc.access}' WHERE rowid = {selecteditem[5]}")
-
-                            await ctx.channel.send("Änderungen wurden vorgenommen")
+                            await editItem(self, ctx, selecteditem)
                         database.commit()
 
             else:
