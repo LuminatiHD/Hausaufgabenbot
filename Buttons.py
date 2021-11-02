@@ -8,6 +8,52 @@ async def testinter(interaction, ctx):
     return True
 
 
+class TestButtons(nextcord.ui.View):
+    """Dieses Objekt dient nur als Beispiel und wird nirgends verwendet."""
+
+    def __init__(self, ctx):
+        """Weis nonid so ganz was das macht, aber es bruuchts zum ä button z kreiere. Wenis richtig verstande ha de
+        heisst z super() eifach, dass me ds __init__ vor Superlass (ä class a mitere superclass b heisst, a isch ä
+        subclass vo b. Üsi superclass isch d class nextcord.ui.View)"""
+        super().__init__(timeout=120.0)
+        self.ctx = ctx
+        if self.ctx.message.content.startswith("bababooey"):
+            self.MyButton.disabled = True
+        """ Hie heimer jetz ä attribute vomne button gänderet. Wie genau das geit gsehmer unge."""
+
+    """Ds dört unge isch ä decorator. Dä nimmt die funkion womer unge definiert hei, und macht när sozäge dass des imne button 
+    integriert isch. Wie genau ds funktioniert isch nid so wichtig, wichtig si d argumänt wome cha drigäh: 
+     - ds label definiert, was när ufem button wird stah.
+     - weme statt text es emoji möcht, chame ds mitem argumänt 'emoji' mache.
+     - mitem 'style' chame d farbe bestimme. D farbe si immer nextcord.ButtonStyle.[COLOR]. es git 6 farbe:
+         - red/danger: Rot
+         - green/success: grüen
+         - blurple/primary: blau
+         - grey/gray/secondary: grau
+         - url/link: Isch spezieu wöuses nid ä farb isch, sondern ä link, heisst, weme dä chnopf drückt, 
+                     dass die URL göffnet wird (ka wie genau me ds när implementiert tbh).
+     - mit custom_id 
+     - disabled: disabled nimmt ä boolean value. We ä button disabled isch, de chame nä nümme drücke.
+       mä cha aber ä button nid ire button-funkion disable. Mä cha aber buttons usserhaub disable, wiemer obe hei gseh.
+       mä cha ou ä button usserhaub vor class disable, aso wemer es buttonobject Button=TestButtons(ctx) hei, de 
+       chöimer mit
+          Button.nameofbutton.disabled = True
+        dr button nameofbutton disable.
+     - mit row chame die jewilige buttons vomne buttonobject ordne. hani nie bruucht.
+     Fyi, mä cha i decorator nid argumänt inegäh wo ir buttonclass definiert si."""
+    @nextcord.ui.button(label="A", emoji="😶", style=nextcord.ButtonStyle.red, custom_id="ID", disabled=False, row=1)
+    async def MyButton(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        """interaction funkioniert praktisch so wie ctx. mä cha drvo usefinge wär ses drückt het, wo etc. """
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            """d funkion testinter teschtet eifach öb dr button vom gliiche mönsch isch drückt worde wo het dr button 
+            verlangt."""
+            self.stop()
+            """self.stop() heisst, d class höret uf z runne, aso nimmt keni inputs meh. Ds isch hiufriich weme 
+            usserhaub vor class sitzet. Wöu weme es Buttonobject Button kreiert, de chame mit
+              await Button.wait()
+            druf warte, dass dr button stoppet."""
+
+
 class PageButtons(nextcord.ui.View):  # buttons für d siitene
     """"Diese Buttons sind für den outlook-command. Dabei hat es 5 select-buttons (mit welchen man ein bestimmtes
     Element vom Outlook auswählen kann), sowie 4 Buttons fürs blättern. Dabei gibt es jeweils einen knopf für 1 Seite
