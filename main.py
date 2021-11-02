@@ -19,7 +19,11 @@ client = commands.Bot(command_prefix='!')  # , help_command= CustomHelpCommand()
 async def on_ready():
     await client.change_presence(status=nextcord.Status.idle, activity=nextcord.Game('Hello there!'))
     print('Ready')
-
+@client.event
+async def on_message(message):
+    """isch absolut useless, nur da für fun."""
+    if message.content in [":(", ":D", "D:", ">:("] and client.user != message.author:
+        await message.channel.send(message.content)
 
 client.load_extension("cogs.newItem")
 client.load_extension("cogs.searchItem")
