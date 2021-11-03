@@ -1,26 +1,13 @@
 import Buttons
 import sqlite3
 import datetime
+import FuncLibrary
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access")
 database = sqlite3.connect(Itemfile)
 Itemkategorien = ("Test", "Aufgabe")
-
-
-def changefachname(fach):  # so isches übersichtlecher
-    fach = fach.capitalize()
-    if fach == "Französisch":
-        fach = "Franz"
-    elif fach == 'Englisch':
-        fach = 'English'
-    elif fach == 'Biologie':
-        fach = 'Bio'
-    elif fach == 'Geschichte':
-        fach = 'History'
-
-    return fach
 
 
 async def editItem(self, ctx, selecteditem):
@@ -41,7 +28,9 @@ async def editItem(self, ctx, selecteditem):
             if not category:
                 category = "Unspezifisch"
             await editor.edit(
-                content=f"Alte Kategorie: {category}\nNeue Kategorie: {newcategory if newcategory else 'Unpezifisch'}\nBestätigen?",
+                content=f"Alte Kategorie: {category}"
+                        f"\nNeue Kategorie: {newcategory if newcategory else 'Unpezifisch'}"
+                        f"\nBestätigen?",
                 view=confirm)
             await confirm.wait()
 
@@ -77,7 +66,7 @@ async def editItem(self, ctx, selecteditem):
                 await dateraw.reply(f"Altes Datum: {selecteditem[0]}\nNeues Datum: {datum}\nBestätigen?", view=confirm)
                 await confirm.wait()
                 error = False
-            except:
+            except (ValueError, TypeError, IndexError):
                 await ctx.reply("ungültiges Datum")
                 continue
         database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}' WHERE rowid = {selecteditem[5]}")
@@ -89,10 +78,10 @@ async def editItem(self, ctx, selecteditem):
             newfach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
 
             await newfach.reply(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
-                                f"{changefachname(newfach.content)}.\nBestätigen?", view=confirm)
+                                f"{FuncLibrary.changefachname(newfach.content)}.\nBestätigen?", view=confirm)
             await confirm.wait()
         database.cursor().execute(
-            f"UPDATE {Itemtable} SET fach = '{changefachname(newfach.content)}' WHERE rowid = {selecteditem[5]}")
+            f"UPDATE {Itemtable} SET fach = '{FuncLibrary.changefachname(newfach.content)}' WHERE rowid = {selecteditem[5]}")
 
     if "access" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)

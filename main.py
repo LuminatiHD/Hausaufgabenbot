@@ -24,7 +24,4 @@ client.load_extension("cogs.newItem")
 client.load_extension("cogs.searchItem")
 client.load_extension("cogs.specialcmds")
 
-
-
-
 client.run('ODk5MjI0MDI1Nzk1MDAyMzY4.YWvpog.s31oLtCJ8TIujHaoYBtZmWXDWu0')

@@ -42,7 +42,7 @@ class TestButtons(nextcord.ui.View):
      - mit row chame die jewilige buttons vomne buttonobject ordne. hani nie bruucht.
      Fyi, mä cha i decorator nid argumänt inegäh wo ir buttonclass definiert si."""
     @nextcord.ui.button(label="A", emoji="😶", style=nextcord.ButtonStyle.red, custom_id="ID", disabled=False, row=1)
-    async def MyButton(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+    async def MyButton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """interaction funkioniert praktisch so wie ctx. mä cha drvo usefinge wär ses drückt het, wo etc. """
         if await testinter(ctx=self.ctx, interaction=interaction):
             """d funkion testinter teschtet eifach öb dr button vom gliiche mönsch isch drückt worde wo het dr button 
@@ -70,12 +70,18 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         self.select = 0
         self.bigleft.disabled = self.currentpage == 0
         self.leftbutton.disabled = self.currentpage == 0
-        self.rightbutton.disabled = (self.currentpage + 1) >= len(results) / 5 # mit [BUTTON].disabled chame d disability vomne button wächsle. det machi hie für dasme nit cha out of bounds gah.
+        self.rightbutton.disabled = (self.currentpage + 1) >= len(results) / 5
         self.bigright.disabled = (self.currentpage + 1) >= len(results) / 5
+        # mit [BUTTON].disabled chame d disability vomne button wächsle.
+        # das machi hie für dasme nit cha out of bounds gah.
+
         for button in self.children:
             label = button.__str__().split(" ")[5].split("=")[1][1:-1]
-            if label not in ["<<", "<", ">", ">>"] and int(label) > len(results)-(currentpage*5): # wider zum prevente das me out of bounds geit, i däm fau das me nid iwie ds item 4 selected wo gar nid da isch.
-                 button.disabled = True
+            if label not in ["<<", "<", ">", ">>"] and int(label) > len(results)-(currentpage*5):
+                button.disabled = True
+            # wider zum prevente das me out of bounds geit,
+            # i däm fau das me nid iwie ds item 4 selected wo gar nid da isch.
+
 
     @nextcord.ui.button(label="1", style=nextcord.ButtonStyle.primary)
     async def Select1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -131,7 +137,7 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
     @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.primary)
     async def bigright(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
-            self.currentpage = int(len(self.results)/5) + (len(self.results) % 5>0)-1
+            self.currentpage = int(len(self.results)/5) + (len(self.results) % 5 > 0)-1
             self.right = True
             self.stop()
 
@@ -148,6 +154,7 @@ class Selectionmode(nextcord.ui.View):
         self.delete = False
         self.goback = False
         self.ctx = ctx
+
     @nextcord.ui.button(label="Edit", style=nextcord.ButtonStyle.primary)
     async def edit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -286,26 +293,26 @@ class ManageItemAccess(nextcord.ui.View):
     @nextcord.ui.button(label="Für mein SF", style=nextcord.ButtonStyle.primary)
     async def OnlySF(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
-            SF = "all"
+            sf = "all"
             for role in self.ctx.author.roles:
                 if role.name.lower().startswith("sf"):
-                    SF = role.name
+                    sf = role.name
 
-            self.access = SF
+            self.access = sf
             self.stop()
 
     @nextcord.ui.button(label="Für mein EF", style=nextcord.ButtonStyle.primary)
     async def OnlyEF(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
-            EF = "all"
+            ef = "all"
             for role in self.ctx.author.roles:
                 if role.name.lower().startswith("ef"):
-                    EF = role.name
+                    ef = role.name
 
-            self.access = EF
+            self.access = ef
             self.stop()
 
-            self.access = EF
+            self.access = ef
             self.stop()
 
     @nextcord.ui.button(label="Nur für mich", style=nextcord.ButtonStyle.primary)
@@ -313,4 +320,3 @@ class ManageItemAccess(nextcord.ui.View):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.access = "private"
             self.stop()
-
