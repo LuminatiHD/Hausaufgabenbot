@@ -51,7 +51,8 @@ class TestButtons(nextcord.ui.View):
             """self.stop() heisst, d class höret uf z runne, aso nimmt keni inputs meh. Ds isch hiufriich weme 
             usserhaub vor class sitzet. Wöu weme es Buttonobject Button kreiert, de chame mit
               await Button.wait()
-            druf warte, dass dr button stoppet."""
+            druf warte, dass dr button stoppet. Mä chönnti zwar vilech es attribute self.ispressed oder so mache, 
+            de muesme dr button ou nid neu generiere weme dr button mehrmaus bruucht."""
 
 
 class PageButtons(nextcord.ui.View):  # buttons für d siitene

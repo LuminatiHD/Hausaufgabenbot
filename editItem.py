@@ -98,7 +98,8 @@ async def editItem(self, ctx, selecteditem):
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
             newacc = Buttons.ManageItemAccess(ctx)
-            confirm = Buttons.Confirm(ctx)
+            confirm = Buttons.Confirm(ctx)  # ig tue dr button neu generiere wöu schüsch chasch dr button nümme drücke
+            # de funktioniert z confirme nid.
             await editor.edit(content="Zugriff: ", view=newacc)
             await newacc.wait()
             oldaccess = selecteditem[4]
