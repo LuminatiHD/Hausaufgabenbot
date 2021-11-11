@@ -283,6 +283,7 @@ class ManageItemAccess(nextcord.ui.View):
         if self.ctx.channel.__str__().startswith("Direct Message"):
             self.OnlyEF.disabled = True
             self.OnlySF.disabled = True
+            self.OnlyKF.disabled = True
 
     @nextcord.ui.button(label="Für Alle", style=nextcord.ButtonStyle.primary)
     async def All(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):

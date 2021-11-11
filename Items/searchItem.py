@@ -15,7 +15,6 @@ Itemkategorien = ("Test", "Aufgabe", "")
 
 database = sqlite3.connect(Itemfile)
 
-
 class Itemsearch(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -25,14 +24,36 @@ class Itemsearch(commands.Cog):
         # aui Elemänt wo scho düre si wärde glöschet.
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<'{date.today()}' ")
         database.commit()
+        search = ctx.message.content[len("!outlook "):]
+        timeset = str(date.today())
+        bfore_or_after = ">="
+
+        if search.startswith("bis") or search.startswith("ab"):
+            timeset = search[len("ab "):].split(", ")[0].split(".")
+            try:
+                timeset = date(int(timeset[2]), int(timeset[1]), int(timeset[0]))
+                bfore_or_after = "<=" if search.startswith("bis") else ">="
+
+            except IndexError:
+                await ctx.channel.send("Invalider Input. Zeitangaben müssen in der Form \"DD.MM.YY angegeben\" werden.")
+                return
+
+            except ValueError:
+                await ctx.channel.send("Invalider Input.")
+                return
+            try:
+                search = search[search.index(", "):]
+            except ValueError:
+                search = None
+
 
         ef, sf, kf = FuncLibrary.get_access_permissions(ctx.author)
-        search = ctx.message.content[9:]
+        items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} '{timeset}' AND (access = 'all' " \
+                                          f"OR access = '{ctx.author.id}' OR access = '{sf}' "\
+                                          f"OR access = '{ef}' OR access = '{kf}') ORDER BY datum").fetchall()
+
         if search == "":
             search = None
-        items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE access = 'all' "\
-                                          f"OR access = '{ctx.author.id}' OR access = '{sf}' "\
-                                          f"OR access = '{ef}' OR access = '{kf}' ORDER BY datum").fetchall()
         # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
         results = [i for i in items]
         if search is not None:
@@ -106,8 +127,8 @@ class Itemsearch(commands.Cog):
                             await editItem(self, ctx, selecteditem)
                         database.commit()
 
-            else:
-                await ctx.reply("Keine Resultate gefunden.")
+        else:
+            await ctx.reply("Keine Resultate gefunden.")
 
 
 def setup(client):
