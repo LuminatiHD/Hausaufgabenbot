@@ -10,6 +10,26 @@ weekdays = ["Montag",
             "Sonntag"]  # allerdings nur aus integer. Ds isch für ds formatting.
 
 
+def get_access_permissions(author):
+    try:
+        ef = "all"
+        sf = "all"
+        kf = "all"
+        for role in author.roles:
+            if role.name.lower().startswith("ef"):
+                ef = role.name
+            elif role.name.lower().startswith("sf"):
+                sf = role.name
+            elif role.name.lower().startswith("kf"):
+                kf = role.name
+
+    except AttributeError:  # für DM-modus
+        sf = "all"
+        ef = "all"
+        kf = "all"
+    return sf, ef, kf
+
+
 def changefachname(fach):  # so isches übersichtlecher
     fach = fach.capitalize()
     if fach == "Französisch":

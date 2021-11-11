@@ -1,6 +1,5 @@
 import datetime
-
-import nextcord
+from Stundenplan import StundenplanButtons
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 
@@ -16,7 +15,7 @@ class extracmds(commands.Cog):
     #         await message.channel.send(message.content)
 
     @commands.command(name="suggest", aliases=["suggestion", "Suggest", "Suggestion", "S", "s"])
-    async def recommend(self, ctx: commands.context.Context):
+    async def recommend(self, ctx:Context):
         """Mit däm command chame vorschläg bringe. die wäre när m textfile USERSUGGESTIONS.txt ufeglade."""
         await ctx.channel.send("Vorschlag: ")
 

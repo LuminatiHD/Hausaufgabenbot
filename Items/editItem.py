@@ -15,6 +15,7 @@ async def editItem(self, ctx, selecteditem):
     editorbtn = Buttons.EditButtons(ctx)
     await editor.edit(view=editorbtn)
     await editorbtn.wait()
+
     if "kategorie" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -69,7 +70,9 @@ async def editItem(self, ctx, selecteditem):
             except (ValueError, TypeError, IndexError):
                 await ctx.reply("ungültiges Datum")
                 continue
+
         database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}' WHERE rowid = {selecteditem[5]}")
+
     if "fach" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -102,6 +105,7 @@ async def editItem(self, ctx, selecteditem):
                 access = ctx.author.id
         database.cursor().execute(
             f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = {selecteditem[5]}")
+
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()
         await ctx.channel.send("Änderungen wurden vorgenommen")

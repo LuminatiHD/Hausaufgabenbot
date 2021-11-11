@@ -312,7 +312,14 @@ class ManageItemAccess(nextcord.ui.View):
             self.access = ef
             self.stop()
 
-            self.access = ef
+    @nextcord.ui.button(label="Für mein KF", style=nextcord.ButtonStyle.primary)
+    async def OnlyKF(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            kf = "all"
+            for role in self.ctx.author.roles:
+                if role.name.lower().startswith("kf"):
+                    kf = role.name
+            self.access = kf
             self.stop()
 
     @nextcord.ui.button(label="Nur für mich", style=nextcord.ButtonStyle.primary)
