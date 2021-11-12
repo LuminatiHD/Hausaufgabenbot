@@ -5,19 +5,21 @@
 import nextcord
 from nextcord.ext import commands
 import sqlite3
-Itemfile = "ItemFiles.db"
-Alltables = "testitems", "items"
-Itemtable = "testitems"
+from nextcord.ext import tasks
+
+Alltables = "items"
+Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access")
+Itemfile = "ItemFiles.db"
 database = sqlite3.connect(Itemfile)
 
-
-client = commands.Bot(command_prefix='!')  # , help_command= CustomHelpCommand()
+intents = nextcord.Intents.all()  # ohni ds dörfti dr bot nid user nach id becho.
+client = commands.Bot(command_prefix='!', intents=intents)# , help_command= CustomHelpCommand()
 
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=nextcord.Status.idle, activity=nextcord.Game('Hello there!'))
+    await client.change_presence(status=nextcord.Status.online, activity=nextcord.Game('Hello there!'))
     print('Ready')
 
 client.load_extension("Items.newItem")
@@ -25,4 +27,4 @@ client.load_extension("Items.searchItem")
 client.load_extension("Items.specialcmds")
 client.load_extension("Stundenplan.main")
 
-client.run('ODk5MjI0MDI1Nzk1MDAyMzY4.YWvpog.s31oLtCJ8TIujHaoYBtZmWXDWu0')
+client.run('ODg4MTI0MDc2NjA5MTMwNTY3.YUOIAA.liiiRdLowjlEFTQncyNN9JxNXVY')

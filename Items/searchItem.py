@@ -8,12 +8,13 @@ import Buttons
 from Items.editItem import editItem
 import FuncLibrary
 Itemfile = "ItemFiles.db"
-Alltables = "testitems", "items"
+Alltables = "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access", "rowid")
 Itemkategorien = ("Test", "Aufgabe", "")
 
 database = sqlite3.connect(Itemfile)
+
 
 class Itemsearch(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -46,8 +47,7 @@ class Itemsearch(commands.Cog):
             except ValueError:
                 search = None
 
-
-        ef, sf, kf = FuncLibrary.get_access_permissions(ctx.author)
+        ef, sf, kf, mint = FuncLibrary.get_access_permissions(ctx.author)
         items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} '{timeset}' AND (access = 'all' " \
                                           f"OR access = '{ctx.author.id}' OR access = '{sf}' "\
                                           f"OR access = '{ef}' OR access = '{kf}') ORDER BY datum").fetchall()

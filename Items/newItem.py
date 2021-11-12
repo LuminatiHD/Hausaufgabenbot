@@ -5,7 +5,7 @@ from nextcord.ext.commands.context import Context
 import Buttons
 import FuncLibrary
 Itemfile = "ItemFiles.db"
-Alltables = "testitems", "items"
+Alltables = "items"
 Itemtable = "items"
 tablecategories = ("datum", "kagegorie", "fach", "aufgabe", "access")
 

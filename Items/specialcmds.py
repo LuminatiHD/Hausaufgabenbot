@@ -1,7 +1,9 @@
 import datetime
-from Stundenplan import StundenplanButtons
+import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
+
+import FuncLibrary
 
 
 class extracmds(commands.Cog):
@@ -17,20 +19,28 @@ class extracmds(commands.Cog):
     @commands.command(name="suggest", aliases=["suggestion", "Suggest", "Suggestion", "S", "s"])
     async def recommend(self, ctx:Context):
         """Mit däm command chame vorschläg bringe. die wäre när m textfile USERSUGGESTIONS.txt ufeglade."""
-        await ctx.channel.send("Vorschlag: ")
 
+        if ctx.message.content[1:] in ["suggestion", "Suggest", "Suggestion", "S", "s", "suggest"]:
+            await ctx.channel.send("Vorschlag: ")
+            suggestion = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+            suggestion = suggestion.content
+        else:
+            suggestion = ctx.message.content[ctx.message.content.index(" "):]
+
+        confirm = await ctx.channel.send("Wird eingetragen...")
         time = datetime.datetime.now()
         time = f"{time.hour:02}:{time.minute:02}:{time.second:02}, {time.day:02}.{time.month:02}.{str(time.year)[-2::]}"
         # ds {time.x:02} isch eifach nur da für weme z.B. ä uhrzit vo 9:16:1 het, dass drus när 09:16:1 wird.
         # So isch ds Layout nicer.
 
-        suggestion = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-
         with open(r"C:\Users\yoanm\Workspace\Hausaufgabenbot\USERSUGGESTIONS.txt", "a") as file:
-            file.write(f"\n\n- [{time}] {ctx.author.name}: {suggestion.content}")
+            file.write(f"\n\n- [{time}] {ctx.author.name}: {suggestion}")
 
-        await ctx.channel.send("Vorschlag wurde eingetragen.")
+        await confirm.edit(content="Vorschlag wurde eingetragen.")
 
+    @commands.command(name="!test")
+    async def test(self, ctx:Context):
+        print(ctx.author.id)
 
 def setup(client):
     client.add_cog(extracmds(client))
