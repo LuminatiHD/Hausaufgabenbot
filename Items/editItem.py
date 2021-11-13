@@ -49,7 +49,8 @@ async def editItem(self, ctx, selecteditem):
                                 view=confirm)
             await confirm.wait()
         database.cursor().execute(
-            f"UPDATE {Itemtable} SET aufgabe = '{newaufg.content}' WHERE rowid = {selecteditem[5]}")
+            f"UPDATE {Itemtable} SET aufgabe = ? WHERE rowid = ?",
+            (newaufg.content, selecteditem[5]))
 
     if "datum" in editorbtn.edit:
         error = True
@@ -71,7 +72,8 @@ async def editItem(self, ctx, selecteditem):
                 await ctx.reply("ungültiges Datum")
                 continue
 
-        database.cursor().execute(f"UPDATE {Itemtable} SET datum = '{datum}' WHERE rowid = {selecteditem[5]}")
+        database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
+                                  (datum, selecteditem[5]))
 
     if "fach" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
@@ -83,8 +85,10 @@ async def editItem(self, ctx, selecteditem):
             await newfach.reply(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
                                 f"{FuncLibrary.changefachname(newfach.content)}.\nBestätigen?", view=confirm)
             await confirm.wait()
+
         database.cursor().execute(
-            f"UPDATE {Itemtable} SET fach = '{FuncLibrary.changefachname(newfach.content)}' WHERE rowid = {selecteditem[5]}")
+            f"UPDATE {Itemtable} SET fach = ? WHERE rowid = ?",
+            (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
 
     if "access" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
@@ -104,7 +108,7 @@ async def editItem(self, ctx, selecteditem):
             if newacc.access == "private":
                 access = ctx.author.id
         database.cursor().execute(
-            f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = {selecteditem[5]}")
+            f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = ?", (selecteditem[5],))
 
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()

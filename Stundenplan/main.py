@@ -41,10 +41,13 @@ class Stundenplan(commands.Cog):
         zeit = datetime.now().time()
         sf, ef, kf, mint= access(ctx.author)
 
-        output = cs.execute(f"SELECT fach, time, room, teacher  FROM {table} WHERE weekday = '{wochentage[date.today().weekday()]}'"\
-                            f"AND time > '{zeit.hour:02}:{zeit.minute:02}-{zeit.hour:02}:{zeit.minute:02}'"\
-                            f"AND (access='all' OR access = '{ef}' OR access = '{sf}' OR access = '{kf}' "
-                            f"OR access = '{mint}') ORDER BY time").fetchone()
+        output = cs.execute(f"SELECT fach, time, room, teacher  FROM {table} WHERE weekday = ?"\
+                            f"AND time > ?"\
+                            f"AND (access='all' OR access = ? OR access = ? OR access = ? "
+                            f"OR access = ?) ORDER BY time",
+                            (wochentage[date.today().weekday()],
+                             f'{zeit.hour:02}:{zeit.minute:02}-{zeit.hour:02}:{zeit.minute:02}',
+                             ef, sf, kf, mint)).fetchone()
 
         if output:
             zeit = output[1].split("-")[0]
@@ -76,8 +79,11 @@ class Stundenplan(commands.Cog):
 
         if tag<=4:
             sf, ef, kf, mint = access(ctx.author)
-            allitems = cs.execute(f"SELECT fach, time, room FROM {table} WHERE weekday = '{wochentage[tag]}'"\
-                                f"AND (access='all' OR access = '{ef}' OR access = '{sf}' OR access = '{kf}' OR access='{mint}')").fetchall()
+
+            allitems = cs.execute(f"SELECT fach, time, room FROM {table} WHERE weekday = ?"\
+                                  " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)",\
+                                  (wochentage[tag], ef, sf, kf, mint)).fetchall()
+
 
             allitems.sort(key=lambda elem:elem[1])
 

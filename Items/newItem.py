@@ -86,7 +86,8 @@ class newItem(commands.Cog):
 
             if not exitcommand:
                 database.cursor().execute(
-                    f"INSERT INTO {Itemtable} VALUES ('{date}', '{category}', '{fach}', '{aufgabe}', '{access}')")
+                    f"INSERT INTO {Itemtable} VALUES (?,?,?,?,?)",
+                    (date, category, fach, aufgabe, access))
                 await ctx.channel.send(f"{category} wurde eingetragen")
                 database.commit()
 

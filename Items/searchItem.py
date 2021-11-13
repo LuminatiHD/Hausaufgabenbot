@@ -23,7 +23,7 @@ class Itemsearch(commands.Cog):
     @commands.command()
     async def outlook(self, ctx: Context):
         # aui Elemänt wo scho düre si wärde glöschet.
-        database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<'{date.today()}' ")
+        database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (str(date.today()),))
         database.commit()
         search = ctx.message.content[len("!outlook "):]
         timeset = str(date.today())
@@ -48,10 +48,10 @@ class Itemsearch(commands.Cog):
                 search = None
 
         ef, sf, kf, mint = FuncLibrary.get_access_permissions(ctx.author)
-        items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} '{timeset}' AND (access = 'all' " \
-                                          f"OR access = '{ctx.author.id}' OR access = '{sf}' "\
-                                          f"OR access = '{ef}' OR access = '{kf}') ORDER BY datum").fetchall()
-
+        items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} ? AND (access = 'all' " \
+                                          f"OR access = ? OR access = ? "\
+                                          f"OR access = ? OR access = ?) ORDER BY datum",
+                                          (timeset, ctx.author.id, sf, ef, kf)).fetchall()
         if search == "":
             search = None
         # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
