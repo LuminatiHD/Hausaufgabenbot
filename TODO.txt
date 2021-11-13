@@ -7,5 +7,3 @@
 - Reminders bei Tests
 
 - Briefing. Der Bot schickt einem einen überblick über die Woche.
-
-- SQLite3-commands injectionsicher machen.

@@ -40,7 +40,12 @@ class extracmds(commands.Cog):
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
-        print(ctx.author.id)
+        liste = list(FuncLibrary.StP_colors.keys())
+        liste.sort(key=lambda m:FuncLibrary.StP_colors[m])
+        for i in liste:
+            await ctx.channel.send(embed=nextcord.Embed(title=i, color=FuncLibrary.StP_colors[i]))
+        await ctx.channel.send("done")
+
 
 def setup(client):
     client.add_cog(extracmds(client))

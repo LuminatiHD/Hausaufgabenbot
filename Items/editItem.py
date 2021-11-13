@@ -10,8 +10,8 @@ database = sqlite3.connect(Itemfile)
 Itemkategorien = ("Test", "Aufgabe")
 
 
-async def editItem(self, ctx, selecteditem):
-    editor = await ctx.reply("Was genau möchtest du editieren?")
+async def editItem(self, ctx, selecteditem, editor):
+    await editor.edit("Was genau möchtest du editieren?")
     editorbtn = Buttons.EditButtons(ctx)
     await editor.edit(view=editorbtn)
     await editorbtn.wait()
@@ -37,7 +37,8 @@ async def editItem(self, ctx, selecteditem):
 
         if confirm.confirm:
             database.cursor().execute(
-                f"UPDATE {Itemtable} SET kategorie = '{newcategory}'WHERE rowid = {selecteditem[5]}")
+                f"UPDATE {Itemtable} SET kategorie = ? WHERE rowid = ?",
+                (newcategory, selecteditem[5]))
 
     if "aufgabe" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)

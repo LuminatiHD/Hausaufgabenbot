@@ -113,7 +113,10 @@ def layout(items, footer):
             future = True
 
         desc = item[3]
-        if len(desc) > 20:
+        if not desc:  # Wenn man keine Lernziele angegeben hat, dann ist desc=None.
+            desc = "Keine Lernziele"
+
+        elif len(desc) > 20:
             desc = item[3][:20]+"..."  # wöu schüsch chasch du lernziele ha wo viu ds läng si.
 
         output.add_field(name=f" {item[1].capitalize()} {item[2]}",

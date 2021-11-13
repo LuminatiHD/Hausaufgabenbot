@@ -55,81 +55,100 @@ class Itemsearch(commands.Cog):
         if search == "":
             search = None
         # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
-        results = [i for i in items]
+        results = items[:]
         if search is not None:
             for keyword in search.split(", "):
                 for item in items:
                     keyword = FuncLibrary.changefachname(keyword.capitalize())  # mues für input und output ou so si
                     if keyword.lower().capitalize() not in item and item in results:
                         results.remove(item)
+        begin = datetime.datetime.now()
+        currentpage = 0
+        selection = results[:5]
         if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
-            begin = datetime.datetime.now()
             buttons = Buttons.PageButtons(results, 0, ctx)
-            currentpage = 0
-            selection = results[:5]
             outputmsg = await ctx.reply(embed=FuncLibrary.layout(selection,
-                                        footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                                                 footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                         view=buttons)
+
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
-                # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber,
-                # dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
-                await buttons.wait()
-
-                # luegt öb ä pagetaschte isch drücket worde. schüsch weiser dasme möcht selecte.
-                if buttons.left or buttons.right:
-                    currentpage = buttons.currentpage
-
-                    selection = results[currentpage * 5:(currentpage + 1) * 5]
-                    buttons = Buttons.PageButtons(results, currentpage, ctx)
-
-                    # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
+                if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
+                    buttons = Buttons.PageButtons(results, 0, ctx)
                     await outputmsg.edit(embed=FuncLibrary.layout(selection,
-                                         footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
-                                         view=buttons)
+                                                                         footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                                view=buttons)
+                    # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber,
+                    # dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
+                    await buttons.wait()
 
-                else:
-                    selecteditem = selection[buttons.select]
-                    # we dr zuegriff aus userid iigspicheret isch, de versuechters z näh.
-                    # weses nid geit, isches nid ä userid.
-                    try:
-                        access = await self.bot.fetch_user(selecteditem[4])
-                    except nextcord.errors.HTTPException:
-                        access = selecteditem[4]
+                    # luegt öb ä pagetaschte isch drücket worde. schüsch weiser dasme möcht selecte.
+                    if buttons.left or buttons.right:
+                        currentpage = buttons.currentpage
 
-                    selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ")
-                    selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=False)
-                    selected.add_field(name="Zugriff: ", value=access, inline=False)
-                    (year, month, day) = selecteditem[0].split("-")
-                    selected.set_footer(text=f"Fällig bis: "
-                                             f"{str(FuncLibrary.weekdays[date(int(year), int(month), int(day)).weekday()])}, "
-                                             f"{day}.{month}.{year}\n")
-
-                    selectbtn = Buttons.Selectionmode(ctx)
-                    await outputmsg.edit(embed=selected, view=selectbtn)
-                    await selectbtn.wait()  # button.wait() wartet druf dasme öppis het drückt
-
-                    if selectbtn.goback:
                         selection = results[currentpage * 5:(currentpage + 1) * 5]
                         buttons = Buttons.PageButtons(results, currentpage, ctx)
+
+                        # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
                         await outputmsg.edit(embed=FuncLibrary.layout(selection,
                                              footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                              view=buttons)
-                    elif selectbtn.delete:
-                        confirm = Buttons.Confirm(ctx)
-                        confirmmsg = await ctx.reply(content="Willst du wirklich das Item löschen?", view=confirm)
-                        await confirm.wait()
-                        if confirm.confirm:
-                            database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = {selecteditem[5]}")
-                            database.commit()
-                            await confirmmsg.edit(content="Item wurde gelöscht", view=None)
+
+                    else:
+                        selecteditem = selection[buttons.select]
+                        # we dr zuegriff aus userid iigspicheret isch, de versuechters z näh.
+                        # weses nid geit, isches nid ä userid.
+                        try:
+                            access = await self.bot.fetch_user(selecteditem[4])
+
+                        except nextcord.errors.HTTPException:
+                            access = selecteditem[4]
+
+                        selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ")
+                        selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=False)
+                        selected.add_field(name="Zugriff: ", value=access, inline=False)
+                        (year, month, day) = selecteditem[0].split("-")
+                        selected.set_footer(text=f"Fällig bis: "
+                                                 f"{str(FuncLibrary.weekdays[date(int(year), int(month), int(day)).weekday()])}, "
+                                                 f"{day}.{month}.{year}\n")
+
+                        selectbtn = Buttons.Selectionmode(ctx)
+                        await outputmsg.edit(embed=selected, view=selectbtn)
+                        await selectbtn.wait()  # button.wait() wartet druf dasme öppis het drückt
+
+                        if selectbtn.goback:
+                            selection = results[currentpage * 5:(currentpage + 1) * 5]
+                            buttons = Buttons.PageButtons(results, currentpage, ctx)
+                            await outputmsg.edit(embed=FuncLibrary.layout(selection,
+                                                 footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                                 view=buttons)
+                        elif selectbtn.delete:
+                            confirm = Buttons.Confirm(ctx)
+                            await outputmsg.edit(content="Willst du wirklich das Item löschen?", embed=None, view=confirm)
+
+                            await confirm.wait()
+
+                            if confirm.confirm:
+                                database.cursor().execute(f"DELETE FROM {Itemtable} WHERE rowid = ?",
+                                                          (selecteditem[5],))
+                                database.commit()
+                                results.remove(selecteditem)
+                                selection.remove(selecteditem)
+                                await outputmsg.edit(content="Item wurde gelöscht", embed=None, view=None)
 
                         elif selectbtn.edit:
-                            await editItem(self, ctx, selecteditem)
+                            await editItem(self, ctx, selecteditem, outputmsg)
+                            break
                         database.commit()
 
-        else:
-            await ctx.reply("Keine Resultate gefunden.")
-
+                else:
+                    try:
+                        await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None)
+                        break
+                    except UnboundLocalError:
+                        await ctx.reply(content="Keine Resultate gefunden.")
+                        break
+            else:
+                await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None)
 
 def setup(client):
     client.add_cog(Itemsearch(client))
