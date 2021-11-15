@@ -17,21 +17,6 @@ cs = database.cursor()
 alltimes = []
 wochentage = ["Mo", "Di", "Mi", "Do", "Fr"]
 
-
-def deletetable(user):
-    database.cursor().execute(f"DROP TABLE {user}")
-
-
-def wipetable(user):
-    database.cursor().execute(f"DELETE FROM {user}")
-
-
-def createtable(user):
-    database.cursor().execute(f"CREATE TABLE IF NOT EXISTS {user} (weekday TEXT, time TEXT, fach TEXT, room TEXT, teacher TEXT)")
-    database.cursor().execute(f"INSERT INTO {user} VALUES SELECT * FROM Stundenplan_23b")
-    database.commit()
-
-
 class Stundenplan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -83,7 +68,6 @@ class Stundenplan(commands.Cog):
             allitems = cs.execute(f"SELECT fach, time, room FROM {table} WHERE weekday = ?"\
                                   " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)",\
                                   (wochentage[tag], ef, sf, kf, mint)).fetchall()
-
 
             allitems.sort(key=lambda elem:elem[1])
 

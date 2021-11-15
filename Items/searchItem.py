@@ -147,8 +147,9 @@ class Itemsearch(commands.Cog):
                     except UnboundLocalError:
                         await ctx.reply(content="Keine Resultate gefunden.")
                         break
-            else:
-                await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None)
+        else:
+            await ctx.reply(content="Keine Resultate gefunden.")
+
 
 def setup(client):
     client.add_cog(Itemsearch(client))
