@@ -17,11 +17,13 @@ cs = database.cursor()
 alltimes = []
 wochentage = ["Mo", "Di", "Mi", "Do", "Fr"]
 
+
 class Stundenplan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="nextlesson", aliases=["nl"])
+    @commands.command(name="nextlesson", aliases=["nl"],
+                      help="Gibt einem die nächste Lektion zurück, falls heue noch welche anstehen.")
     async def next(self, ctx:Context):
         zeit = datetime.now().time()
         sf, ef, kf, mint= access(ctx.author)
@@ -56,7 +58,7 @@ class Stundenplan(commands.Cog):
         else:
             await ctx.channel.send("Du hast heute keine Lektionen mehr :D")
 
-    @commands.command(name = "tagesplan", aliases = ["t", "T"])
+    @commands.command(name = "tagesplan", aliases = ["t", "T"], help="Gibt alle heutigen Lektionen zurück.")
     async def day(self, ctx:Context):
         table = "Stundenplan_23b"
         currdate = date.today()

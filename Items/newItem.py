@@ -21,7 +21,8 @@ class newItem(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(help="Trage neue Elemente ein. Die kann man mit 'todo' ansehen und bearbeiten. (Tipp: Mit "
+                           "'exit' oder 'stop' kannst du die Erstellung direkt abbrechen)")
     async def new(self, ctx: Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
             button = Buttons.TestOrHA(ctx)

@@ -20,8 +20,14 @@ class Itemsearch(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
-    async def outlook(self, ctx: Context):
+    @commands.command(name="todo",
+                      help="Zeigt dir die Liste der kommenden Aufgaben und Ereignisse, die eingetragen sind. "
+                           "Mit den Nummern kannst du die einzelnen Elemente auswählen und "
+                           "diese bearbeiten oder löschen."
+)
+    async def todo(self, ctx: Context):
+        # docstring. isch da füre help-command
+
         # aui Elemänt wo scho düre si wärde glöschet.
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (str(date.today()),))
         database.commit()

@@ -12,11 +12,12 @@ week = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 cs = database.cursor()
 
 
-class BriefingSetup(commands.Cog):
+class Briefing(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="briefing")
+    @commands.command(name="briefing", help="Mit briefing kannst du einstellen, wann und ob du vom bot ein Briefing "
+                                            "bekommst")
     async def briefing(self, ctx: Context):
 
         # es wärde hie lääri values iiträge, damit die später chöi gänderet wärde.
@@ -91,7 +92,7 @@ class BriefingSetup(commands.Cog):
 
         await choice.edit(content="Wurde eingetragen", view=None)
 
-    @commands.command(name="settings")
+    @commands.command(name="settings", help="Zeigt dir deine momentane Einstellungen fürs briefing an.")
     async def settings(self, ctx:Context):
         settingsoutput = nextcord.Embed(title="Einstellungen")
         settings = cs.execute("SELECT  mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()[0]
@@ -105,4 +106,4 @@ class BriefingSetup(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(BriefingSetup(client))
+    client.add_cog(Briefing(client))
