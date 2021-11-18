@@ -9,6 +9,7 @@ from nextcord.ext import tasks
 from datetime import date, datetime, timedelta, time
 import help_command
 import FuncLibrary
+from Mensa import Webscraping
 
 Alltables = "items"
 Itemtable = "items"
@@ -29,11 +30,13 @@ async def on_ready():
     print('Ready')
     briefing.start()
     remind.start()
+
 client.load_extension("Items.newItem")
 client.load_extension("Items.searchItem")
 client.load_extension("Items.specialcmds")
 client.load_extension("Stundenplan.main")
 client.load_extension("Briefing.main")
+client.load_extension("Mensa.main")
 
 
 @tasks.loop(seconds = 1)
@@ -57,6 +60,11 @@ async def remind():
 
     cs.execute("DELETE FROM reminder WHERE time LIKE ?", (f"{zeit.hour:02}:{zeit.minute}%", ))
     database.commit()
+
+
+@tasks.loop(hours=6)
+async def download_pdf():
+    await Webscraping.weeklypdf(client=client)
 
 
 client.run('ODg4MTI0MDc2NjA5MTMwNTY3.YUOIAA.liiiRdLowjlEFTQncyNN9JxNXVY')
