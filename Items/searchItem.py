@@ -108,8 +108,13 @@ class Itemsearch(commands.Cog):
 
                         except nextcord.errors.HTTPException:
                             access = selecteditem[4]
+                        if selecteditem[2].lower() in FuncLibrary.StP_colors.keys():
+                            embedcolor = FuncLibrary.StP_colors[selecteditem[2].lower()]
+                        else:
+                            embedcolor = 0x232323
+                        selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ",
+                                                  color=embedcolor)
 
-                        selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ")
                         selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=False)
                         selected.add_field(name="Zugriff: ", value=access, inline=False)
                         (year, month, day) = selecteditem[0].split("-")

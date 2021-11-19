@@ -43,7 +43,7 @@ class Stundenplan(commands.Cog):
 
             hours = zeit.seconds//3600
             minutes = (zeit.seconds//60)%60
-            color = FuncLibrary.StP_colors[output[0]] if output[0] in FuncLibrary.StP_colors.keys() else None
+            color = FuncLibrary.StP_colors[output[0].lower()] if output[0].lower() in FuncLibrary.StP_colors.keys() else None
             outputembed = nextcord.Embed(title=output[0], colour=color)
 
             outputembed.set_footer(text=f"In {minutes} minuten." if not hours else f"In {hours} stunden und {minutes} minuten.")

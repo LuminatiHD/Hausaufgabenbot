@@ -2,7 +2,6 @@ import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import sqlite3
-
 import Buttons
 import FuncLibrary
 from datetime import date, datetime, timedelta, time
@@ -63,6 +62,39 @@ class extracmds(commands.Cog):
         database.commit()
 
         await ctx.channel.send("Reminder wurde eingetragen")
+
+    @commands.command(name="poll", help="Mache Polls. Format ist: !poll [test verschieben] [nicht verschieben]")
+    async def poll(self, ctx:Context):
+        try:
+            optiona = ctx.message.content.split("[")[1].replace("]", "")
+            optionb = ctx.message.content.split("[")[2].replace("]", "")
+
+            votebutton = Buttons.VoteButtons(240.0)
+            votebutton.OptA.label=optiona
+            votebutton.OptB.label = optionb
+            vote = await ctx.channel.send("Vote time", view=votebutton)
+            await votebutton.wait()
+
+            if votebutton.votes:
+                votecounta, votecountb = list(votebutton.votes.values()).count(optiona), list(votebutton.votes.values()).count(optionb)
+
+                if votecounta>votecountb:
+                    await vote.reply(f"'{optiona}' hat gewonnen mit {votecounta} zu {votecountb} Punkten!")
+
+                elif votecountb>votecounta:
+                    await vote.reply(f"'{optionb}' hat gewonnen mit {votecountb} zu {votecounta} Punkten!")
+
+                else:
+                    await vote.reply(f"Es ist Gleichstand ({votecounta}:{votecountb}")
+
+            else:
+                await vote.reply("Niemand hat gewählt")
+
+        except IndexError:
+            await ctx.reply("Invalide syntax. Optionen müssen in der form [A][B] angegeben werden")
+
+        except nextcord.errors.HTTPException:
+            await ctx.reply("Nachricht ist zu lang. Darf nur 80 zeichen lang sein.")
 
     @commands.command(name="!stcol")
     async def test(self, ctx:Context):

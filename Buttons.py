@@ -573,3 +573,23 @@ class choose_KF(nextcord.ui.View):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.kf = 'KF BG'
             self.stop()
+
+
+class VoteButtons(nextcord.ui.View):
+    def __init__(self, timeout):
+        super().__init__(timeout=timeout)
+        self.votes = {}
+
+    @nextcord.ui.button(label="A", style=nextcord.ButtonStyle.primary)
+    async def OptA(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        if not interaction.user.id in self.votes.keys():
+            self.votes[interaction.user.id] = button.label
+        else:
+            await interaction.response.send_message("Du hast schon gewählt", ephemeral=True)
+
+    @nextcord.ui.button(label="B", style=nextcord.ButtonStyle.primary)
+    async def OptB(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        if not interaction.user.id in self.votes.keys():
+            self.votes[interaction.user.id] = button.label
+        else:
+            await interaction.response.send_message("Du hast schon gewählt", ephemeral=True)
