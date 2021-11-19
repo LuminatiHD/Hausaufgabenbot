@@ -121,8 +121,8 @@ def layout(items, footer):
         if not desc:  # Wenn man keine Lernziele angegeben hat, dann ist desc=None.
             desc = "Keine Lernziele"
 
-        elif len(desc) > 20:
-            desc = item[3][:20]+"..."  # wöu schüsch chasch du lernziele ha wo viu ds läng si.
+        elif len(desc) > 30:
+            desc = item[3][:30]+"..."  # wöu schüsch chasch du lernziele ha wo viu ds läng si.
 
         output.add_field(name=f" {item[1].capitalize()} {item[2]}",
                          value=f" {str(weekdays[itemdate.weekday()])}, "
@@ -136,15 +136,15 @@ def layout(items, footer):
 def outputbriefing(user, ef, sf, kf, mint):
     output = nextcord.Embed(title=f"{weekdays[date.today().weekday()]}, "
                                   f"{date.today().day}.{date.today().month}.{str(date.today().year)[2:]} "
-                                  f"({datetime.now().hour}:{datetime.now().minute})")
+                                  f"({datetime.now().hour}:{datetime.now().minute:02})")
 
-    timeset = f"{(date.today() + timedelta(7)).day}:{(date.today() + timedelta(7)).month}:{(date.today() + timedelta(7)).year}"
+    timeset = f"{(date.today()).year}-{(date.today()).month}-{(date.today() + timedelta(days=7)).day}"
     items = cs.execute(f"SELECT * FROM items WHERE datum <= ? AND (access = 'all' " \
                                       f"OR access = ? OR access = ? " \
                                       f"OR access = ? OR access = ?) ORDER BY datum",
                                       (timeset, user.id, sf, ef, kf)).fetchall()
 
-    output.add_field(name="AUFGABEN UND TESTS DIESE WOCHE:", value=f"({timeset})", inline=False)
+    output.add_field(name="AUFGABEN UND TESTS DIESE WOCHE:", value=f"(Bis {timeset})", inline=False)
 
     if items:
         for item in items:

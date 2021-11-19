@@ -35,7 +35,7 @@ class Menu(commands.Cog):
         await ctx.channel.send(embed=menu)
         await output.delete()
 
-    @commands.command(name = "weekly", aliases=["Weekly", "w", "W"], help="Gibt das Menu der momentanen Woche zurück")
+    @commands.command(name = "wochenplan", aliases=["Wochenplan", "wp", "WP"], help="Gibt das Menu der momentanen Woche zurück")
     async def weekly(self, ctx:Context):
         datum = date.today()
         output = await ctx.channel.send("Einen Moment...")
@@ -59,7 +59,7 @@ class Menu(commands.Cog):
 
         await output.delete()
 
-    @commands.command(name = "weeklypdf", aliases=["Weeklypdf", "wp", "WP", "Wp"],
+    @commands.command(name = "wochepdf", aliases=["Wocheypdf", "wpdf", "WPDF", "Wpdf"],
                       help="Gibt ein PDF des momentanen Mensa-Wochenplan zurück.")
     async def weeklypdf(self, ctx:Context):
         output = await ctx.channel.send(content="Einen Moment...")

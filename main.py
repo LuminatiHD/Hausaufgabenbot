@@ -26,11 +26,11 @@ client.help_command = help_command.Help()
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=nextcord.Status.online, activity=nextcord.Game('Hello there!'))
+    await client.change_presence(status=nextcord.Status.online)
     print('Ready')
     briefing.start()
     remind.start()
-
+    download_pdf.start()
 client.load_extension("Items.newItem")
 client.load_extension("Items.searchItem")
 client.load_extension("Items.specialcmds")
@@ -39,10 +39,11 @@ client.load_extension("Briefing.main")
 client.load_extension("Mensa.main")
 
 
-@tasks.loop(seconds = 1)
+@tasks.loop(hours = 1)
 async def briefing():
     weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
-    users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE {weekdays[date.today().weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
+    users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
+                       f"{weekdays[date.today().weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
     if users:
         for user in users:
             await client.get_user(user[0]).send(embed=FuncLibrary.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
@@ -52,7 +53,7 @@ async def briefing():
 async def remind():
     zeit = datetime.now().time()
     reminders = cs.execute("SELECT user_id, message FROM reminder WHERE time LIKE ?",
-                           (f"{zeit.hour:02}:{zeit.minute}%", )).fetchall()
+                           (f"{zeit.hour:02}:{zeit.minute:02}%", )).fetchall()
 
     for i in reminders:
         user =client.get_user(i[0])

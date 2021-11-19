@@ -79,9 +79,9 @@ class Itemsearch(commands.Cog):
 
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
                 if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
-                    buttons = Buttons.PageButtons(results, 0, ctx)
+                    buttons = Buttons.PageButtons(results, currentpage, ctx)
                     await outputmsg.edit(embed=FuncLibrary.layout(selection,
-                                                                         footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                                                         footer=f"Seite {currentpage+1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                                 view=buttons)
                     # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber,
                     # dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
@@ -154,7 +154,7 @@ class Itemsearch(commands.Cog):
                         await ctx.reply(content="Keine Resultate gefunden.")
                         break
         else:
-            await ctx.reply(content="Keine Resultate gefunden.")
+            await ctx.reply(content="Keine Resultate gefunden oder keine vorhanden.")
 
 
 def setup(client):

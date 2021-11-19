@@ -26,19 +26,25 @@ class newItem(commands.Cog):
     async def new(self, ctx: Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
             button = Buttons.TestOrHA(ctx)
-            await ctx.reply("Welche Itemkategorie soll das Item haben?", view=button)
+            await ctx.reply("welche Kategorie?", view=button)
             await button.wait()
             category = button.choice
             exitcommand = False  # isch da für weme möcht abbräche
+            exitoutput = False
+
             error = True
             while error:
-                await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
+                await ctx.reply("Wann ist der Test oder die Aufgabe fällig?")
                 try:
                     dateraw = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-                    exitcommand = dateraw.content in ["break", "exit", "stop"]
+                    exitcommand = dateraw.content in ["break", "exit", "stop"] or dateraw.content.startswith("!")
+
                     if exitcommand:
+                        await ctx.reply("Erstellung wird abgebrochen")
+                        exitoutput = True
                         error = False
                         break
+
                     date = str(datetime.date(int(dateraw.content.split(".")[2]),
                                              int(dateraw.content.split(".")[1]),
                                              int(dateraw.content.split(".")[0])))
@@ -53,13 +59,13 @@ class newItem(commands.Cog):
                 await ctx.reply("Welches Fach? ")
                 fach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 fach = FuncLibrary.changefachname(fach.content)
-                exitcommand = fach in ["Break", "Exit", "Stop"]
+                exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
             if category != "Test" and not exitcommand:
                 await ctx.reply("Was zu tun ist: ")
                 aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 aufgabe = aufgabe.content
-                exitcommand = aufgabe in ["break", "exit", "stop"]
+                exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
 
             elif not exitcommand:
                 yesno = Buttons.Confirm(ctx)
@@ -69,9 +75,13 @@ class newItem(commands.Cog):
                     await ctx.reply("Lernziele:")
                     aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     aufgabe = aufgabe.content
+                    exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
                 else:
                     await ctx.reply("Keine aufgabe")
                     aufgabe = None
+
+            elif exitcommand and not exitoutput:
+                await ctx.reply("Erstellung wird abgebrochen")
 
             if not exitcommand:
                 manageaccess = Buttons.ManageItemAccess(ctx)

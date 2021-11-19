@@ -48,6 +48,7 @@ class Briefing(commands.Cog):
         cs.execute("DELETE FROM briefing WHERE user_id = ?", (int(ctx.author.id),))
         cs.execute("INSERT INTO briefing VALUES (?, '', '', '', '', '', '', '', 'all', 'all', 'all', 'all')",
                    (int(ctx.author.id),))
+        database.commit()
 
         for i in chosen:
             choiceforday= []
@@ -63,6 +64,7 @@ class Briefing(commands.Cog):
                     choiceforday.append(button.choice)
 
             cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday), ))
+            database.commit()
 
         button = choose_SF(ctx)
         await choice.edit(content="Was ist dein SF?", view=button)
@@ -75,7 +77,7 @@ class Briefing(commands.Cog):
         ef = button.ef
 
         button = choose_KF(ctx)
-        await choice.edit(content="Was ist dein SF?", view=button)
+        await choice.edit(content="Was ist dein KF?", view=button)
         await button.wait()
         kf = button.kf
 
@@ -100,6 +102,15 @@ class Briefing(commands.Cog):
             if settings[i]:
                 zeiten=settings[i][1:-1].replace(",", "\n").replace("'", "")
                 settingsoutput.add_field(name=FuncLibrary.weekdays[i], value=zeiten)
+
+        access = cs.execute("SELECT sf, ef, kf, mint FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()[0]
+        settingsoutput.add_field(name="SF:", value=access[0])
+        settingsoutput.add_field(name="EF:", value=access[1])
+        settingsoutput.add_field(name="KF:", value=access[2])
+        if access[3] == "all":
+            settingsoutput.add_field(name="MINT:", value="Nein")
+        else:
+            settingsoutput.add_field(name="MINT:", value="Ja")
 
         settingsoutput.set_footer(text="Du kannst die Einstellungen mit !briefing neu setzen")
         await ctx.channel.send(embed=settingsoutput)

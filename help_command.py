@@ -17,6 +17,7 @@ class Help(commands.HelpCommand):
                 cog_name = getattr(cog, "qualified_name", "Sonstige")
                 embed.add_field(name=cog_name, value="\n".join(command_signatures))
 
+            embed.set_footer(text="Zeige mit !help [COMMAND] Hilfe zu einem bestimmten Befehl an.")
         channel = self.get_destination()
         await channel.send(embed=embed)
 
