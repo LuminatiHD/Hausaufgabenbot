@@ -1,7 +1,3 @@
-# IDEAS:
-#   -man könnte den Stundenplan mit Buttons konstruieren
-#   und wenn man die Knöpfe drückt, dann werden alle kommenden Items für das Fach angezeigt
-
 import nextcord
 from nextcord.ext import commands
 import sqlite3
@@ -59,7 +55,7 @@ async def remind():
         user =client.get_user(i[0])
         await user.send(f"Du hast einen Reminder:\n{i[1]}")
 
-    cs.execute("DELETE FROM reminder WHERE time LIKE ?", (f"{zeit.hour:02}:{zeit.minute}%", ))
+    cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute}:00", ))
     database.commit()
 
 

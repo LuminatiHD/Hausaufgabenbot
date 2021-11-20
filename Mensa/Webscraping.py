@@ -1,6 +1,6 @@
 import requests
 from pdf2image import convert_from_path
-from datetime import date
+from datetime import date, datetime, time, timedelta
 import nextcord
 url = "https://lerbermatt.sv-restaurant.ch/de/menuplan/"
 
@@ -8,9 +8,14 @@ url = "https://lerbermatt.sv-restaurant.ch/de/menuplan/"
 def menuoutput(output):
     req = requests.get(url, 'html.parser').text
     weekday = date.today().weekday()
+    menuselect = 1
+    if datetime.now().time() > time(hour=14, minute=30):
+        menuselect=2
+        weekday = (date.today()+timedelta(1)).weekday()
+
     if weekday< 8:
-        items = req.split(f"<div id=\"menu-plan-tab1")[1].replace("\t", "")\
-                    .split(f"<div id=\"menu-plan-tab2")[0]\
+        items = req.split(f"<div id=\"menu-plan-tab{menuselect}")[1].replace("\t", "")\
+                    .split(f"<div id=\"menu-plan-tab{menuselect+1}")[0]\
                     .split('<div class="menu-item">')[1::]
 
         for item in items:

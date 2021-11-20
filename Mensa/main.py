@@ -2,7 +2,7 @@ from Mensa import  Webscraping
 import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, time
 wochentage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"]
 
 embedcol = [0xba2929, 0xeb7c28, 0xd6aa18, 0x237a06, 0x086fcf]
@@ -15,9 +15,12 @@ class Menu(commands.Cog):
     @commands.command(name="menu", aliases=["Menu", "m", "M"], help="Gibt das heutige Menu in der Mensa zurück")
     async def menu(self, ctx:Context):
         datum = date.today()
+
+        if datetime.now().time() > time(hour=14, minute=30):
+            datum = date.today() + timedelta(1)
+
         if datum.weekday() > 4:
             datum += timedelta(7-datum.weekday())
-            print(datum)
 
         output = await ctx.channel.send("Eine Sekunde...")
         menu = nextcord.Embed(title=f"{wochentage[datum.weekday()]}, "

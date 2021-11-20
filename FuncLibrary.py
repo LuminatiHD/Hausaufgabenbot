@@ -81,6 +81,8 @@ def changefachname(fach):  # so isches übersichtlecher
 
 
 def layout(items, footer):
+    today = False
+    tmrw = False
     week_1 = False
     week_2 = False
     month_1 = False
@@ -90,29 +92,48 @@ def layout(items, footer):
     for item in items:
         (year, month, day) = item[0].split("-")
         itemdate = date(int(year), int(month), int(day))
+
+        if itemdate==date.today() and not today:
+            zeit = date.today()
+            output.add_field(name="__HEUTE:__",
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
+                             inline=False)
+            today = True
+
+        elif itemdate==date.today()+timedelta(1) and not tmrw:
+            zeit = date.today()
+            output.add_field(name="__HEUTE:__",
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
+                             inline=False)
+            tmrw = True
+
         # week_1 teschtet öb ds scho isch vergäh worde, wenn nid de machter das häre
-        if itemdate <= date.today() + timedelta(7) and not week_1:
+        elif itemdate <= date.today() + timedelta(7) and not week_1:
+            zeit = date.today() + timedelta(7)
             output.add_field(name="__BIS NÄCHSTE WOCHE:__",
-                             value=f"(Bis zum {date.today() + timedelta(7)})",
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
                              inline=False)
             week_1 = True
 
-        if date.today() + timedelta(7) <= itemdate <= date.today() + timedelta(14) and not week_2:
+        elif date.today() + timedelta(7) <= itemdate <= date.today() + timedelta(14) and not week_2:
+            zeit = date.today() + timedelta(14)
             output.add_field(name="__NÄCHSTE 2 WOCHEN:__",
-                             value=f"(Bis zum {date.today() + timedelta(14)})", inline=False)
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             week_2 = True
 
-        if date.today() + timedelta(14) < itemdate <= date.today() + timedelta(30) and not month_1:
+        elif date.today() + timedelta(14) < itemdate <= date.today() + timedelta(30) and not month_1:
+            zeit = date.today() + timedelta(30)
             output.add_field(name="__INNERHALB VON 30 TAGEN:__",
-                             value=f"(Bis zum {date.today() + timedelta(30)})", inline=False)
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             month_1 = True
 
-        if date.today() + timedelta(30) < itemdate <= date.today() + timedelta(60) and not month_2:
+        elif date.today() + timedelta(30) < itemdate <= date.today() + timedelta(60) and not month_2:
+            zeit = date.today() + timedelta(60)
             output.add_field(name="__INNERHALB VON 60 TAGEN:__",
-                             value=f"(Bis zum {date.today() + timedelta(60)})", inline=False)
+                             value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             month_2 = True
 
-        if date.today() + timedelta(60) < itemdate and not future:
+        elif date.today() + timedelta(60) < itemdate and not future:
             lastitem = items[-1][0].split("-")
             output.add_field(name="__SPÄTER ALS 60 TAGE:__",
                              value=f"(Bis zum {date(int(lastitem[0]), int(lastitem[1]), int(lastitem[2]))})", inline=False)
@@ -166,13 +187,15 @@ def outputbriefing(user, ef, sf, kf, mint):
     else:
         output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen", inline=False)
 
-    output.add_field(name="DER STUNDENPLAN VON HEUTE:", value="\ ")
     currdate = date.today()
     tag = currdate.weekday()
     wochentage = ["Mo", "Di", "Mi", "Do", "Fr"]
 
     if tag > 4:
-        tag = (currdate + (timedelta(7) - timedelta(tag))).weekday()
+        tag = (currdate + (timedelta(7) - timedelta(tag))).weekday() # tag wird ufe mänti gsetzt
+        output.add_field(name="DER STUNDENPLAN VON MONTAG:", value="\ ")
+    else:
+        output.add_field(name="DER STUNDENPLAN VON HEUTE:", value="\ ")
 
     allitems = cs.execute(f"SELECT fach, time, room FROM Stundenplan_23b WHERE weekday = ?" \
                           " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)", \

@@ -47,13 +47,25 @@ class extracmds(commands.Cog):
             await ctx.reply("Bro häb frässe")
 
     @commands.command(name="remindme", aliases=["remind"],
-                      help="Stelle dir einen Reminder. Für die Zeitangabe, gib die Zeit bitte in der Form HH:MM an.")
+                      help="Stelle dir einen Reminder. Für die Zeitangabe, gib die Zeit bitte in der Form HH:MM an."
+                           "Der Bot schickt dir dann um diese Uhrzeit einen Reminder.")
     async def set_reminder(self, ctx:Context):
-        await ctx.reply("Wann willst du erinnert werden (Uhrzeit)?")
-        timemsg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-        minute = int(timemsg.content.split(':')[1])
-        hour = int(timemsg.content.split(":")[0])
-        zeit = time(hour=hour, minute=minute)
+        error = True
+        while error:
+            await ctx.reply("Wann willst du erinnert werden (Uhrzeit)?")
+            timemsg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+
+            try:
+                minute = int(timemsg.content.split(':')[1])
+                hour = int(timemsg.content.split(":")[0])
+                zeit = time(hour=hour, minute=minute)
+                error = False
+
+            except IndexError:
+                await ctx.reply("Zeit muss in der Form HH:MM angegeben werden")
+
+            except ValueError:
+                await ctx.reply("Inkorrekte Eingabe")
 
         await ctx.reply("An was willst du erinnert werden?")
         reminder = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
@@ -108,6 +120,19 @@ class extracmds(commands.Cog):
     async def members(self,ctx:Context):
         for i in self.bot.guilds[0].members:
             print(f"{i.name:15}{i.id:12}\n"+"-"*40)
+
+    @commands.command(name="!sus")
+    async def sussy(self, ctx:Context):
+        await ctx.reply("STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! "
+                        "MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S "
+                        "FUCKING MEMES! I was in a server, right? and ALL OF "
+                        "THE CHANNELS were just among us stuff. I-I showed"
+                        " my champion underwear to my girlfriend and t-the logo "
+                        "I flipped it and I said \"hey babe, when the underwear is sus HAHA "
+                        "DING DING DING DING DING DING DING DI DI DING\" I fucking "
+                        "looked at a trashcan and said \"THAT'S A BIT SUSSY\" I looked "
+                        "at my penis I think of an astronauts helmet and I go \"PENIS? MORE "
+                        "LIKE PENSUS\" AAAAAAAAAAAAAAHGESFG")
 
 
 def setup(client):
