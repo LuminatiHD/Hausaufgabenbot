@@ -186,13 +186,13 @@ class Confirm(nextcord.ui.View):
         self.ctx = ctx
 
     @nextcord.ui.button(label="Ja", style=nextcord.ButtonStyle.green)
-    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def confirmbtn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.confirm = True
             self.stop()
 
     @nextcord.ui.button(label="Nein", style=nextcord.ButtonStyle.red)
-    async def cancel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def cancelbtn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.confirm = False
             self.stop()
@@ -333,19 +333,12 @@ class ManageItemAccess(nextcord.ui.View):
 
 
 class ChooseWeekdays(nextcord.ui.View):
-    def __init__(self, ctx: Context, mo: bool, di: bool, mi: bool, do: bool, fr: bool, sa:bool, so:bool, confirmbtn:bool = False):
+    def __init__(self, ctx: Context, confirmbtn:bool = False):
         super().__init__(timeout=120.0)
         self.ctx = ctx
         self.choice = []
         self.confirm = False
 
-        self.Montag.disabled = mo
-        self.Dienstag.disabled = di
-        self.Mittwoch.disabled = mi
-        self.Donnerstag.disabled = do
-        self.Freitag.disabled = fr
-        self.Samstag.disabled = sa
-        self.Sonntag.disabled = so
         self.confirmbtn.disabled = confirmbtn
 
     @nextcord.ui.button(label="Mo", style=nextcord.ButtonStyle.primary, row=1)
@@ -403,16 +396,6 @@ class ChooseTime(nextcord.ui.View):
         self.ctx = ctx
         self.confirm= False
         self.choice=None
-        self.hour_7.disabled = "7:00" in choice
-        self.hour_8.disabled = "8:00" in choice
-        self.hour_9.disabled = "9:00" in choice
-        self.hour_10.disabled = "10:00" in choice
-        self.hour_11.disabled = "11:00" in choice
-        self.hour_12.disabled = "12:00" in choice
-        self.hour_13.disabled = "13:00" in choice
-        self.hour_14.disabled = "14:00" in choice
-        self.hour_15.disabled = "15:00" in choice
-        self.hour_16.disabled = "16:00" in choice
 
     @nextcord.ui.button(label="7:00", style=nextcord.ButtonStyle.primary, row=1)
     async def hour_7(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -593,3 +576,22 @@ class VoteButtons(nextcord.ui.View):
             self.votes[interaction.user.id] = button.label
         else:
             await interaction.response.send_message("Du hast schon gewählt", ephemeral=True)
+
+
+class BriefingSettings(nextcord.ui.View):
+    def __init__(self, ctx):
+        super().__init__(timeout = None)
+        self.ctx = ctx
+        self.choice = None
+
+    @nextcord.ui.button(label="Zeiten ändern", style=nextcord.ButtonStyle.primary)
+    async def edit_time(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        if await testinter(interaction, self.ctx):
+            self.choice = "time"
+            self.stop()
+
+    @nextcord.ui.button(label="Fächer ändern", style=nextcord.ButtonStyle.primary)
+    async def edit_classes(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        if await testinter(interaction, self.ctx):
+            self.choice = "classes"
+            self.stop()

@@ -40,7 +40,7 @@ async def editItem(self, ctx, selecteditem, editor):
                 f"UPDATE {Itemtable} SET kategorie = ? WHERE rowid = ?",
                 (newcategory, selecteditem[5]))
 
-    if "aufgabe" in editorbtn.edit:
+    elif "aufgabe" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
             confirm = Buttons.Confirm(ctx)
@@ -53,7 +53,7 @@ async def editItem(self, ctx, selecteditem, editor):
             f"UPDATE {Itemtable} SET aufgabe = ? WHERE rowid = ?",
             (newaufg.content, selecteditem[5]))
 
-    if "datum" in editorbtn.edit:
+    elif "datum" in editorbtn.edit:
         error = True
         confirm = Buttons.Confirm(ctx)
         while error and not confirm.confirm:
@@ -62,11 +62,16 @@ async def editItem(self, ctx, selecteditem, editor):
             try:
                 dateraw = await self.bot.wait_for("message",
                                                   check=lambda msg: msg.author == ctx.author)
-                datum = str(datetime.date(int(dateraw.content.split(".")[2]),
+                datum = datetime.date(int(dateraw.content.split(".")[2]),
                                           int(dateraw.content.split(".")[1]),
-                                          int(dateraw.content.split(".")[0])))
+                                          int(dateraw.content.split(".")[0]))
 
-                await dateraw.reply(f"Altes Datum: {selecteditem[0]}\nNeues Datum: {datum}\nBestätigen?", view=confirm)
+                olddatum = datetime.date(int(selecteditem[0].split("-")[0]),
+                                         int(selecteditem[0].split("-")[1]),
+                                         int(selecteditem[0].split("-")[2]))
+
+                await dateraw.reply(f"Altes Datum: {olddatum.day}.{olddatum.month}.{olddatum.year}"
+                                    f"\nNeues Datum: {datum.day}.{datum.month}.{datum.year}\nBestätigen?", view=confirm)
                 await confirm.wait()
                 error = False
             except (ValueError, TypeError, IndexError):
@@ -76,7 +81,7 @@ async def editItem(self, ctx, selecteditem, editor):
         database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
                                   (datum, selecteditem[5]))
 
-    if "fach" in editorbtn.edit:
+    elif "fach" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
             confirm = Buttons.Confirm(ctx)
@@ -91,7 +96,7 @@ async def editItem(self, ctx, selecteditem, editor):
             f"UPDATE {Itemtable} SET fach = ? WHERE rowid = ?",
             (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
 
-    if "access" in editorbtn.edit:
+    elif "access" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
             newacc = Buttons.ManageItemAccess(ctx)

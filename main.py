@@ -24,9 +24,13 @@ client.help_command = help_command.Help()
 async def on_ready():
     await client.change_presence(status=nextcord.Status.online)
     print('Ready')
-    briefing.start()
-    remind.start()
-    download_pdf.start()
+    try: # we sech dr bot mues reconnecte, denn motzter wöuder d tasks scho gstartet het.
+        briefing.start()
+        remind.start()
+        download_pdf.start()
+    except RuntimeError:
+        pass
+
 client.load_extension("Items.newItem")
 client.load_extension("Items.searchItem")
 client.load_extension("Items.specialcmds")

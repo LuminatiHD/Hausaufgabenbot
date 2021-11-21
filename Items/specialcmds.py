@@ -15,12 +15,6 @@ class extracmds(commands.Cog):
     def __init__(self, bot:commands.Bot):
         self.bot = bot
 
-    # @commands.event
-    # async def on_message(self, message):
-    #     """isch absolut useless, nur da für fun."""
-    #     if message.content in [":(", ":D", "D:", ">:("] and self.bot.user != message.author:
-    #         await message.channel.send(message.content)
-
     @commands.command(name="feedback", aliases=["f"], help="Gib uns Feedback für unseren Bot!")
     async def recommend(self, ctx:Context):
 

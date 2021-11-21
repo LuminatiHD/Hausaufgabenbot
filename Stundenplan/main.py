@@ -25,14 +25,19 @@ class Stundenplan(commands.Cog):
     @commands.command(name="nextlesson", aliases=["nl"],
                       help="Gibt einem die nächste Lektion zurück, falls heue noch welche anstehen.")
     async def next(self, ctx:Context):
-        zeit = datetime.now().time()
+        tag = datetime.now()
+        zeit = tag.time()
         sf, ef, kf, mint= access(ctx.author)
 
+        if not date.today().weekday() in wochentage:
+            await ctx.channel.send("Es ist Wochenende, du hast heute keine Lektionen mehr")
+            return
+        
         output = cs.execute(f"SELECT fach, time, room, teacher  FROM {table} WHERE weekday = ?"\
                             f"AND time > ?"\
                             f"AND (access='all' OR access = ? OR access = ? OR access = ? "
                             f"OR access = ?) ORDER BY time",
-                            (wochentage[date.today().weekday()],
+                            (wochentage[tag.weekday()],
                              f'{zeit.hour:02}:{zeit.minute:02}-{zeit.hour:02}:{zeit.minute:02}',
                              ef, sf, kf, mint)).fetchone()
 
@@ -44,6 +49,7 @@ class Stundenplan(commands.Cog):
             hours = zeit.seconds//3600
             minutes = (zeit.seconds//60)%60
             color = FuncLibrary.StP_colors[output[0].lower()] if output[0].lower() in FuncLibrary.StP_colors.keys() else None
+
             outputembed = nextcord.Embed(title=output[0], colour=color)
 
             outputembed.set_footer(text=f"In {minutes} minuten." if not hours else f"In {hours} stunden und {minutes} minuten.")

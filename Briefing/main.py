@@ -2,8 +2,10 @@ from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import nextcord
 import sqlite3
+import Buttons
 from Buttons import ChooseWeekdays, ChooseTime, choose_EF, choose_KF, choose_SF, Confirm
 import FuncLibrary
+from Briefing import editsettings
 
 database = sqlite3.connect("ItemFiles.db")
 table = "briefing"
@@ -16,104 +18,47 @@ class Briefing(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="briefing", help="Mit briefing kannst du einstellen, wann und ob du vom bot ein Briefing "
-                                            "bekommst")
-    async def briefing(self, ctx: Context):
+    @commands.command(name="briefing", help="Mit briefing kannst du sagen, ob und wann dir der Bot ein Briefing zur "
+                                            "kommenden Woche schickt.")
+    async def briefing(self, ctx:Context):
 
-        # es wärde hie lääri values iiträge, damit die später chöi gänderet wärde.
-        # ig due t database hie scho committe, dass we ä fähler passiert, dass ses när nid problem git.
-
-        chosen = []
-        choicebtns = ChooseWeekdays(ctx=ctx, mo=False, di=False, mi=False, do=False, fr=False, sa=False, so=False)
-        choice = await ctx.reply("An welchen Tagen möchtest du ene Nachricht erhalten? ", view=choicebtns)
-
-        while not choicebtns.confirm:
-            await choicebtns.wait()
-
-            if not choicebtns.confirm:
-                chosen.append(choicebtns.choice)
-
-                choicebtns = ChooseWeekdays(ctx=ctx,
-                                            mo="mo" in chosen, # die wo si drückt worde wärde disabled
-                                            di="di" in chosen,
-                                            mi="mi" in chosen,
-                                            do="do" in chosen,
-                                            fr="fr" in chosen,
-                                            sa="sa" in chosen,
-                                            so="so" in chosen)
-
-            await choice.edit(view=choicebtns) # die nöie buttons wärde inebracht wöu die aute nümme bruchbar si.
-        chosen.sort(key=lambda m:week.index(m.capitalize()))
-
-        cs.execute("DELETE FROM briefing WHERE user_id = ?", (int(ctx.author.id),))
-        cs.execute("INSERT INTO briefing VALUES (?, '', '', '', '', '', '', '', 'all', 'all', 'all', 'all')",
-                   (int(ctx.author.id),))
-        database.commit()
-
-        for i in chosen:
-            choiceforday= []
-            button = ChooseTime(ctx, [])
-
-            while not button.confirm:
-                button = ChooseTime(ctx, choiceforday)
-
-                await choice.edit(content=f"Bitte gib die Zeiten an für:\n\t{i.capitalize()}", view=button)
-                await button.wait()
-
-                if not button.confirm:
-                    choiceforday.append(button.choice)
-
-            cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday), ))
-            database.commit()
-
-        button = choose_SF(ctx)
-        await choice.edit(content="Was ist dein SF?", view=button)
-        await button.wait()
-        sf = button.sf
-
-        button = choose_EF(ctx)
-        await choice.edit(content="Was ist dein EF?", view=button)
-        await button.wait()
-        ef = button.ef
-
-        button = choose_KF(ctx)
-        await choice.edit(content="Was ist dein KF?", view=button)
-        await button.wait()
-        kf = button.kf
-
-        button = Confirm(ctx)
-        await choice.edit(content="Hast du MINT?", view=button)
-        await button.wait()
-        if button.confirm:
-            mint = "MINT"
-        else:
-            mint="all"
-
-        cs.execute(f"UPDATE briefing SET sf=?, ef=?, kf=?, mint=? WHERE user_id = {ctx.author.id}", (sf, ef, kf, mint))
-        database.commit()
-
-        await choice.edit(content="Wurde eingetragen", view=None)
-
-    @commands.command(name="settings", help="Zeigt dir deine momentane Einstellungen fürs briefing an.")
-    async def settings(self, ctx:Context):
         settingsoutput = nextcord.Embed(title="Einstellungen")
-        settings = cs.execute("SELECT  mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()[0]
-        for i in range(len(settings)):
-            if settings[i]:
-                zeiten=settings[i][1:-1].replace(",", "\n").replace("'", "")
-                settingsoutput.add_field(name=FuncLibrary.weekdays[i], value=zeiten)
+        settings = cs.execute("SELECT  mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()
+        if settings:
+            settings = settings[0]
 
-        access = cs.execute("SELECT sf, ef, kf, mint FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()[0]
-        settingsoutput.add_field(name="SF:", value=access[0])
-        settingsoutput.add_field(name="EF:", value=access[1])
-        settingsoutput.add_field(name="KF:", value=access[2])
-        if access[3] == "all":
-            settingsoutput.add_field(name="MINT:", value="Nein")
+            for i in range(len(settings)):
+                if settings[i]:
+                    zeiten=settings[i][1:-1].replace(",", "\n").replace("'", "")
+                    settingsoutput.add_field(name=FuncLibrary.weekdays[i], value=zeiten)
+
+            access = cs.execute("SELECT sf, ef, kf, mint FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()[0]
+            settingsoutput.add_field(name="SF:", value=access[0])
+            settingsoutput.add_field(name="EF:", value=access[1])
+            settingsoutput.add_field(name="KF:", value=access[2])
+            if access[3] == "all":
+                settingsoutput.add_field(name="MINT:", value="Nein")
+            else:
+                settingsoutput.add_field(name="MINT:", value="Ja")
+
+            askbutton = Buttons.BriefingSettings(ctx)
+            await ctx.channel.send(embed=settingsoutput, view=askbutton)
+            await askbutton.wait()
+            if askbutton.choice == "time":
+                await editsettings.editdates(ctx)
+
+            elif askbutton.choice == "classes":
+                await editsettings.edit_classes(ctx)
+
         else:
-            settingsoutput.add_field(name="MINT:", value="Ja")
+            yesno = Buttons.Confirm(ctx)
 
-        settingsoutput.set_footer(text="Du kannst die Einstellungen mit !briefing neu setzen")
-        await ctx.channel.send(embed=settingsoutput)
+            await ctx.reply(embed = nextcord.Embed(title="Du hast noch nichts eingestellt",
+                                                   description="Möchtest du das ändern?"), view=yesno)
+            await yesno.wait()
+            if yesno.confirm:
+                await editsettings.editdates(ctx)
+                await editsettings.edit_classes(ctx)
 
 
 def setup(client):

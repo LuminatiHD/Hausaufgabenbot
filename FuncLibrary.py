@@ -110,32 +110,32 @@ def layout(items, footer):
         # week_1 teschtet öb ds scho isch vergäh worde, wenn nid de machter das häre
         elif itemdate <= date.today() + timedelta(7) and not week_1:
             zeit = date.today() + timedelta(7)
-            output.add_field(name="__BIS NÄCHSTE WOCHE:__",
+            output.add_field(name="__\nBIS NÄCHSTE WOCHE:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
                              inline=False)
             week_1 = True
 
         elif date.today() + timedelta(7) <= itemdate <= date.today() + timedelta(14) and not week_2:
             zeit = date.today() + timedelta(14)
-            output.add_field(name="__NÄCHSTE 2 WOCHEN:__",
+            output.add_field(name="__\nNÄCHSTE 2 WOCHEN:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             week_2 = True
 
         elif date.today() + timedelta(14) < itemdate <= date.today() + timedelta(30) and not month_1:
             zeit = date.today() + timedelta(30)
-            output.add_field(name="__INNERHALB VON 30 TAGEN:__",
+            output.add_field(name="__\nINNERHALB VON 30 TAGEN:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             month_1 = True
 
         elif date.today() + timedelta(30) < itemdate <= date.today() + timedelta(60) and not month_2:
             zeit = date.today() + timedelta(60)
-            output.add_field(name="__INNERHALB VON 60 TAGEN:__",
+            output.add_field(name="__\nINNERHALB VON 60 TAGEN:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})", inline=False)
             month_2 = True
 
         elif date.today() + timedelta(60) < itemdate and not future:
             lastitem = items[-1][0].split("-")
-            output.add_field(name="__SPÄTER ALS 60 TAGE:__",
+            output.add_field(name="__\nSPÄTER ALS 60 TAGE:__",
                              value=f"(Bis zum {date(int(lastitem[0]), int(lastitem[1]), int(lastitem[2]))})", inline=False)
             future = True
 

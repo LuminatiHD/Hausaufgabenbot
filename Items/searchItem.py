@@ -26,8 +26,6 @@ class Itemsearch(commands.Cog):
                            "diese bearbeiten oder löschen."
 )
     async def todo(self, ctx: Context):
-        # docstring. isch da füre help-command
-
         # aui Elemänt wo scho düre si wärde glöschet.
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (str(date.today()),))
         database.commit()
@@ -71,6 +69,7 @@ class Itemsearch(commands.Cog):
         begin = datetime.datetime.now()
         currentpage = 0
         selection = results[:5]
+
         if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
             buttons = Buttons.PageButtons(results, 0, ctx)
             outputmsg = await ctx.reply(embed=FuncLibrary.layout(selection,
