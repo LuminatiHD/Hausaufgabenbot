@@ -63,13 +63,13 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
     weiter zurück, sowie je einen Knopf für ganz nach hinten/vorne."""
 
     def __init__(self, results, currentpage, ctx):
-        super().__init__(timeout=None)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
+        super().__init__(timeout=120)  # timeout macht eifach das d buttons nach 2 minute nümme chöi drückt wärde.
         self.currentpage = currentpage
         self.ctx = ctx
         self.results = results
         self.left = False
         self.right = False
-        self.select = 0
+        self.select = -1
         self.bigleft.disabled = self.currentpage == 0
         self.leftbutton.disabled = self.currentpage == 0
         self.rightbutton.disabled = (self.currentpage + 1) >= len(results) / 5
@@ -391,7 +391,7 @@ class ChooseWeekdays(nextcord.ui.View):
 
 
 class ChooseTime(nextcord.ui.View):
-    def __init__(self, ctx, choice):
+    def __init__(self, ctx):
         super().__init__(timeout=120.0)
         self.ctx = ctx
         self.confirm= False

@@ -26,9 +26,15 @@ class newItem(commands.Cog):
     async def new(self, ctx: Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
             button = Buttons.TestOrHA(ctx)
-            await ctx.reply("welche Kategorie?", view=button)
+            categorymsg = await ctx.reply("welche Kategorie?", view=button)
+
             await button.wait()
             category = button.choice
+
+            for i in button.children:
+                i.disabled = True
+            await categorymsg.edit(view=button)
+
             exitcommand = False  # isch da für weme möcht abbräche
             exitoutput = False
 
@@ -69,15 +75,26 @@ class newItem(commands.Cog):
 
             elif not exitcommand:
                 yesno = Buttons.Confirm(ctx)
-                await ctx.reply("Schon Lernziele? ", view=yesno)
+                asklernziele = await ctx.reply("Schon Lernziele? ", view=yesno)
+
                 await yesno.wait()
+
                 if yesno.confirm:
+                    for i in yesno.children:
+                        i.disabled = True
+
+                    await asklernziele.edit(view=yesno)
+
                     await ctx.reply("Lernziele:")
+
                     aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     aufgabe = aufgabe.content
                     exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
                 else:
-                    await ctx.reply("Keine aufgabe")
+                    for i in yesno.children:
+                        i.disabled = True
+
+                    await asklernziele.edit(view=yesno)
                     aufgabe = None
 
             elif exitcommand and not exitoutput:
@@ -85,8 +102,9 @@ class newItem(commands.Cog):
 
             if not exitcommand:
                 manageaccess = Buttons.ManageItemAccess(ctx)
-                await ctx.reply("Für wen soll dieses Item sichtbar sein?", view=manageaccess)
+                askaccess_msg = await ctx.reply("Für wen soll dieses Item sichtbar sein?", view=manageaccess)
                 await manageaccess.wait()
+
                 if manageaccess.access == "all":
                     access = "all"
                 elif manageaccess.access == "private":
@@ -94,6 +112,11 @@ class newItem(commands.Cog):
 
                 else:
                     access = manageaccess.access
+
+                for i in manageaccess.children:
+                    i.disabled = True
+
+                await askaccess_msg.edit(view=manageaccess)
 
             if not exitcommand:
                 database.cursor().execute(

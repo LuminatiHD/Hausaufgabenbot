@@ -23,13 +23,14 @@ class Itemsearch(commands.Cog):
     @commands.command(name="todo",
                       help="Zeigt dir die Liste der kommenden Aufgaben und Ereignisse, die eingetragen sind. "
                            "Mit den Nummern kannst du die einzelnen Elemente auswählen und "
-                           "diese bearbeiten oder löschen."
+                           "diese bearbeiten oder löschen. (Tipp: du kannst mit ab [datum] und bis [datum] dir"
+                           "Aufgaben anzeigen, die vor oder nach dem spezifizierten Datum stattfinden"
 )
     async def todo(self, ctx: Context):
         # aui Elemänt wo scho düre si wärde glöschet.
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (str(date.today()),))
         database.commit()
-        search = ctx.message.content[len("!outlook "):]
+        search = ctx.message.content[len("!todo "):]
         timeset = str(date.today())
         bfore_or_after = ">="
 
@@ -56,6 +57,7 @@ class Itemsearch(commands.Cog):
                                           f"OR access = ? OR access = ? "\
                                           f"OR access = ? OR access = ?) ORDER BY datum",
                                           (timeset, ctx.author.id, sf, ef, kf)).fetchall()
+
         if search == "":
             search = None
         # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
@@ -66,6 +68,7 @@ class Itemsearch(commands.Cog):
                     keyword = FuncLibrary.changefachname(keyword.capitalize())  # mues für input und output ou so si
                     if keyword.lower().capitalize() not in item and item in results:
                         results.remove(item)
+
         begin = datetime.datetime.now()
         currentpage = 0
         selection = results[:5]
@@ -98,7 +101,7 @@ class Itemsearch(commands.Cog):
                                              footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                              view=buttons)
 
-                    else:
+                    elif buttons.select >-1:
                         selecteditem = selection[buttons.select]
                         # we dr zuegriff aus userid iigspicheret isch, de versuechters z näh.
                         # weses nid geit, isches nid ä userid.
@@ -150,6 +153,9 @@ class Itemsearch(commands.Cog):
                             break
                         database.commit()
 
+                    else:
+                        await outputmsg.delete()
+                        break
                 else:
                     try:
                         await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None)

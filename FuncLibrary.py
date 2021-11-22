@@ -59,10 +59,17 @@ def get_access_permissions(author):
                 mint = role.name
 
     except AttributeError:  # für DM-modus
-        sf = "all"
-        ef = "all"
-        kf = "all"
-        mint = "all"
+        perm = cs.execute(f"SELECT sf, ef, kf, mint FROm briefing WHERE user_id = {author.id}").fetchall()
+        if perm:
+            sf = perm[0][0]
+            ef = perm[0][1]
+            kf = perm[0][2]
+            mint = perm[0][3]
+        else:
+            sf = "all"
+            ef = "all"
+            kf = "all"
+            mint = "all"
     return sf, ef, kf, mint
 
 
@@ -101,8 +108,8 @@ def layout(items, footer):
             today = True
 
         elif itemdate==date.today()+timedelta(1) and not tmrw:
-            zeit = date.today()
-            output.add_field(name="__HEUTE:__",
+            zeit = date.today()+timedelta(1)
+            output.add_field(name="__MORGEN:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
                              inline=False)
             tmrw = True

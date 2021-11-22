@@ -15,7 +15,7 @@ async def editdates(ctx:Context):
     olddates = cs.execute("SELECT mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id = ?", (ctx.author.id,)).fetchall()
 
     if olddates:
-        for i in range(len(olddates)):
+        for i in range(len(olddates[0])):
             if olddates[0][i]:
                 chosen.append(weekdays[i])
 
@@ -53,7 +53,8 @@ async def editdates(ctx:Context):
 
         await editor_message.edit(view=choicebtns)
 
-    print(chosen)
+    chosen.sort(key = lambda day:weekdays.index(day))
+
     for i in oldchoice:
         if not i in chosen:
             cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", ("",))
@@ -63,19 +64,20 @@ async def editdates(ctx:Context):
         if olddates:
             choiceforday = cs.execute(f"SELECT {i} FROM briefing WHERE user_id=?",
                                       (ctx.author.id,)).fetchall()[0][0][1:-1].replace("'", "").replace(" ", "").split(",")
+
         else:
             choiceforday = []
 
-        button = Buttons.ChooseTime(ctx, choiceforday)
+        button = Buttons.ChooseTime(ctx)
 
         while not button.confirm:
-            button = Buttons.ChooseTime(ctx, choiceforday)
+            button = Buttons.ChooseTime(ctx)
 
             for child in button.children:
                 if child.label in choiceforday:
                     if choiceforday.count(child.label) > 1:
 
-                        choiceforday[:] = [x for x in choiceforday if x != child.label]
+                        choiceforday[:] = [x for x in choiceforday if x != child.label and x]
 
                         child.style = nextcord.ButtonStyle.blurple
 
@@ -85,13 +87,15 @@ async def editdates(ctx:Context):
             await editor_message.edit(content=f"Bitte gib die Zeiten an für:\n\t{i.capitalize()}", view=button)
             await button.wait()
 
-            if not button.confirm:
+            if not button.confirm and button.choice:
                 choiceforday.append(button.choice)
+
+            choiceforday.sort(key=lambda time:int(time.split(":")[0]))
 
         cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday),))
         database.commit()
 
-    await ctx.reply("Änderungen wurden eingetragen")
+    await editor_message.edit(content="Änderungen wurden vorgenommen", view=None)
 
 
 async def edit_classes(ctx:Context):

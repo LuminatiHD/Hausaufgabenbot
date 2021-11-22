@@ -29,7 +29,7 @@ class Stundenplan(commands.Cog):
         zeit = tag.time()
         sf, ef, kf, mint= access(ctx.author)
 
-        if not date.today().weekday() in wochentage:
+        if date.today().weekday()>4:
             await ctx.channel.send("Es ist Wochenende, du hast heute keine Lektionen mehr")
             return
         

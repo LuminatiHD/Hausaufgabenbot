@@ -21,7 +21,6 @@ class Briefing(commands.Cog):
     @commands.command(name="briefing", help="Mit briefing kannst du sagen, ob und wann dir der Bot ein Briefing zur "
                                             "kommenden Woche schickt.")
     async def briefing(self, ctx:Context):
-
         settingsoutput = nextcord.Embed(title="Einstellungen")
         settings = cs.execute("SELECT  mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id=?", (ctx.author.id,)).fetchall()
         if settings:
@@ -42,8 +41,14 @@ class Briefing(commands.Cog):
                 settingsoutput.add_field(name="MINT:", value="Ja")
 
             askbutton = Buttons.BriefingSettings(ctx)
-            await ctx.channel.send(embed=settingsoutput, view=askbutton)
+            output = await ctx.channel.send(embed=settingsoutput, view=askbutton)
             await askbutton.wait()
+
+            for i in askbutton.children:
+                i.disabled = True
+
+            await output.edit(view=askbutton)
+
             if askbutton.choice == "time":
                 await editsettings.editdates(ctx)
 
@@ -53,10 +58,15 @@ class Briefing(commands.Cog):
         else:
             yesno = Buttons.Confirm(ctx)
 
-            await ctx.reply(embed = nextcord.Embed(title="Du hast noch nichts eingestellt",
+            output = await ctx.reply(embed = nextcord.Embed(title="Du hast noch nichts eingestellt",
                                                    description="Möchtest du das ändern?"), view=yesno)
             await yesno.wait()
+
             if yesno.confirm:
+                for i in yesno.children:
+                    i.disabled = True
+                await output.edit(view = yesno)
+
                 await editsettings.editdates(ctx)
                 await editsettings.edit_classes(ctx)
 
