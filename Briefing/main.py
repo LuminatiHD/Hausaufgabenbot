@@ -35,6 +35,7 @@ class Briefing(commands.Cog):
             settingsoutput.add_field(name="SF:", value=access[0])
             settingsoutput.add_field(name="EF:", value=access[1])
             settingsoutput.add_field(name="KF:", value=access[2])
+
             if access[3] == "all":
                 settingsoutput.add_field(name="MINT:", value="Nein")
             else:

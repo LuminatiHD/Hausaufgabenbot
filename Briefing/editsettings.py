@@ -65,6 +65,11 @@ async def editdates(ctx:Context):
             choiceforday = cs.execute(f"SELECT {i} FROM briefing WHERE user_id=?",
                                       (ctx.author.id,)).fetchall()[0][0][1:-1].replace("'", "").replace(" ", "").split(",")
 
+            if not choiceforday[0]:
+                choiceforday = []
+                # we für dä tag nüt iigspicheret isch, de isch d iste läär. schüsch het me problem
+                # dass me när e liste ["", 7:00, 9:00, usw.]  het.
+
         else:
             choiceforday = []
 
@@ -90,7 +95,7 @@ async def editdates(ctx:Context):
             if not button.confirm and button.choice:
                 choiceforday.append(button.choice)
 
-            choiceforday.sort(key=lambda time:int(time.split(":")[0]))
+        choiceforday.sort(key=lambda time:int(time.split(":")[0]))
 
         cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday),))
         database.commit()

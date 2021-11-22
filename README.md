@@ -1,7 +1,9 @@
 # Hausaufgabenbot
 Husibot füre discord server
 
-__HIIWIIS: TÜET BITTE DAS WODER PROGRAMMIERET KOMMENTIERE. SO CHÖISES DIE ANDERE OU EIFACH VERSTAH.__
+- Für dass dr bot runnet brüchet dir es text file namens TOKEN.txt, wo bi eurem code iigspicheret isch. 
+
+HIIWIIS: TÜET BITTE DAS WODER PROGRAMMIERET KOMMENTIERE. SO CHÖISES DIE ANDERE OU EIFACH VERSTAH.
 
 fürs Programm wäri nice weder wüsset wieme mit dr SQLite3-library cha umgah 
 (sqlite isch scho teil vor python standart-library, aso me mues importe aber nid installiere).

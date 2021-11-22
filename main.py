@@ -67,5 +67,5 @@ async def remind():
 async def download_pdf():
     await Webscraping.weeklypdf(client=client)
 
-
-client.run('ODg4MTI0MDc2NjA5MTMwNTY3.YUOIAA.liiiRdLowjlEFTQncyNN9JxNXVY')
+with open("TOKEN.txt", "r") as file:
+    client.run(file.read())
