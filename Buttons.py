@@ -79,7 +79,7 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
 
         for button in self.children:
             label = button.__str__().split(" ")[5].split("=")[1][1:-1]
-            if label not in ["<<", "<", ">", ">>"] and int(label) > len(results) - (currentpage * 5):
+            if label not in ["<<", "<","o", ">", ">>"] and int(label) > len(results) - (currentpage * 5):
                 button.disabled = True
             # wider zum prevente das me out of bounds geit,
             # i däm fau das me nid iwie ds item 4 selected wo gar nid da isch.
@@ -126,6 +126,11 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.currentpage -= 1
             self.left = True
+            self.stop()
+
+    @nextcord.ui.button(label="o", style=nextcord.ButtonStyle.primary)
+    async def endinteraction(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
             self.stop()
 
     @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)

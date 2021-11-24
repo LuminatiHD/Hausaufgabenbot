@@ -43,7 +43,7 @@ def menuoutput(output):
             dic = {"title": i.split("menu-title\">")[1].split("</h2>")[0]}
 
             desc = i.split("menu-description\">")[1].split("</p")[0]\
-                .replace("<br />\n", " ")\
+                .replace("<br />", "\n")\
                 .replace("inkl.", "inkl. ")\
                 .replace("&amp;", "&")
             dic["desc"] = desc
@@ -65,7 +65,7 @@ async def menuweekly(output):
         dic = {"title": i.split("menu-title\">")[1].split("</h2>")[0]}
 
         desc = i.split("menu-description\">")[1].split("</p")[0]\
-            .replace("<br />\n", " ")\
+            .replace("<br />", "\n")\
             .replace("inkl.", "inkl. ")\
             .replace("&amp;", "&")
         dic["desc"] = desc

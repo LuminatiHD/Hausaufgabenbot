@@ -25,6 +25,8 @@ class newItem(commands.Cog):
                            "'exit' oder 'stop' kannst du die Erstellung direkt abbrechen)")
     async def new(self, ctx: Context):
         if self.bot.user != ctx.author and ctx.author not in enteringusers:
+            allaskmessages = []
+
             button = Buttons.TestOrHA(ctx)
             categorymsg = await ctx.reply("welche Kategorie?", view=button)
 
@@ -35,12 +37,15 @@ class newItem(commands.Cog):
                 i.disabled = True
             await categorymsg.edit(view=button)
 
+            allaskmessages.append(categorymsg)
+
             exitcommand = False  # isch da für weme möcht abbräche
             exitoutput = False
 
             error = True
             while error:
-                await ctx.reply("Wann ist der Test oder die Aufgabe fällig?")
+                allaskmessages.append(await ctx.reply("Wann ist der Test oder die Aufgabe fällig?"))
+
                 try:
                     dateraw = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     exitcommand = dateraw.content in ["break", "exit", "stop"] or dateraw.content.startswith("!")
@@ -62,15 +67,17 @@ class newItem(commands.Cog):
                     # fragt nachemne valid input bis ä valid input gäh wird.
 
             if not exitcommand:
-                await ctx.reply("Welches Fach? ")
+                allaskmessages.append(await ctx.reply("Welches Fach? "))
                 fach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 fach = FuncLibrary.changefachname(fach.content)
                 exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
             if category != "Test" and not exitcommand:
-                await ctx.reply("Was zu tun ist: ")
+                allaskmessages.append(await ctx.reply("Was zu tun ist: "))
+
                 aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                 aufgabe = aufgabe.content
+
                 exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
 
             elif not exitcommand:
@@ -78,23 +85,19 @@ class newItem(commands.Cog):
                 asklernziele = await ctx.reply("Schon Lernziele? ", view=yesno)
 
                 await yesno.wait()
+                for i in yesno.children:
+                    i.disabled = True
+
+                await asklernziele.edit(view=yesno)
+                allaskmessages.append(asklernziele)
 
                 if yesno.confirm:
-                    for i in yesno.children:
-                        i.disabled = True
-
-                    await asklernziele.edit(view=yesno)
-
-                    await ctx.reply("Lernziele:")
+                    allaskmessages.append(await ctx.reply("Lernziele:"))
 
                     aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
                     aufgabe = aufgabe.content
                     exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
                 else:
-                    for i in yesno.children:
-                        i.disabled = True
-
-                    await asklernziele.edit(view=yesno)
                     aufgabe = None
 
             elif exitcommand and not exitoutput:
@@ -118,6 +121,8 @@ class newItem(commands.Cog):
 
                 await askaccess_msg.edit(view=manageaccess)
 
+                allaskmessages.append(askaccess_msg)
+
             if not exitcommand:
                 database.cursor().execute(
                     f"INSERT INTO {Itemtable} VALUES (?,?,?,?,?)",
@@ -125,6 +130,8 @@ class newItem(commands.Cog):
                 await ctx.channel.send(f"{category} wurde eingetragen")
                 database.commit()
 
+            for i in allaskmessages:
+                await i.delete()
 
 def setup(client):
     client.add_cog(newItem(client))

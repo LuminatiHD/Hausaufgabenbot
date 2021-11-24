@@ -57,7 +57,8 @@ async def remind():
 
     for i in reminders:
         user =client.get_user(i[0])
-        await user.send(f"Du hast einen Reminder:\n{i[1]}")
+        await user.send(embed = nextcord.Embed(title="Du hast einen Reminder!",
+                                               description=i[1]))
 
     cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute:02}:00", ))
     database.commit()

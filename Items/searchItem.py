@@ -145,7 +145,7 @@ class Itemsearch(commands.Cog):
                                                           (selecteditem[5],))
                                 database.commit()
                                 results.remove(selecteditem)
-                                selection.remove(selecteditem)
+                                selection = results[currentpage * 5:(currentpage + 1) * 5]
                                 await outputmsg.edit(content="Item wurde gelöscht", embed=None, view=None)
 
                         elif selectbtn.edit:
