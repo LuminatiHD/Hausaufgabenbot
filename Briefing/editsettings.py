@@ -100,7 +100,7 @@ async def editdates(ctx:Context):
         cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday),))
         database.commit()
 
-    await editor_message.edit(content="Änderungen wurden vorgenommen", view=None)
+    await editor_message.edit(content="Änderungen wurden vorgenommen", view=None, delete_after=20)
 
 
 async def edit_classes(ctx:Context):
@@ -149,5 +149,5 @@ async def edit_classes(ctx:Context):
     cs.execute(f"UPDATE briefing SET sf=?, ef=?, kf=?, mint=? WHERE user_id = {ctx.author.id}", (sf, ef, kf, mint))
     database.commit()
 
-    await editor.edit(content="Wurde eingetragen", view=None)
+    await editor.edit(content="Wurde eingetragen", view=None, delete_after=20)
 

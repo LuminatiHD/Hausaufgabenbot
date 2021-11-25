@@ -402,6 +402,12 @@ class ChooseTime(nextcord.ui.View):
         self.confirm= False
         self.choice=None
 
+    @nextcord.ui.button(label="6:00", style=nextcord.ButtonStyle.primary, row=1)
+    async def hour_6(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice=button.label
+            self.stop()
+
     @nextcord.ui.button(label="7:00", style=nextcord.ButtonStyle.primary, row=1)
     async def hour_7(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -426,7 +432,7 @@ class ChooseTime(nextcord.ui.View):
             self.choice=button.label
             self.stop()
 
-    @nextcord.ui.button(label="11:00", style=nextcord.ButtonStyle.primary, row=1)
+    @nextcord.ui.button(label="11:00", style=nextcord.ButtonStyle.primary, row=2)
     async def hour_11(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice=button.label
@@ -456,13 +462,37 @@ class ChooseTime(nextcord.ui.View):
             self.choice=button.label
             self.stop()
 
-    @nextcord.ui.button(label="16:00", style=nextcord.ButtonStyle.primary, row=2)
+    @nextcord.ui.button(label="16:00", style=nextcord.ButtonStyle.primary, row=3)
     async def hour_16(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice=button.label
             self.stop()
 
-    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.red, row=3)
+    @nextcord.ui.button(label="17:00", style=nextcord.ButtonStyle.primary, row=3)
+    async def hour_17(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice=button.label
+            self.stop()
+
+    @nextcord.ui.button(label="18:00", style=nextcord.ButtonStyle.primary, row=3)
+    async def hour_18(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice=button.label
+            self.stop()
+
+    @nextcord.ui.button(label="19:00", style=nextcord.ButtonStyle.primary, row=3)
+    async def hour_19(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice=button.label
+            self.stop()
+
+    @nextcord.ui.button(label="20:00", style=nextcord.ButtonStyle.primary, row=3)
+    async def hour_20(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.choice=button.label
+            self.stop()
+
+    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.red, row=4)
     async def confirmbtn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.confirm = True
@@ -585,7 +615,7 @@ class VoteButtons(nextcord.ui.View):
 
 class BriefingSettings(nextcord.ui.View):
     def __init__(self, ctx):
-        super().__init__(timeout = None)
+        super().__init__(timeout = 180)
         self.ctx = ctx
         self.choice = None
 

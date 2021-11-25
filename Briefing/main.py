@@ -45,10 +45,7 @@ class Briefing(commands.Cog):
             output = await ctx.channel.send(embed=settingsoutput, view=askbutton)
             await askbutton.wait()
 
-            for i in askbutton.children:
-                i.disabled = True
-
-            await output.edit(view=askbutton)
+            await output.delete()
 
             if askbutton.choice == "time":
                 await editsettings.editdates(ctx)

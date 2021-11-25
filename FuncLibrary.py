@@ -192,7 +192,7 @@ def outputbriefing(user, ef, sf, kf, mint):
                              inline=False)
 
     else:
-        output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen", inline=False)
+        output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen\n.", inline=False)
 
     currdate = date.today()
     tag = currdate.weekday()
@@ -200,9 +200,9 @@ def outputbriefing(user, ef, sf, kf, mint):
 
     if tag > 4:
         tag = (currdate + (timedelta(7) - timedelta(tag))).weekday() # tag wird ufe mänti gsetzt
-        output.add_field(name="DER STUNDENPLAN VON MONTAG:", value="\ ")
+        output.add_field(name="DER STUNDENPLAN VON MONTAG:", value=".")
     else:
-        output.add_field(name="DER STUNDENPLAN VON HEUTE:", value="\ ")
+        output.add_field(name="DER STUNDENPLAN VON HEUTE:", value=".")
 
     allitems = cs.execute(f"SELECT fach, time, room FROM Stundenplan_23b WHERE weekday = ?" \
                           " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)", \

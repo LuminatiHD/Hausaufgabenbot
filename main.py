@@ -28,6 +28,7 @@ async def on_ready():
         briefing.start()
         remind.start()
         download_pdf.start()
+        smedbullying.start()
     except RuntimeError:
         pass
 
@@ -67,6 +68,12 @@ async def remind():
 @tasks.loop(hours=6)
 async def download_pdf():
     await Webscraping.weeklypdf(client=client)
+
+
+@tasks.loop(hours=1)
+async def smedbullying():
+    """isch nur temporär"""
+    await client.get_user(421756815118958592).send("Du bisch fett lmao")
 
 with open("TOKEN.txt", "r") as file:
     client.run(file.read())
