@@ -67,7 +67,7 @@ class Stundenplan(commands.Cog):
     @commands.command(name = "tagesplan", aliases = ["t", "T"], help="Gibt alle heutigen Lektionen zurück.")
     async def day(self, ctx:Context):
         table = "Stundenplan_23b"
-        currdate = date.today()
+        currdate = (datetime.now()+timedelta(hours=24-17)).date()
         tag = currdate.weekday()
 
         if tag<=4:

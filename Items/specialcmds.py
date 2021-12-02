@@ -103,12 +103,16 @@ class extracmds(commands.Cog):
             await ctx.reply("Nachricht ist zu lang. Darf nur 80 zeichen lang sein.")
 
     @commands.command(name="!stcol")
-    async def test(self, ctx:Context):
+    async def stcol(self, ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())
         liste.sort(key=lambda m:FuncLibrary.StP_colors[m])
         for i in liste:
             await ctx.channel.send(embed=nextcord.Embed(title=i, color=FuncLibrary.StP_colors[i]))
         await ctx.channel.send("done")
+
+    @commands.command(name="!brief")
+    async def briefing(self, ctx:Context):
+        await ctx.channel.send(embed=FuncLibrary.outputbriefing(ctx.author, "all", "all", "all", "all"))
 
     @commands.command(name="!memlist")
     async def members(self,ctx:Context):

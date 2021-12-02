@@ -28,7 +28,7 @@ async def on_ready():
         briefing.start()
         remind.start()
         download_pdf.start()
-        smedbullying.start()
+
     except RuntimeError:
         pass
 
@@ -42,9 +42,10 @@ client.load_extension("Mensa.main")
 
 @tasks.loop(hours = 1)
 async def briefing():
+    zeit = (datetime.now()+timedelta(hours=24-17)).date()
     weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
     users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
-                       f"{weekdays[date.today().weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
+                       f"{weekdays[zeit.weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
     if users:
         for user in users:
             await client.get_user(user[0]).send(embed=FuncLibrary.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
@@ -64,16 +65,14 @@ async def remind():
     cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute:02}:00", ))
     database.commit()
 
+    if zeit.hour%12==0 and zeit.minute==0:
+        await client.get_user(421756815118958592).send("Du bisch fett lmao")
+
 
 @tasks.loop(hours=6)
 async def download_pdf():
     await Webscraping.weeklypdf(client=client)
 
-
-@tasks.loop(hours=1)
-async def smedbullying():
-    """isch nur temporär"""
-    await client.get_user(421756815118958592).send("Du bisch fett lmao")
 
 with open("TOKEN.txt", "r") as file:
     client.run(file.read())

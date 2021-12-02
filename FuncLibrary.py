@@ -167,13 +167,14 @@ def outputbriefing(user, ef, sf, kf, mint):
                                   f"{date.today().day}.{date.today().month}.{str(date.today().year)[2:]} "
                                   f"({datetime.now().hour}:{datetime.now().minute:02})")
 
-    timeset = f"{(date.today()).year}-{(date.today()).month}-{(date.today() + timedelta(days=7)).day}"
+    timeset = date.today()+timedelta(days=7)
     items = cs.execute(f"SELECT * FROM items WHERE datum <= ? AND (access = 'all' " \
                                       f"OR access = ? OR access = ? " \
                                       f"OR access = ? OR access = ?) ORDER BY datum",
                                       (timeset, user.id, sf, ef, kf)).fetchall()
 
-    output.add_field(name="AUFGABEN UND TESTS DIESE WOCHE:", value=f"(Bis {timeset})", inline=False)
+    output.add_field(name="AUFGABEN UND TESTS DIESE WOCHE:",
+                     value=f"(Bis {timeset.day}.{timeset.month}.{timeset.year})", inline=False)
 
     if items:
         for item in items:
@@ -194,15 +195,19 @@ def outputbriefing(user, ef, sf, kf, mint):
     else:
         output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen\n.", inline=False)
 
-    currdate = date.today()
+    currdate = (datetime.now()+timedelta(hours=24-17)).date()
     tag = currdate.weekday()
     wochentage = ["Mo", "Di", "Mi", "Do", "Fr"]
 
     if tag > 4:
         tag = (currdate + (timedelta(7) - timedelta(tag))).weekday() # tag wird ufe mänti gsetzt
-        output.add_field(name="DER STUNDENPLAN VON MONTAG:", value=".")
+        output.add_field(name=".", value="**DER STUNDENPLAN VON MONTAG:**")
+
+    elif currdate == date.today():
+        output.add_field(name=".", value="**DER STUNDENPLAN VON HEUTE:**")
+
     else:
-        output.add_field(name="DER STUNDENPLAN VON HEUTE:", value=".")
+        output.add_field(name=".", value="**DER STUNDENPLAN VON MORGEN**")
 
     allitems = cs.execute(f"SELECT fach, time, room FROM Stundenplan_23b WHERE weekday = ?" \
                           " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)", \
