@@ -9,50 +9,38 @@ def menuoutput(output):
     req = requests.get(url, 'html.parser').text
     weekday = date.today().weekday()
     menuselect = 1
+    output = []
+
     if datetime.now().time() > time(hour=14, minute=30):
         menuselect=2
         weekday = (date.today()+timedelta(1)).weekday()
 
-    if weekday< 8:
-        items = req.split(f"<div id=\"menu-plan-tab{menuselect}")[1].replace("\t", "")\
-                    .split(f"<div id=\"menu-plan-tab{menuselect+1}")[0]\
-                    .split('<div class="menu-item">')[1::]
+    items = req.split(f"<div id=\"menu-plan-tab{menuselect}")[1].replace("\t", "")\
+                .split(f"<div id=\"menu-plan-tab{menuselect+1}")[0]\
+                .split('<div class="menu-item">')[1::]
 
-        for item in items:
-            title = item.split('<h2 class="menu-title">')[1].split("</h2>")[0]
+    for item in items:
+        item = item.replace("&amp;", "&")
+        title = item.split('<h2 class="menu-title">')[1].split("</h2>")[0]
 
-            desc = item.split('<p class="menu-description">')[1].split('</p>')[0]\
-                .replace("<br />\n", " ")\
-                .replace("&amp;", "&")
+        desc = item.split('<p class="menu-description">')[1].split('</p>')[0]\
+            .replace("<br />\n", " ")\
 
-            label = item.split('<div class="menu-prices prices-3">')[1]\
-                .replace("\t", "")\
-                .split('class="menu')[1]
+        label = item.split('<div class="menu-prices prices-3">')[1]\
+            .replace("\t", "")\
+            .split('class="menu')[1]
 
-            if label.startswith("-provenance"):
-                label = label.split('-provenance">')[1].split('</span>')[0]
+        if label.startswith("-provenance"):
+            label = label.split('-provenance">')[1].split('</span>')[0]
 
-            else:
-                label = label.split('-labels">\n\n\n<span class="label label-')[1].split(' has-infobox">')[0]
-            yield {"title": title, "desc":desc, "label":label}
+        else:
+            label = label.split('-labels">\n\n\n<span class="label label-')[1].split(' has-infobox">')[0]
+        output.append({"title": title, "desc":desc, "label":label})
 
+    if output[0]["label"] not in {"vegan", "vegetarian"}:
+        output[0], output[1] = output[1], output[0]
 
-    else:
-        allelements = req.split("\"menu-item\"")[1::]
-        for i in allelements:
-            dic = {"title": i.split("menu-title\">")[1].split("</h2>")[0]}
-
-            desc = i.split("menu-description\">")[1].split("</p")[0]\
-                .replace("<br />", "\n")\
-                .replace("inkl.", "inkl. ")\
-                .replace("&amp;", "&")
-            dic["desc"] = desc
-
-            try:
-                dic["label"] = i.split("menu-labels")[1].split("<p>")[1].split(":<br />")[0]
-            except IndexError:
-                dic["label"] = ""
-            yield dic
+    return output
 
 
 async def menuweekly(output):

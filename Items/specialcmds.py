@@ -25,7 +25,7 @@ class extracmds(commands.Cog):
         else:
             suggestion = ctx.message.content[ctx.message.content.index(" "):]
 
-        if not suggestion.lower() in ["ligma", "sugma", "you suck", "u suck"]:
+        if not suggestion.lower().replace(" ", "") in ["ligma", "sugma", "you suck", "u suck", "ligmaballs"]:
             confirm = await ctx.channel.send("Wird eingetragen...")
             time = datetime.now()
             time = f"{time.hour:02}:{time.minute:02}:{time.second:02}, {time.day:02}.{time.month:02}.{str(time.year)[-2::]}"
@@ -40,46 +40,24 @@ class extracmds(commands.Cog):
         else:
             await ctx.reply("Bro häb frässe")
 
-    @commands.command(name="remindme", aliases=["remind"],
-                      help="Stelle dir einen Reminder. Für die Zeitangabe, gib die Zeit bitte in der Form HH:MM an."
-                           "Der Bot schickt dir dann um diese Uhrzeit einen Reminder.")
-    async def set_reminder(self, ctx:Context):
-        error = True
-        while error:
-            await ctx.reply("Wann willst du erinnert werden (Uhrzeit)?")
-            timemsg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-
-            try:
-                minute = int(timemsg.content.split(':')[1])
-                hour = int(timemsg.content.split(":")[0])
-                zeit = time(hour=hour, minute=minute)
-                error = False
-
-            except IndexError:
-                await ctx.reply("Zeit muss in der Form HH:MM angegeben werden")
-
-            except ValueError:
-                await ctx.reply("Inkorrekte Eingabe")
-
-        await ctx.reply("An was willst du erinnert werden?")
-        reminder = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-
-        cs.execute(f"INSERT INTO reminder VALUES ({int(ctx.author.id)}, ?, ?)", (str(zeit), reminder.content))
-        database.commit()
-
-        await ctx.channel.send("Reminder wurde eingetragen")
-
-    @commands.command(name="poll", help="Mache Polls. Format ist: !poll [test verschieben] [nicht verschieben]")
+    @commands.command(name="poll", help="Mache Polls. Format ist: !poll statement (dauer) [option a] [option b]")
     async def poll(self, ctx:Context):
         try:
+            question = ctx.message.content.split("(")[0][len("!poll"):]
+            duration = ctx.message.content.split("(")[1].split(")")[0]
             optiona = ctx.message.content.split("[")[1].replace("]", "")
             optionb = ctx.message.content.split("[")[2].replace("]", "")
 
-            votebutton = Buttons.VoteButtons(240.0)
+            votebutton = Buttons.VoteButtons(float(duration))
             votebutton.OptA.label=optiona
             votebutton.OptB.label = optionb
-            vote = await ctx.channel.send("Vote time", view=votebutton)
+            vote = await ctx.channel.send(f"{question} ({duration} sekunden)", view=votebutton)
             await votebutton.wait()
+
+            for i in votebutton.children:
+                i.disabled=True
+
+            await vote.edit(view=votebutton)
 
             if votebutton.votes:
                 votecounta, votecountb = list(votebutton.votes.values()).count(optiona), list(votebutton.votes.values()).count(optionb)
@@ -91,7 +69,7 @@ class extracmds(commands.Cog):
                     await vote.reply(f"'{optionb}' hat gewonnen mit {votecountb} zu {votecounta} Punkten!")
 
                 else:
-                    await vote.reply(f"Es ist Gleichstand ({votecounta}:{votecountb}")
+                    await vote.reply(f"Es ist Gleichstand ({votecounta}:{votecountb})")
 
             else:
                 await vote.reply("Niemand hat gewählt")
@@ -100,7 +78,10 @@ class extracmds(commands.Cog):
             await ctx.reply("Invalide syntax. Optionen müssen in der form [A][B] angegeben werden")
 
         except nextcord.errors.HTTPException:
-            await ctx.reply("Nachricht ist zu lang. Darf nur 80 zeichen lang sein.")
+            await ctx.reply("Nachricht ist zu lang. Darf nur 80 Zeichen lang sein.")
+
+        except ValueError:
+            await ctx.reply(f"'{ctx.message.content.split('(')[1].split(')')[0]}' ist keine Zahl")
 
     @commands.command(name="!stcol")
     async def stcol(self, ctx:Context):

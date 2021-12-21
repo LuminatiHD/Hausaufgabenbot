@@ -4,6 +4,7 @@ import nextcord
 import sqlite3
 import Buttons
 from Buttons import ChooseWeekdays, ChooseTime, choose_EF, choose_KF, choose_SF, Confirm
+from datetime import date, datetime, timedelta
 import FuncLibrary
 from Briefing import editsettings
 
@@ -71,3 +72,61 @@ class Briefing(commands.Cog):
 
 def setup(client):
     client.add_cog(Briefing(client))
+
+
+def outputbriefing(user, ef, sf, kf, mint):
+    weekdays = FuncLibrary.weekdays
+    output = nextcord.Embed(title=f"{weekdays[date.today().weekday()]}, "
+                                  f"{date.today().day}.{date.today().month}.{str(date.today().year)[2:]} "
+                                  f"({datetime.now().hour}:{datetime.now().minute:02})")
+
+    timeset = date.today()+timedelta(days=7)
+    items = cs.execute(f"SELECT * FROM items WHERE datum <= ? AND (access = 'all' " \
+                                      f"OR access = ? OR access = ? " \
+                                      f"OR access = ? OR access = ?) ORDER BY datum",
+                                      (timeset, user.id, sf, ef, kf)).fetchall()
+
+    output.add_field(name="AUFGABEN UND TESTS DIESE WOCHE:",
+                     value=f"(Bis {timeset.day}.{timeset.month}.{timeset.year})", inline=False)
+
+    if items:
+        for item in items:
+            desc = item[3]
+            if not desc:  # Wenn man keine Lernziele angegeben hat, dann ist desc=None.
+                desc = "Keine Lernziele"
+
+            elif len(desc) > 20:
+                desc = item[3][:20] + "..."  # wöu schüsch chasch du lernziele ha wo viu ds läng si.
+
+            (year, month, day) = item[0].split("-")
+            itemdate = date(int(year), int(month), int(day))
+            output.add_field(name=f" {item[1].capitalize()} {item[2]}",
+                             value=f" {str(weekdays[itemdate.weekday()])}, "
+                                   f"{day}.{month}.{year}\n {desc}\n ",
+                             inline=False)
+
+    else:
+        output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen.", inline=False)
+
+    currdate = (datetime.now()+timedelta(hours=24-17)).date()
+    tag = currdate.weekday()
+    wochentage = ["Mo", "Di", "Mi", "Do", "Fr"]
+
+    if tag > 4:
+        tag = (currdate + (timedelta(7) - timedelta(tag))).weekday() # tag wird ufe mänti gsetzt
+        output.add_field(name=".", value="**DER STUNDENPLAN VON MONTAG:**")
+
+    elif currdate == date.today():
+        output.add_field(name=".", value="**DER STUNDENPLAN VON HEUTE:**")
+
+    else:
+        output.add_field(name=".", value="**DER STUNDENPLAN VON MORGEN**")
+
+    allitems = cs.execute(f"SELECT fach, time, room FROM Stundenplan_23b WHERE weekday = ?" \
+                          " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)", \
+                          (wochentage[tag], ef, sf, kf, mint)).fetchall()
+
+    allitems.sort(key=lambda elem: elem[1])
+    for i in allitems:
+        output.add_field(name=i[0], value=f"{i[1]}\n{i[2]}", inline=False)
+    return output

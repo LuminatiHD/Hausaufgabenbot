@@ -4,6 +4,7 @@ import sqlite3
 from nextcord.ext import tasks
 from datetime import date, datetime, timedelta, time
 import help_command
+from Briefing import main
 import FuncLibrary
 from Mensa import Webscraping
 
@@ -25,12 +26,15 @@ async def on_ready():
     await client.change_presence(status=nextcord.Status.online)
     print('Ready')
     try: # we sech dr bot mues reconnecte, denn motzter wöuder d tasks scho gstartet het.
-        briefing.start()
         remind.start()
         download_pdf.start()
+        briefing.start()
 
     except RuntimeError:
         pass
+
+    finally:
+        await  client.change_presence(activity=nextcord.Game(name="!help"))
 
 client.load_extension("Items.newItem")
 client.load_extension("Items.searchItem")
@@ -38,17 +42,19 @@ client.load_extension("Items.specialcmds")
 client.load_extension("Stundenplan.main")
 client.load_extension("Briefing.main")
 client.load_extension("Mensa.main")
+client.load_extension("reminders")
 
 
-@tasks.loop(hours = 1)
+@tasks.loop(minutes = 10)
 async def briefing():
-    zeit = (datetime.now()+timedelta(hours=24-17)).date()
-    weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
-    users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
-                       f"{weekdays[zeit.weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
-    if users:
-        for user in users:
-            await client.get_user(user[0]).send(embed=FuncLibrary.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
+    if datetime.now().minute//10 ==0:
+        zeit = (datetime.now()+timedelta(hours=24-17)).date()
+        weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
+        users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
+                           f"{weekdays[zeit.weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
+        if users:
+            for user in users:
+                await client.get_user(user[0]).send(embed=main.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
 
 
 @tasks.loop(seconds=30)

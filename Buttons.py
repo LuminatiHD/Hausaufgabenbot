@@ -625,6 +625,12 @@ class BriefingSettings(nextcord.ui.View):
             self.choice = "time"
             self.stop()
 
+    @nextcord.ui.button(label="o", style=nextcord.ButtonStyle.primary)
+    async def delmsg(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
+        if await testinter(interaction, self.ctx):
+            self.choice = None
+            self.stop()
+
     @nextcord.ui.button(label="Fächer ändern", style=nextcord.ButtonStyle.primary)
     async def edit_classes(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
         if await testinter(interaction, self.ctx):

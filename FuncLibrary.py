@@ -115,7 +115,7 @@ def layout(items, footer):
             tmrw = True
 
         # week_1 teschtet öb ds scho isch vergäh worde, wenn nid de machter das häre
-        elif itemdate <= date.today() + timedelta(7) and not week_1:
+        elif date.today()+timedelta(1)< itemdate <= date.today() + timedelta(7) and not week_1:
             zeit = date.today() + timedelta(7)
             output.add_field(name="__\nBIS NÄCHSTE WOCHE:__",
                              value=f"(Bis zum {zeit.day}.{zeit.month}.{zeit.year})",
@@ -193,7 +193,7 @@ def outputbriefing(user, ef, sf, kf, mint):
                              inline=False)
 
     else:
-        output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen\n.", inline=False)
+        output.add_field(name="Es ist nichts zu tun", value="Du kannst mit !new etwas hinzufügen.", inline=False)
 
     currdate = (datetime.now()+timedelta(hours=24-17)).date()
     tag = currdate.weekday()

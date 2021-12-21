@@ -70,25 +70,26 @@ class Stundenplan(commands.Cog):
         currdate = (datetime.now()+timedelta(hours=24-17)).date()
         tag = currdate.weekday()
 
-        if tag<=4:
-            sf, ef, kf, mint = access(ctx.author)
+        if tag>4:
+            currdate = currdate+timedelta(days=7-tag)
+            tag = 0
 
-            allitems = cs.execute(f"SELECT fach, time, room FROM {table} WHERE weekday = ?"\
-                                  " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)",\
-                                  (wochentage[tag], ef, sf, kf, mint)).fetchall()
 
-            allitems.sort(key=lambda elem:elem[1])
+        sf, ef, kf, mint = access(ctx.author)
 
-            output = nextcord.Embed(title=f"{week[currdate.weekday()]}, {currdate.day}.{currdate.month}.{currdate.year}",
-                                    color=weekcol[tag])
+        allitems = cs.execute(f"SELECT fach, time, room FROM {table} WHERE weekday = ?"\
+                              " AND (access='all' OR access = ? OR access = ? OR access = ? OR access=?)",\
+                              (wochentage[tag], ef, sf, kf, mint)).fetchall()
 
-            for i in allitems:
-                output.add_field(name=i[0], value=f"{i[1]}\n{i[2]}", inline=False)
+        allitems.sort(key=lambda elem:elem[1])
 
-            await ctx.channel.send(embed=output)
+        output = nextcord.Embed(title=f"{week[currdate.weekday()]}, {currdate.day}.{currdate.month}.{currdate.year}",
+                                color=weekcol[tag])
 
-        else:
-            await ctx.channel.send("Es ist Wochenende.")
+        for i in allitems:
+            output.add_field(name=i[0], value=f"{i[1]}\n{i[2]}", inline=False)
+
+        await ctx.channel.send(embed=output)
 
 
 def setup(client):

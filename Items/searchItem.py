@@ -75,7 +75,7 @@ class Itemsearch(commands.Cog):
 
         if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
             buttons = Buttons.PageButtons(results, 0, ctx)
-            outputmsg = await ctx.reply(embed=FuncLibrary.layout(selection,
+            outputmsg = await ctx.channel.send(embed=FuncLibrary.layout(selection,
                                                                  footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                         view=buttons)
 
@@ -117,7 +117,7 @@ class Itemsearch(commands.Cog):
                         selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ",
                                                   color=embedcolor)
 
-                        selected.add_field(name="Aufgabe:", value=selecteditem[3], inline=False)
+                        selected.add_field(name="Aufgabe:", value=selecteditem[3] if selecteditem[3] else "None", inline=False)
                         selected.add_field(name="Zugriff: ", value=access, inline=False)
                         (year, month, day) = selecteditem[0].split("-")
                         selected.set_footer(text=f"Fällig bis: "
