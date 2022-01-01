@@ -17,22 +17,16 @@ class Reminders(commands.Cog):
                       help="Stelle dir einen Reminder. Für die Zeitangabe, gib die Zeit bitte in der Form HH:MM an."
                            "Der Bot schickt dir dann um diese Uhrzeit einen Reminder.")
     async def set_reminder(self, ctx: Context):
-        error = True
-        while error:
-            await ctx.reply("Wann willst du erinnert werden (Uhrzeit)?", delete_after=60)
-            timemsg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+        select = Buttons.TimeForReminder(ctx)
+        timemsg = await ctx.channel.send("Wann willst du erinnert werden (Uhrzeit)?", view=select)
+        await select.wait()
 
-            try:
-                minute = int(timemsg.content.split(':')[1])
-                hour = int(timemsg.content.split(":")[0])
-                zeit = time(hour=hour, minute=minute)
-                error = False
+        await timemsg.delete()
 
-            except IndexError:
-                await ctx.reply("Zeit muss in der Form HH:MM angegeben werden", delete_after=60)
+        if not (select.minute or select.hour):
+            return
 
-            except ValueError:
-                await ctx.reply("Inkorrekte Eingabe", delete_after=180)
+        zeit = f"{select.hour:02}:{select.minute:02}"
 
         await ctx.reply("An was willst du erinnert werden?", delete_after=180)
         reminder = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)

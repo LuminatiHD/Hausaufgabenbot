@@ -83,6 +83,17 @@ class extracmds(commands.Cog):
         except ValueError:
             await ctx.reply(f"'{ctx.message.content.split('(')[1].split(')')[0]}' ist keine Zahl")
 
+    @commands.command(name="!test")
+    async def test(self, ctx:Context):
+        menu = Buttons.ChooseDatum(ctx)
+        menumsg = await ctx.channel.send("test", view=menu)
+        while not menu.over:
+            menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
+            await menumsg.edit(view=menu)
+            await menu.wait()
+
+        print(menu.day, menu.month, menu.year)
+
     @commands.command(name="!stcol")
     async def stcol(self, ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())

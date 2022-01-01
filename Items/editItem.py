@@ -16,6 +16,11 @@ async def editItem(self, ctx, selecteditem, editor):
     await editor.edit(view=editorbtn)
     await editorbtn.wait()
 
+    for i in editorbtn.children:
+        i.disabled = True
+
+    await editor.edit(view=editorbtn)
+
     if "kategorie" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -39,6 +44,7 @@ async def editItem(self, ctx, selecteditem, editor):
             database.cursor().execute(
                 f"UPDATE {Itemtable} SET kategorie = ? WHERE rowid = ?",
                 (newcategory, selecteditem[5]))
+            database.commit()
 
     elif "aufgabe" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
@@ -46,13 +52,14 @@ async def editItem(self, ctx, selecteditem, editor):
             confirm = Buttons.Confirm(ctx)
             await ctx.reply("Aufgabe: ")
             newaufg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-            confirmmsg = await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}.\nBestätigen?",
+            confirmmsg = await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}\nBestätigen?",
                                 view=confirm)
             await confirm.wait()
             await confirmmsg.delete()
         database.cursor().execute(
             f"UPDATE {Itemtable} SET aufgabe = ? WHERE rowid = ?",
             (newaufg.content, selecteditem[5]))
+        database.commit()
 
     elif "datum" in editorbtn.edit:
         error = True
@@ -98,6 +105,8 @@ async def editItem(self, ctx, selecteditem, editor):
         database.cursor().execute(
             f"UPDATE {Itemtable} SET fach = ? WHERE rowid = ?",
             (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
+        database.commit()
+
     elif "access" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -117,6 +126,7 @@ async def editItem(self, ctx, selecteditem, editor):
                 access = ctx.author.id
         database.cursor().execute(
             f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = ?", (selecteditem[5],))
+        database.commit()
 
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()

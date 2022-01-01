@@ -85,6 +85,6 @@ async def weeklypdf(client):
     for i in pages:
         i.save("Mensa/menu.png")
 
-    await client.change_presence(activity=nextcord.Game("Menu-PDF auf aktuellem Stand."))
+    await client.change_presence(activity=nextcord.Game("Download complete."))
 
     return "menu.png"

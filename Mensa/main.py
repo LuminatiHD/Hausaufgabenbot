@@ -26,41 +26,49 @@ class Menu(commands.Cog):
         menu = nextcord.Embed(title=f"{wochentage[datum.weekday()]}, "
                                     f"{datum.day}.{datum.month}.{datum.year}",
                               colour = embedcol[datum.weekday()])
+        try:
+            for item in Webscraping.menuoutput(output):
+                title = f"{item['title']}"
+                if item["label"] in ["vegan", "vegetarian"]:
+                    if item["label"] == "vegetarian":
+                        item["label"] = "vegetarisch"
+                    title +=f" ({item['label'].upper()})"
+                menu.add_field(name=title, value=item["desc"])
 
-        for item in Webscraping.menuoutput(output):
-            title = f"{item['title']}"
-            if item["label"] in ["vegan", "vegetarian"]:
-                if item["label"] == "vegetarian":
-                    item["label"] = "vegetarisch"
-                title +=f" ({item['label'].upper()})"
-            menu.add_field(name=title, value=item["desc"])
+            await ctx.channel.send(embed=menu)
+            await output.delete()
 
-        await ctx.channel.send(embed=menu)
-        await output.delete()
+        except IndexError:
+            await output.edit(content="Es wurde kein Menu gefunden, wahrscheinlich sind Ferien")
 
     @commands.command(name = "wochenplan", aliases=["Wochenplan", "wp", "WP"], help="Gibt das Menu der momentanen Woche zurück")
     async def weekly(self, ctx:Context):
         datum = date.today()
         output = await ctx.channel.send("Einen Moment...")
         weekm = await Webscraping.menuweekly(output)
-        await output.edit(content="Verarbeitung komplett...")
-        for i in range(len(weekm)//3):
-            length = len(weekm)//3
-            elem = await ctx.channel.send(f"Element {i+1}/{length+1}")
 
-            if datum.weekday() >4:
-                datum = datum+(timedelta(7)-timedelta(datum.weekday()))
+        if weekm:
+            await output.edit(content="Verarbeitung komplett...")
+            for i in range(len(weekm)//3):
+                length = len(weekm)//3
+                elem = await ctx.channel.send(f"Element {i+1}/{length+1}")
 
-            menuoutput = nextcord.Embed(title=f"{wochentage[datum.weekday()%5]}, {datum.day}.{datum.month}.{datum.year}",
-                                        color=embedcol[datum.weekday()%5])
+                if datum.weekday() >4:
+                    datum = datum+(timedelta(7)-timedelta(datum.weekday()))
 
-            for item in weekm[3*i:3*(i+1)]:
-                menuoutput.add_field(name=f"{item['title']} ({item['label'].upper()})" if item["label"] else f"{item['title']}", value=item["desc"])
+                menuoutput = nextcord.Embed(title=f"{wochentage[datum.weekday()%5]}, {datum.day}.{datum.month}.{datum.year}",
+                                            color=embedcol[datum.weekday()%5])
 
-            await elem.edit(content=None, embed=menuoutput)
-            datum = datum + timedelta(1)
+                for item in weekm[3*i:3*(i+1)]:
+                    menuoutput.add_field(name=f"{item['title']} ({item['label'].upper()})" if item["label"] else f"{item['title']}", value=item["desc"])
 
-        await output.delete()
+                await elem.edit(content=None, embed=menuoutput)
+                datum = datum + timedelta(1)
+
+            await output.delete()
+
+        else:
+            await output.edit(content="Es sind Ferien")
 
     @commands.command(name = "wochepdf", aliases=["Wocheypdf", "wpdf", "WPDF", "Wpdf"],
                       help="Gibt ein PDF des momentanen Mensa-Wochenplan zurück.")

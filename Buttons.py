@@ -1,6 +1,9 @@
 import nextcord
 from nextcord.ext.commands.context import Context
+from datetime import date
 
+
+maxdayspermonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 async def testinter(interaction, ctx):
     if interaction.user != ctx.author:
@@ -636,3 +639,115 @@ class BriefingSettings(nextcord.ui.View):
         if await testinter(interaction, self.ctx):
             self.choice = "classes"
             self.stop()
+
+
+class Dropdown(nextcord.ui.Select):
+    def __init__(self):
+        options = [nextcord.SelectOption(label=str(i)) for i in range(1, 25)]
+        super().__init__(placeholder="ur mom:", max_values=1, min_values=1, options=options)
+
+
+class DayDropdown(nextcord.ui.Select):
+    def __init__(self, menu, day):
+        self.menu = menu
+
+        if day is None or day == "24-" or day<"25":
+            options = [nextcord.SelectOption(label=str(i)) for i in range(1, 25)] \
+                      + [nextcord.SelectOption(label="25+", description="Man kann nur 25 Optionen Max haben")]
+        else:
+            options = [nextcord.SelectOption(label="24-")]+\
+                      [nextcord.SelectOption(label=str(i)) for i in range(25, maxdayspermonth[date.today().month-1])] \
+
+
+        super().__init__(placeholder="Tag:", max_values=1, min_values=1, options=options)
+
+    async def callback(self, interaction: nextcord.Interaction):
+        self.menu.day = self.values[0]
+        if self.values[0] == "25+" or self.values[0] == "24-":
+            self.menu.day == None
+            self.menu.stop()
+
+
+class TimeForReminder(nextcord.ui.View):
+    def __init__(self, ctx):
+        self.ctx = ctx
+        super().__init__(timeout = 120)
+
+        self.hour = None
+        self.minute = None
+
+        hours = Dropdown()
+        hours.placeholder = "Stunden"
+        hours.options = [nextcord.SelectOption(label=str(i%24)) for i in range(7, 24+7)]
+        hours.custom_id = "hour"
+
+        minutes = Dropdown()
+        minutes.placeholder = "Minuten"
+        minutes.options = [nextcord.SelectOption(label=str(i)) for i in range(0, 60, 3)]
+        minutes.custom_id = "minute"
+
+        self.add_item(hours)
+        self.add_item(minutes)
+
+    @nextcord.ui.button(label="bestätigen", style=nextcord.ButtonStyle.primary)
+    async def confirm(self, button:nextcord.Button, interaction:nextcord.Interaction):
+        if await testinter(interaction, self.ctx) and self.children[1].values and self.children[2].values:
+            self.hour = int(self.children[1].values[0])
+            self.minute = int(self.children[2].values[0])
+            self.stop()
+
+    @nextcord.ui.button(label="zurück", style=nextcord.ButtonStyle.red)
+    async def exit(self, button:nextcord.Button, interaction:nextcord.Interaction):
+        self.stop()
+
+
+class ChooseDatum(nextcord.ui.View):
+    def __init__(self, ctx, day=None, month=None, year=None):
+        self.ctx = ctx
+        self.update = True
+        self.over = False
+        super().__init__(timeout = 120)
+
+        self.day = day
+        self.month = month
+        self.year = year
+
+        dayselect = DayDropdown(self, self.day)
+        dayselect.custom_id = "day"
+
+        monthselect = Dropdown()
+        monthselect.placeholder = "Monat:"
+        monthselect.options = [nextcord.SelectOption(label=str(i)) for i in range(1, 13)]
+        monthselect.custom_id = "month"
+
+        yearselect = Dropdown()
+        yearselect.placeholder = "Jahr:"
+        yearselect.options = [nextcord.SelectOption(label=str(i)) for i in range(date.today().year, date.today().year+3)]
+        yearselect.custom_id = "year"
+
+        self.add_item(dayselect)
+        self.add_item(monthselect)
+        self.add_item(yearselect)
+
+    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.primary)
+    async def confirm(self, button: nextcord.Button, interaction: nextcord.Interaction):
+
+        if await testinter(interaction, self.ctx) and all(i.values for i in self.children if
+                                                          type(i) == Dropdown or type(i) == DayDropdown):
+
+            for i in self.children:
+                if i.custom_id == "day":
+                    self.day = i.values[0]
+
+                elif i.custom_id == "month":
+                    self.month = i.values[0]
+
+                elif i.custom_id == "year":
+                    self.year = i.values[0]
+
+            self.over = True
+            self.stop()
+
+    @nextcord.ui.button(label="zurück", style=nextcord.ButtonStyle.red)
+    async def exit(self, button: nextcord.Button, interaction: nextcord.Interaction):
+        self.stop()

@@ -20,6 +20,16 @@ intents = nextcord.Intents.all()  # ohni ds dörfti dr bot nid user nach id bech
 client = commands.Bot(command_prefix='!', intents=intents)# , help_command= CustomHelpCommand()
 client.help_command = help_command.Help()
 
+with open("TOKEN.txt", "r") as file:
+    a = input("Main [0] or Test [1]? ")
+    if a == "0":
+        BOT_TOKEN = file.readlines()[0][len("main: "):]
+
+    else:
+        BOT_TOKEN = file.readlines()[1][len("test: "):]
+
+TEST_OR_MAIN = lambda m: a
+
 
 @client.event
 async def on_ready():
@@ -78,7 +88,7 @@ async def remind():
 @tasks.loop(hours=6)
 async def download_pdf():
     await Webscraping.weeklypdf(client=client)
+    await client.change_presence(activity=nextcord.Game(name="!help"))
 
 
-with open("TOKEN.txt", "r") as file:
-    client.run(file.read())
+client.run(BOT_TOKEN)

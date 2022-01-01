@@ -88,6 +88,7 @@ def changefachname(fach):  # so isches übersichtlecher
 
 
 def layout(items, footer):
+    i = 1
     today = False
     tmrw = False
     week_1 = False
@@ -153,12 +154,13 @@ def layout(items, footer):
         elif len(desc) > 30:
             desc = item[3][:30]+"..."  # wöu schüsch chasch du lernziele ha wo viu ds läng si.
 
-        output.add_field(name=f" {item[1].capitalize()} {item[2]}",
+        output.add_field(name=f"{i}: {item[1].capitalize()} {item[2]}",
                          value=f" {str(weekdays[itemdate.weekday()])}, "
                                f"{day}.{month}.{year}\n {desc}\n ",
                          inline=False)
 
         output.set_footer(text=footer)
+        i+=1
     return output
 
 
