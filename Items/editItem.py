@@ -21,6 +21,7 @@ async def editItem(self, ctx, selecteditem, editor):
 
     await editor.edit(view=editorbtn)
 
+# ============================================== KATEGORIE ==============================================
     if "kategorie" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -46,6 +47,7 @@ async def editItem(self, ctx, selecteditem, editor):
                 (newcategory, selecteditem[5]))
             database.commit()
 
+# ============================================== AUFGABE ==============================================
     elif "aufgabe" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -61,35 +63,56 @@ async def editItem(self, ctx, selecteditem, editor):
             (newaufg.content, selecteditem[5]))
         database.commit()
 
+# ============================================== DATUM ==============================================
     elif "datum" in editorbtn.edit:
-        error = True
         confirm = Buttons.Confirm(ctx)
-        while error and not confirm.confirm:
+
+        while not confirm.confirm:
+
             confirm = Buttons.Confirm(ctx)
-            await ctx.message.reply("Wann ist der Test oder die Aufgabe fällig?")
-            try:
-                dateraw = await self.bot.wait_for("message",
-                                                  check=lambda msg: msg.author == ctx.author)
-                datum = datetime.date(int(dateraw.content.split(".")[2]),
-                                          int(dateraw.content.split(".")[1]),
-                                          int(dateraw.content.split(".")[0]))
 
-                olddatum = datetime.date(int(selecteditem[0].split("-")[0]),
-                                         int(selecteditem[0].split("-")[1]),
-                                         int(selecteditem[0].split("-")[2]))
+            menu = Buttons.ChooseDatum(ctx)
 
-                confirmmsg = await dateraw.reply(f"Altes Datum: {olddatum.day}.{olddatum.month}.{olddatum.year}"
-                                    f"\nNeues Datum: {datum.day}.{datum.month}.{datum.year}\nBestätigen?", view=confirm)
-                await confirm.wait()
-                await confirmmsg.delete()
-                error = False
-            except (ValueError, TypeError, IndexError):
-                await ctx.reply("ungültiges Datum")
-                continue
+            await editor.edit("Wann ist der Test oder die Aufgabe fällig?", view=menu)
 
-        database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
-                                  (datum, selecteditem[5]))
+            while not menu.over:
+                menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
 
+                await editor.edit(view=menu)
+                await menu.wait()
+                if menu.exit:
+                    break
+
+            if menu.exit:
+                await editor.delete()
+                break
+
+            for i in menu.children:
+                i.disabled = True
+
+            await editor.edit(view=menu)
+
+            datum = datetime.date(int(menu.year), int(menu.month), int(menu.day))
+
+            olddatum = datetime.date(int(selecteditem[0].split("-")[0]),
+
+                                     int(selecteditem[0].split("-")[1]),
+
+                                     int(selecteditem[0].split("-")[2]))
+
+            confirmmsg = await ctx.reply(f"Altes Datum: {olddatum.day}.{olddatum.month}.{olddatum.year}"
+        
+                                         f"\nNeues Datum: {datum.day}.{datum.month}.{datum.year}\nBestätigen?", view=confirm)
+
+            await confirm.wait()
+
+        if not menu.exit:
+            database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
+                                      (str(datum), selecteditem[5]))
+            database.commit()
+            await confirmmsg.delete()
+
+# ============================================== FACH ==============================================
     elif "fach" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -107,6 +130,7 @@ async def editItem(self, ctx, selecteditem, editor):
             (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
         database.commit()
 
+# ============================================== ACCESS ==============================================
     elif "access" in editorbtn.edit:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
@@ -128,8 +152,9 @@ async def editItem(self, ctx, selecteditem, editor):
             f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = ?", (selecteditem[5],))
         database.commit()
 
+# ============================================== CLEANUP ==============================================
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()
-        await ctx.channel.send("Änderungen wurden vorgenommen")
+        await ctx.channel.send("Gegebene Änderungen wurden vorgenommen")
     else:
         await ctx.channel.send("Editng-mode wird verlassen")

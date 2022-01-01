@@ -34,6 +34,8 @@ class Itemsearch(commands.Cog):
         timeset = str(date.today())
         bfore_or_after = ">="
 
+
+# =========================================== PERMISSIONS ===========================================
         if search.startswith("bis") or search.startswith("ab"):
             timeset = search[len("ab "):].split(", ")[0].split(".")
             try:
@@ -58,6 +60,8 @@ class Itemsearch(commands.Cog):
                                           f"OR access = ? OR access = ?) ORDER BY datum",
                                           (timeset, ctx.author.id, sf, ef, kf)).fetchall()
 
+
+# =========================================== ITEMSUCHE ===========================================
         if search == "":
             search = None
         # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
@@ -73,6 +77,7 @@ class Itemsearch(commands.Cog):
         currentpage = 0
         selection = results[:5]
 
+# =========================================== ERSTE SEITE ===========================================
         if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
             buttons = Buttons.PageButtons(results, 0, ctx)
             outputmsg = await ctx.channel.send(embed=FuncLibrary.layout(selection,
@@ -81,7 +86,9 @@ class Itemsearch(commands.Cog):
 
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
                 if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
+
                     buttons = Buttons.PageButtons(results, currentpage, ctx)
+
                     await outputmsg.edit(embed=FuncLibrary.layout(selection,
                                                                          footer=f"Seite {currentpage+1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                                 view=buttons)
@@ -89,7 +96,7 @@ class Itemsearch(commands.Cog):
                     # dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
                     await buttons.wait()
 
-                    # luegt öb ä pagetaschte isch drücket worde. schüsch weiser dasme möcht selecte.
+# =========================================== BLÄTTERN ===========================================
                     if buttons.left or buttons.right:
                         currentpage = buttons.currentpage
 
@@ -100,6 +107,8 @@ class Itemsearch(commands.Cog):
                         await outputmsg.edit(embed=FuncLibrary.layout(selection,
                                              footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                              view=buttons)
+
+# =========================================== AUSWAHL ===========================================
 
                     elif buttons.select >-1:
                         selecteditem = selection[buttons.select]
@@ -134,6 +143,8 @@ class Itemsearch(commands.Cog):
                             await outputmsg.edit(embed=FuncLibrary.layout(selection,
                                                  footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                                  view=buttons)
+
+# =========================================== LÖSCHEN ===========================================
                         elif selectbtn.delete:
                             confirm = Buttons.Confirm(ctx)
                             await outputmsg.edit(content="Willst du wirklich das Item löschen?", embed=None, view=confirm)
@@ -146,6 +157,9 @@ class Itemsearch(commands.Cog):
                                 database.commit()
 
                                 results.remove(selecteditem)
+                                if currentpage + 1 > int(len(results) / 5) + (len(results) % 5 > 0):
+                                    currentpage -= 1  # bugfix das weme ds letschte item ufere site löschet daser nit crashet
+
                                 selection = results[currentpage * 5:(currentpage + 1) * 5]
                                 await outputmsg.edit(content="Item wurde gelöscht", embed=None, view=None)
 

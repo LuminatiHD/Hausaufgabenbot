@@ -14,8 +14,6 @@ tablecategories = ("datum", "kagegorie", "fach", "aufgabe", "access")
 
 database = sqlite3.connect(Itemfile)
 
-enteringusers = []  # da drmit sech d lüt nid gägesiitig düe sache gäh
-
 
 class newItem(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -24,7 +22,7 @@ class newItem(commands.Cog):
     @commands.command(help="Trage neue Elemente ein. Die kann man mit 'todo' ansehen und bearbeiten. (Tipp: Mit "
                            "'exit' oder 'stop' kannst du die Erstellung direkt abbrechen)")
     async def new(self, ctx: Context):
-        if self.bot.user != ctx.author and ctx.author not in enteringusers:
+        if self.bot.user != ctx.author:
             allaskmessages = []
 
             button = Buttons.TestOrHA(ctx)
@@ -42,29 +40,25 @@ class newItem(commands.Cog):
             exitcommand = False  # isch da für weme möcht abbräche
             exitoutput = False
 
-            error = True
-            while error:
-                allaskmessages.append(await ctx.reply("Wann ist der Test oder die Aufgabe fällig?"))
+# ====================================== DATUM ==================================================
+            menu = Buttons.ChooseDatum(ctx)
+            menumsg = await ctx.channel.send("Wann ist der Test oder die Aufgabe fällig?", view=menu)
+            allaskmessages.append(menumsg)
 
-                try:
-                    dateraw = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
-                    exitcommand = dateraw.content in ["break", "exit", "stop"] or dateraw.content.startswith("!")
+            while not menu.over:
+                menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
+                await menumsg.edit(view=menu)
+                await menu.wait()
 
-                    if exitcommand:
-                        await ctx.reply("Erstellung wird abgebrochen")
-                        exitoutput = True
-                        error = False
-                        break
+            exitcommand = menu.exit
 
-                    date = str(datetime.date(int(dateraw.content.split(".")[2]),
-                                             int(dateraw.content.split(".")[1]),
-                                             int(dateraw.content.split(".")[0])))
-                    # datetime.date nimmt daten nur in der Form YY/MM/DD an
-                    error = False
-                except (ValueError, IndexError):  # IndexError wöu ja dr input no gsplittet und indexet wird.
-                    await ctx.reply("ungültiges Datum")
-                    continue
-                    # fragt nachemne valid input bis ä valid input gäh wird.
+            for i in menu.children:
+                i.disabled = True
+            await menumsg.edit(view=menu)
+
+            date = f"{menu.year}-{menu.month:02}-{menu.day:02}"
+
+# ======================================== FACH =========================================================
 
             if not exitcommand:
                 allaskmessages.append(await ctx.reply("Welches Fach? "))
@@ -72,6 +66,7 @@ class newItem(commands.Cog):
                 fach = FuncLibrary.changefachname(fach.content)
                 exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
+# ======================================== AUFGABE =========================================================
             if category != "Test" and not exitcommand:
                 allaskmessages.append(await ctx.reply("Was zu tun ist: "))
 
@@ -101,8 +96,9 @@ class newItem(commands.Cog):
                     aufgabe = None
 
             elif exitcommand and not exitoutput:
-                await ctx.reply("Erstellung wird abgebrochen")
+                await ctx.channel.send("Erstellung wird abgebrochen")
 
+# ========================================= ACCESS =======================================
             if not exitcommand:
                 manageaccess = Buttons.ManageItemAccess(ctx)
                 askaccess_msg = await ctx.reply("Für wen soll dieses Item sichtbar sein?", view=manageaccess)
@@ -123,6 +119,7 @@ class newItem(commands.Cog):
 
                 allaskmessages.append(askaccess_msg)
 
+# ====================================== EINTRAGEN =====================================
             if not exitcommand:
                 database.cursor().execute(
                     f"INSERT INTO {Itemtable} VALUES (?,?,?,?,?)",
@@ -130,8 +127,10 @@ class newItem(commands.Cog):
                 await ctx.channel.send(f"{category} wurde eingetragen")
                 database.commit()
 
+# ======================================== CLEANUP ==========================================
             for i in allaskmessages:
                 await i.delete()
+
 
 def setup(client):
     client.add_cog(newItem(client))

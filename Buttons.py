@@ -5,6 +5,7 @@ from datetime import date
 
 maxdayspermonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
+
 async def testinter(interaction, ctx):
     if interaction.user != ctx.author:
         await interaction.response.send_message("Du kannst dieses Dialogfeld nicht benutzen", ephemeral=True)
@@ -703,6 +704,7 @@ class TimeForReminder(nextcord.ui.View):
 
 class ChooseDatum(nextcord.ui.View):
     def __init__(self, ctx, day=None, month=None, year=None):
+        self.exit = False
         self.ctx = ctx
         self.update = True
         self.over = False
@@ -745,9 +747,12 @@ class ChooseDatum(nextcord.ui.View):
                 elif i.custom_id == "year":
                     self.year = i.values[0]
 
+            self.exit = False
             self.over = True
             self.stop()
 
-    @nextcord.ui.button(label="zurück", style=nextcord.ButtonStyle.red)
+    @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red)
     async def exit(self, button: nextcord.Button, interaction: nextcord.Interaction):
+        self.over = True
+        self.exit=True
         self.stop()

@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta, time
 Itemfile = "ItemFiles.db"
 database = sqlite3.connect(Itemfile)
 cs = database.cursor()
+Itemtable = "items"
 
 
 class extracmds(commands.Cog):
@@ -85,14 +86,8 @@ class extracmds(commands.Cog):
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
-        menu = Buttons.ChooseDatum(ctx)
-        menumsg = await ctx.channel.send("test", view=menu)
-        while not menu.over:
-            menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
-            await menumsg.edit(view=menu)
-            await menu.wait()
+        pass
 
-        print(menu.day, menu.month, menu.year)
 
     @commands.command(name="!stcol")
     async def stcol(self, ctx:Context):
