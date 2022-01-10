@@ -163,6 +163,7 @@ class Itemsearch(commands.Cog):
                                 selection = results[currentpage * 5:(currentpage + 1) * 5]
                                 await outputmsg.edit(content="Item wurde gelöscht", embed=None, view=None)
 
+# ============================================= EDITIEREN ====================================================
                         elif selectbtn.edit:
                             await editItem(self, ctx, selecteditem, outputmsg)
                             break
@@ -173,13 +174,13 @@ class Itemsearch(commands.Cog):
                         break
                 else:
                     try:
-                        await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None)
+                        await outputmsg.edit(content="Keine Resultate gefunden.", embed=None, view=None, delete_after=60)
                         break
                     except UnboundLocalError:
-                        await ctx.reply(content="Keine Resultate gefunden.")
+                        await ctx.reply(content="Keine Resultate gefunden.", delete_after=60)
                         break
         else:
-            await ctx.reply(content="Keine Resultate gefunden oder keine vorhanden.")
+            await ctx.reply(content="Keine Resultate gefunden oder keine vorhanden.", delete_after=60)
 
 
 def setup(client):

@@ -54,9 +54,11 @@ class newItem(commands.Cog):
 
             for i in menu.children:
                 i.disabled = True
+
             await menumsg.edit(view=menu)
 
-            date = f"{menu.year}-{menu.month:02}-{menu.day:02}"
+            if not exitcommand:
+                date = f"{menu.year}-{int(menu.month):02}-{int(menu.day):02}"
 
 # ======================================== FACH =========================================================
 

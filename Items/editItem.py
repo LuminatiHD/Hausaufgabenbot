@@ -72,12 +72,10 @@ async def editItem(self, ctx, selecteditem, editor):
             confirm = Buttons.Confirm(ctx)
 
             menu = Buttons.ChooseDatum(ctx)
-
             await editor.edit("Wann ist der Test oder die Aufgabe fällig?", view=menu)
 
             while not menu.over:
                 menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
-
                 await editor.edit(view=menu)
                 await menu.wait()
                 if menu.exit:
@@ -105,12 +103,13 @@ async def editItem(self, ctx, selecteditem, editor):
                                          f"\nNeues Datum: {datum.day}.{datum.month}.{datum.year}\nBestätigen?", view=confirm)
 
             await confirm.wait()
+            await confirmmsg.delete()
 
         if not menu.exit:
             database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
                                       (str(datum), selecteditem[5]))
             database.commit()
-            await confirmmsg.delete()
+
 
 # ============================================== FACH ==============================================
     elif "fach" in editorbtn.edit:
@@ -158,3 +157,4 @@ async def editItem(self, ctx, selecteditem, editor):
         await ctx.channel.send("Gegebene Änderungen wurden vorgenommen")
     else:
         await ctx.channel.send("Editng-mode wird verlassen")
+    await editor.delete()

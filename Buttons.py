@@ -509,7 +509,6 @@ class choose_SF(nextcord.ui.View):
         self.ctx = ctx
         self.sf = 'all'
 
-
     @nextcord.ui.button(label="PAM", style=nextcord.ButtonStyle.primary)
     async def pam(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
@@ -652,20 +651,19 @@ class DayDropdown(nextcord.ui.Select):
     def __init__(self, menu, day):
         self.menu = menu
 
-        if day is None or day == "24-" or day<"25":
+        if day is None or day == "<25" or day<"25":
             options = [nextcord.SelectOption(label=str(i)) for i in range(1, 25)] \
-                      + [nextcord.SelectOption(label="25+", description="Man kann nur 25 Optionen Max haben")]
+                      + [nextcord.SelectOption(label=">24", description="Discord erlaubt nur 25 Optionen max")]
         else:
-            options = [nextcord.SelectOption(label="24-")]+\
-                      [nextcord.SelectOption(label=str(i)) for i in range(25, maxdayspermonth[date.today().month-1])] \
+            options = [nextcord.SelectOption(label="<25")]+\
+                      [nextcord.SelectOption(label=str(i)) for i in range(25, 32)] \
 
 
         super().__init__(placeholder="Tag:", max_values=1, min_values=1, options=options)
 
     async def callback(self, interaction: nextcord.Interaction):
         self.menu.day = self.values[0]
-        if self.values[0] == "25+" or self.values[0] == "24-":
-            self.menu.day == None
+        if self.values[0] == ">24" or self.values[0] == "<25":
             self.menu.stop()
 
 
@@ -731,7 +729,7 @@ class ChooseDatum(nextcord.ui.View):
         self.add_item(monthselect)
         self.add_item(yearselect)
 
-    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.primary, custom_id = "confirm")
     async def confirm(self, button: nextcord.Button, interaction: nextcord.Interaction):
 
         if await testinter(interaction, self.ctx) and all(i.values for i in self.children if
@@ -739,20 +737,27 @@ class ChooseDatum(nextcord.ui.View):
 
             for i in self.children:
                 if i.custom_id == "day":
-                    self.day = i.values[0]
+                    self.day = int(i.values[0])
 
                 elif i.custom_id == "month":
-                    self.month = i.values[0]
+                    self.month = int(i.values[0])
 
                 elif i.custom_id == "year":
-                    self.year = i.values[0]
+                    self.year = int(i.values[0])
+
+            if int(self.day) > maxdayspermonth[int(self.month)-1]:
+                self.day = maxdayspermonth[int(self.month)-1]
+                if int(self.month) == 2 and not (self.year%4==0
+                                                 and not (self.year%100==0
+                                                          and not (self.year%400==0))):
+                    self.day = 28
 
             self.exit = False
             self.over = True
             self.stop()
 
-    @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red)
-    async def exit(self, button: nextcord.Button, interaction: nextcord.Interaction):
+    @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red, custom_id="exit")
+    async def goback(self, button: nextcord.Button, interaction: nextcord.Interaction):
         self.over = True
-        self.exit=True
+        self.exit = True
         self.stop()

@@ -1,6 +1,8 @@
 import nextcord
 from datetime import timedelta, date, datetime
 import sqlite3
+import covid_despair
+
 Itemfile = "ItemFiles.db"
 database = sqlite3.connect(Itemfile)
 cs = database.cursor()
@@ -219,3 +221,26 @@ def outputbriefing(user, ef, sf, kf, mint):
     for i in allitems:
         output.add_field(name=i[0], value=f"{i[1]}\n{i[2]}", inline=False)
     return output
+
+
+async def covid_embed(channel, delete_after):
+    all_data = list(i for i in covid_despair.get_cases())
+    buttons = nextcord.ui.View()
+    graph_name = covid_despair.get_graph()
+    buttons.add_item(nextcord.ui.Button(label="Source [1]",
+                                        url="https://www.covid19.admin.ch/de/overview"))
+    buttons.add_item(nextcord.ui.Button(label="Source [2]\n",
+                                        url="https://www.worldometers.info/coronavirus/"))
+
+    embed = nextcord.Embed(title="+++COVID-NEWS+++", description=f"Stand {all_data[8]}", color=0xfff700) \
+        .add_field(name="SCHWEIZ:", value=f"**Cases**: {all_data[0]} [2] "
+                                          f"(+{all_data[2]} [1])\n"
+                                          f"**Tode:**: {all_data[1]} [2] "
+                                          f"(+{all_data[3]} [1])", inline=False) \
+        .add_field(name="WELTWEIT:", value=f"**Cases**: {all_data[4]} [2] "
+                                           f"(+{all_data[6]} [2])\n"
+                                           f"**Tode:**: {all_data[5]} [2] "
+                                           f"(+{all_data[7]} [2])", inline=False) \
+        .set_image(url=f"attachment://{graph_name}")
+    await channel.send(content=None, embed=embed, view=buttons, file=nextcord.File(graph_name),
+                       delete_after=delete_after)

@@ -21,25 +21,26 @@ client = commands.Bot(command_prefix='!', intents=intents)# , help_command= Cust
 client.help_command = help_command.Help()
 
 with open("TOKEN.txt", "r") as file:
-    a = input("Main [0] or Test [1]? ")
-    if a == "0":
+    TEST_OR_MAIN = input("Main [0] or Test [1]? ")
+    if TEST_OR_MAIN == "0":
         BOT_TOKEN = file.readlines()[0][len("main: "):]
 
     else:
         BOT_TOKEN = file.readlines()[1][len("test: "):]
 
-TEST_OR_MAIN = lambda m: a
-
-
 @client.event
 async def on_ready():
     await client.change_presence(status=nextcord.Status.online)
     print('Ready')
+    samed = client.get_user(421756815118958592)
+
+    if TEST_OR_MAIN == "0":
+        covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
+
     try: # we sech dr bot mues reconnecte, denn motzter wöuder d tasks scho gstartet het.
         remind.start()
         download_pdf.start()
         briefing.start()
-
     except RuntimeError:
         pass
 
@@ -81,8 +82,9 @@ async def remind():
     cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute:02}:00", ))
     database.commit()
 
-    if zeit.hour%12==0 and zeit.minute==0:
-        await client.get_user(421756815118958592).send("Du bisch fett lmao")
+    if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute==0:
+        covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
+        await FuncLibrary.covid_embed(covid_channel, None)
 
 
 @tasks.loop(hours=6)

@@ -84,13 +84,18 @@ class extracmds(commands.Cog):
         except ValueError:
             await ctx.reply(f"'{ctx.message.content.split('(')[1].split(')')[0]}' ist keine Zahl")
 
+    @commands.command(name="covidstats", aliases=["stats", "covid", "despair"], help="Gibt covid-stats")
+    async def despair_time(self, ctx:Context):
+        output = await ctx.channel.send("get COVID data...")
+        await FuncLibrary.covid_embed(ctx.channel, 120)
+        await output.delete()
+
     @commands.command(name="!test")
     async def test(self, ctx:Context):
         pass
 
-
     @commands.command(name="!stcol")
-    async def stcol(self, ctx:Context):
+    async def stcol(ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())
         liste.sort(key=lambda m:FuncLibrary.StP_colors[m])
         for i in liste:
