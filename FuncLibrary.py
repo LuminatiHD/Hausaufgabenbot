@@ -244,3 +244,8 @@ async def covid_embed(channel, delete_after):
         .set_image(url=f"attachment://{graph_name}")
     await channel.send(content=None, embed=embed, view=buttons, file=nextcord.File(graph_name),
                        delete_after=delete_after)
+
+
+def test(var):
+    import os
+    print(os.environ.get(var))
