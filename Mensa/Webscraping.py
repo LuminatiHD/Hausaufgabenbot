@@ -79,7 +79,7 @@ async def weeklypdf(client):
         pdffile.write(pdf.content)
     await client.change_presence(activity=nextcord.Game("Download complete. converting to png...(0/2)"))
 
-    pages = convert_from_path('Mensa/menu.pdf', 100, poppler_path=r"poppler bin")
+    pages = convert_from_path('Mensa/menu.pdf', 100, poppler_path=r"poppler_bin")
     await client.change_presence(activity=nextcord.Game("Download complete. converting to png... (1/2)"))
 
     for i in pages:
