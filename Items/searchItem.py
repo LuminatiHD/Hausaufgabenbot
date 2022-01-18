@@ -167,10 +167,15 @@ class Itemsearch(commands.Cog):
                         elif selectbtn.edit:
                             await editItem(self, ctx, selecteditem, outputmsg)
                             break
+
+                        else:
+                            await outputmsg.delete()
+
                         database.commit()
 
+
                     else:
-                        await outputmsg.delete()
+                        await outputmsg.edit(content="Wurde ausgeführt", view=None, embed=None)
                         break
                 else:
                     try:

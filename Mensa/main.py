@@ -14,6 +14,7 @@ class Menu(commands.Cog):
 
     @commands.command(name="menu", aliases=["Menu", "m", "M"], help="Gibt das heutige Menu in der Mensa zurück")
     async def menu(self, ctx:Context):
+
         datum = date.today()
 
         if datetime.now().time() > time(hour=14, minute=30):

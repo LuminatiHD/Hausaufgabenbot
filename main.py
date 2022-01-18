@@ -28,6 +28,7 @@ with open("TOKEN.txt", "r") as file:
     else:
         BOT_TOKEN = file.readlines()[1][len("test: "):]
 
+
 @client.event
 async def on_ready():
     await client.change_presence(status=nextcord.Status.online)
@@ -82,14 +83,18 @@ async def remind():
     cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute:02}:00", ))
     database.commit()
 
-    if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute==0:
+    if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute==0 and zeit.second < 30:
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
         await FuncLibrary.covid_embed(covid_channel, None)
 
 
 @tasks.loop(hours=6)
 async def download_pdf():
-    await Webscraping.weeklypdf(client=client)
+    try:
+        await Webscraping.weeklypdf(client=client)
+    except IndexError:
+        print("Website down or other error")
+
     await client.change_presence(activity=nextcord.Game(name="!help"))
 
 

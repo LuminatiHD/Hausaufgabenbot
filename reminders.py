@@ -36,7 +36,7 @@ class Reminders(commands.Cog):
 
         await ctx.channel.send("Reminder wurde eingetragen", delete_after=60)
 
-    @commands.command(name="reminders")
+    @commands.command(name="reminders", help="Zeigt dir alle Reminders an, die du gestellt hast")
     async def reminderlist(self, ctx:Context):
         allreminders = cs.execute(f"SELECT *, rowid FROM reminder WHERE user_id = {int(ctx.author.id)}").fetchall()
 

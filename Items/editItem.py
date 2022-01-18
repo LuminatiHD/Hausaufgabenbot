@@ -82,7 +82,6 @@ async def editItem(self, ctx, selecteditem, editor):
                     break
 
             if menu.exit:
-                await editor.delete()
                 break
 
             for i in menu.children:
@@ -109,7 +108,6 @@ async def editItem(self, ctx, selecteditem, editor):
             database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
                                       (str(datum), selecteditem[5]))
             database.commit()
-
 
 # ============================================== FACH ==============================================
     elif "fach" in editorbtn.edit:

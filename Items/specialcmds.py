@@ -88,14 +88,14 @@ class extracmds(commands.Cog):
     async def despair_time(self, ctx:Context):
         output = await ctx.channel.send("get COVID data...")
         await FuncLibrary.covid_embed(ctx.channel, 120)
-        await output.delete()
+        await output.edit(content="(Wurde gelöscht wegen Spamprävention)", embed=None, view=None)
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
         pass
 
     @commands.command(name="!stcol")
-    async def stcol(ctx:Context):
+    async def stcol(self, ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())
         liste.sort(key=lambda m:FuncLibrary.StP_colors[m])
         for i in liste:
@@ -107,7 +107,7 @@ class extracmds(commands.Cog):
         await ctx.channel.send(embed=FuncLibrary.outputbriefing(ctx.author, "all", "all", "all", "all"))
 
     @commands.command(name="!memlist")
-    async def members(self,ctx:Context):
+    async def members(self, ctx:Context):
         for i in self.bot.guilds[0].members:
             print(f"{i.name:15}{i.id:12}\n"+"-"*40)
 

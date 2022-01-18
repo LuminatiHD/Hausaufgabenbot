@@ -60,13 +60,13 @@ def get_cases():
 
     sw_daily_cases = requests.get(sw_bag_url, "html-parser").text\
         .split("Laborbestätigte Fälle")[1]\
-        .split("Differenz zum Vortag")[1]\
+        .split("Differenz")[1]\
         .split("class=\"bag-key-value-list__entry-value\">")[1]\
         .split("</span")[0]
 
     sw_daily_deaths = requests.get(sw_bag_url, "html-parser").text\
         .split("Laborbestätigte Todesfälle")[1]\
-        .split("Differenz zum Vortag")[1]\
+        .split("Differenz")[1]\
         .split("class=\"bag-key-value-list__entry-value\">")[1]\
         .split("</span")[0]
 

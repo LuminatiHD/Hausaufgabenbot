@@ -12,6 +12,7 @@ class Help(commands.HelpCommand):
         embed = nextcord.Embed(title="Help")
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
+
             command_signatures = [self.get_command_signature(c) for c in filtered if not self.get_command_signature(c).startswith("!")]
             if command_signatures:
                 cog_name = getattr(cog, "qualified_name", "Sonstige")
@@ -30,4 +31,3 @@ class Help(commands.HelpCommand):
 
         channel = self.get_destination()
         await channel.send(embed=embed)
-
