@@ -90,10 +90,6 @@ class extracmds(commands.Cog):
         await FuncLibrary.covid_embed(ctx.channel, 120)
         await output.edit(content="(Wurde gelöscht wegen Spamprävention)", embed=None, view=None)
 
-    @commands.command(name="!test")
-    async def test(self, ctx:Context):
-        pass
-
     @commands.command(name="!stcol")
     async def stcol(self, ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())
@@ -123,6 +119,53 @@ class extracmds(commands.Cog):
                         "looked at a trashcan and said \"THAT'S A BIT SUSSY\" I looked "
                         "at my penis I think of an astronauts helmet and I go \"PENIS? MORE "
                         "LIKE PENSUS\" AAAAAAAAAAAAAAHGESFG")
+
+    @commands.command(name="!test")
+    async def test(self, ctx:Context):
+
+        try:
+            question = ctx.message.content.split("(")[0][len("!poll "):]
+            duration = float(ctx.message.content.split("(")[1].split(")")[0])
+            options = ctx.message.content.replace("]", "").split("[")[1:]
+
+            view = Buttons.Poll_ViewObj(options=options, duration=duration)
+            electionmsg = await ctx.channel.send(content=question, view=view)
+            await view.wait()
+
+            votes = list(view.votes.values())
+            vote_count=dict()
+
+            for i in options:
+                amount = str(votes.count(i))
+                if not vote_count.get(amount):
+                    vote_count[amount] = list()
+
+                vote_count[amount].append(i)
+
+            winner_amount = max(vote_count.keys())
+            winner = vote_count[winner_amount]
+            del vote_count[winner_amount]
+
+            if winner == 0:
+                await ctx.channel.send("Niemand hat gewählt")
+
+            elif len(winner) > 1:
+                await ctx.channel.send(f"""Gleichstand. """
+                                       f"""'{"', ".join(winner[:-1])}' und '{winner[-1]}' haben je {winner_amount} """
+                                       f"""Votes bekommen.""")
+            else:
+                await ctx.channel.send(f"'{winner[0]}' hat mit {winner_amount} zu "
+                                       f"{':'.join([str(votes.count(i)) for i in options if i != winner[0]])} gewonnen")
+
+            await electionmsg.delete()
+
+        except IndexError:
+            await ctx.reply("Invalide syntax. syntax ist !poll <FRAGE> (<DAUER>) [<OPTION>][<OPTION>][<OPTION>]...")
+        except nextcord.errors.HTTPException:
+            await ctx.reply("Nachricht ist zu lang. Darf nur 80 Zeichen lang sein.")
+        except ValueError:
+            await ctx.reply(f"'{ctx.message.content.split('(')[1].split(')')[0]}' ist keine Zahl")
+
 
 
 def setup(client):

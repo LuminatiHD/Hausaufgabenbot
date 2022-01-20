@@ -761,3 +761,25 @@ class ChooseDatum(nextcord.ui.View):
         self.over = True
         self.exit = True
         self.stop()
+
+
+class Poll_Button(nextcord.ui.Button):
+    def __init__(self, label, view_obj):
+        super().__init__()
+        self.label = label
+        self.style = nextcord.ButtonStyle.blurple
+        self.view_obj = view_obj
+
+    async def callback(self, interaction: nextcord.Interaction):
+        if interaction.user.id in self.view_obj.votes.keys():
+            await interaction.response.send_message("Dein Vote wurde geändert", ephemeral=True)
+
+        self.view_obj.votes[interaction.user.id] = self.label
+
+
+class Poll_ViewObj(nextcord.ui.View):
+    def __init__(self, options, duration):
+        super().__init__(timeout=duration)
+        self.votes = {}
+        for opt in options:
+            self.add_item(Poll_Button(label=opt, view_obj=self))
