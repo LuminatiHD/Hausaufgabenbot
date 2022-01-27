@@ -7,6 +7,7 @@ import help_command
 from Briefing import main
 import FuncLibrary
 from Mensa import Webscraping
+from News import news_scraper
 
 Alltables = "items"
 Itemtable = "items"
@@ -17,7 +18,7 @@ cs = database.cursor()
 
 
 intents = nextcord.Intents.all()  # ohni ds dörfti dr bot nid user nach id becho.
-client = commands.Bot(command_prefix='!', intents=intents)# , help_command= CustomHelpCommand()
+client = commands.Bot(command_prefix='!', intents=intents)
 client.help_command = help_command.Help()
 
 with open("TOKEN.txt", "r") as file:
@@ -42,6 +43,8 @@ async def on_ready():
         remind.start()
         download_pdf.start()
         briefing.start()
+        news.start()
+
     except RuntimeError:
         pass
 
@@ -96,6 +99,12 @@ async def download_pdf():
         print("Website down or other error")
 
     await client.change_presence(activity=nextcord.Game(name="!help"))
+
+
+@tasks.loop(hours=1)
+async def news():
+    if datetime.now().hour == 16:
+        await news_scraper.post_news(client)
 
 
 client.run(BOT_TOKEN)

@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext.commands.context import Context
 from datetime import date
-
+import json
 
 maxdayspermonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -783,3 +783,69 @@ class Poll_ViewObj(nextcord.ui.View):
         self.votes = {}
         for opt in options:
             self.add_item(Poll_Button(label=opt, view_obj=self))
+
+
+class Vote_btns(nextcord.ui.View):
+    def __init__(self, flair, voters=dict()):
+        super().__init__(timeout=None)
+        self.flair = flair
+        self.voters = voters
+
+        if not self.flair:
+            self.flair = "null"
+
+        # btn = nextcord.ui.Button()
+        # btn.label = "Zurück"
+        # btn.row = 2
+        # self.add_item(btn)
+
+    async def change_score(self, val, voter, inter):
+        if not voter in self.voters.keys() or self.voters[voter]!=val:
+            with open("News/tag_priority.json", "r") as file:
+                in_file = json.load(file)
+                try:
+                    if voter in self.voters.keys():
+                        in_file[self.flair] += 2*val
+                    else:
+                        in_file[self.flair] += val
+
+                except KeyError:
+                    in_file[self.flair] = val
+
+                with open("News/tag_priority.json", "w") as out_file:
+                    json.dump(in_file, out_file)
+
+            self.voters[voter] = val
+
+        else:
+            await inter.response.send_message(f"Du hast schon {self.voters[voter]} gewählt", ephemeral=True)
+
+    @nextcord.ui.button(emoji="👍", style=nextcord.ButtonStyle.green, row=1)
+    async def up(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await self.change_score(1, interaction.user.id, interaction)
+
+    @nextcord.ui.button(emoji="👎", style=nextcord.ButtonStyle.red, row=1)
+    async def down(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        await self.change_score(-1, interaction.user.id, interaction)
+
+    @nextcord.ui.button(label="Zurück", row=2)
+    async def back(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        self.stop()
+
+
+class Select_article(nextcord.ui.View):
+    def __init__(self, posts):
+        super().__init__(timeout=None)
+        self.choice = None
+        self.add_item(menu(posts, self))
+
+
+class menu(nextcord.ui.Select):
+    def __init__(self, posts, view_obj):
+        options = [nextcord.SelectOption(label=i) for i in posts.keys()]
+        super().__init__(placeholder="Artikel", min_values=1, max_values=1,  options=options)
+        self.view_obj = view_obj
+
+    async def callback(self, interaction: nextcord.Interaction):
+            self.view_obj.choice = self.values[0]
+            self.view_obj.stop()
