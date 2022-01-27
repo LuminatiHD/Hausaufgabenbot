@@ -92,7 +92,7 @@ class extracmds(commands.Cog):
     @commands.command(name="covidstats", aliases=["stats", "covid", "despair"], help="Gibt covid-stats")
     async def despair_time(self, ctx:Context):
         output = await ctx.channel.send("get COVID data...")
-        await FuncLibrary.covid_embed(ctx.channel, 120)
+        await FuncLibrary.covid_embed(ctx.channel, 600)
         await output.edit(content="(Wurde gelöscht wegen Spamprävention)", embed=None, view=None)
 
     @commands.command(name="!stcol")
@@ -128,6 +128,7 @@ class extracmds(commands.Cog):
     @commands.command(name="!test")
     async def test(self, ctx:Context):
         pass
+
 
 def setup(client):
     client.add_cog(extracmds(client))

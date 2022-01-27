@@ -23,17 +23,16 @@ def get_graph():
         .split("data: [")[1] \
         .split("]")[0].split(",")
 
-    sw_daily_cases = [int(i) if i != "null" else 0 for i in sw_daily_cases]
+    sw_daily_cases = [int(i) if i != "null" else 0 for i in sw_daily_cases][-300:]
 
-    start_date = date(2020, 2, 15)
-    dates = [start_date + timedelta(i) for i in range(0, (date.today() - start_date).days)]
-
+    dates = [date.today()-timedelta(i) for i in range(len(sw_daily_cases), 0, -1)]
+    start_date = dates[0]
     fig = plt.figure()
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%d.%m.%Y'))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=round(len(sw_daily_cases) / 8)))
 
     plt.title("Tägliche COVID-Zahlen Schweiz [2]")
-    plt.xlim(start_date - timedelta(11), dates[-1])
+    plt.xlim(start_date, dates[-1])
     plt.ylim(0, max(sw_daily_cases) * 1.1)
     plt.grid()
     plt.plot(dates, sw_daily_cases)

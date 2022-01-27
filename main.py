@@ -103,7 +103,7 @@ async def download_pdf():
 
 @tasks.loop(hours=1)
 async def news():
-    if datetime.now().hour == 16:
+    if datetime.now().hour == 10:
         await news_scraper.post_news(client)
 
 
