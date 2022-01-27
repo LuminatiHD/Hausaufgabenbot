@@ -596,26 +596,6 @@ class choose_KF(nextcord.ui.View):
             self.stop()
 
 
-class VoteButtons(nextcord.ui.View):
-    def __init__(self, timeout):
-        super().__init__(timeout=timeout)
-        self.votes = {}
-
-    @nextcord.ui.button(label="A", style=nextcord.ButtonStyle.primary)
-    async def OptA(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
-        if not interaction.user.id in self.votes.keys():
-            self.votes[interaction.user.id] = button.label
-        else:
-            await interaction.response.send_message("Du hast schon gewählt", ephemeral=True)
-
-    @nextcord.ui.button(label="B", style=nextcord.ButtonStyle.primary)
-    async def OptB(self, button:nextcord.ui.Button, interaction:nextcord.Interaction):
-        if not interaction.user.id in self.votes.keys():
-            self.votes[interaction.user.id] = button.label
-        else:
-            await interaction.response.send_message("Du hast schon gewählt", ephemeral=True)
-
-
 class BriefingSettings(nextcord.ui.View):
     def __init__(self, ctx):
         super().__init__(timeout = 180)
@@ -771,16 +751,16 @@ class Poll_Button(nextcord.ui.Button):
         self.view_obj = view_obj
 
     async def callback(self, interaction: nextcord.Interaction):
-        if interaction.user.id in self.view_obj.votes.keys():
+        if interaction.user.id in self.view_obj.voters.keys():
             await interaction.response.send_message("Dein Vote wurde geändert", ephemeral=True)
 
-        self.view_obj.votes[interaction.user.id] = self.label
+        self.view_obj.voters[interaction.user.id] = self.label
 
 
 class Poll_ViewObj(nextcord.ui.View):
     def __init__(self, options, duration):
         super().__init__(timeout=duration)
-        self.votes = {}
+        self.voters = {}
         for opt in options:
             self.add_item(Poll_Button(label=opt, view_obj=self))
 

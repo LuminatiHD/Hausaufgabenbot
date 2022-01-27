@@ -45,39 +45,43 @@ class extracmds(commands.Cog):
     @commands.command(name="poll", help="Mache Polls. Format ist: !poll statement (dauer) [option a] [option b]")
     async def poll(self, ctx:Context):
         try:
-            question = ctx.message.content.split("(")[0][len("!poll"):]
-            duration = ctx.message.content.split("(")[1].split(")")[0]
-            optiona = ctx.message.content.split("[")[1].replace("]", "")
-            optionb = ctx.message.content.split("[")[2].replace("]", "")
+            question = ctx.message.content.split("(")[0][len("!poll "):]
+            duration = float(ctx.message.content.split("(")[1].split(")")[0])
+            options = set(ctx.message.content.replace("]", "").split("[")[1:])
 
-            votebutton = Buttons.VoteButtons(float(duration))
-            votebutton.OptA.label=optiona
-            votebutton.OptB.label = optionb
-            vote = await ctx.channel.send(f"{question} ({duration} sekunden)", view=votebutton)
-            await votebutton.wait()
+            view = Buttons.Poll_ViewObj(options=options, duration=duration)
+            electionmsg = await ctx.channel.send(content=question, view=view)
+            await view.wait()
 
-            for i in votebutton.children:
-                i.disabled=True
+            votes = list(view.voters.values())
+            vote_count = dict()
 
-            await vote.edit(view=votebutton)
+            for i in options:
+                amount = str(votes.count(i))
+                if not vote_count.get(amount):
+                    vote_count[amount] = list()
 
-            if votebutton.votes:
-                votecounta, votecountb = list(votebutton.votes.values()).count(optiona), list(votebutton.votes.values()).count(optionb)
+                vote_count[amount].append(i)
 
-                if votecounta>votecountb:
-                    await vote.reply(f"'{optiona}' hat gewonnen mit {votecounta} zu {votecountb} Punkten!")
+            winner_amount = max(vote_count.keys())
+            winner = vote_count[winner_amount]
+            del vote_count[winner_amount]
 
-                elif votecountb>votecounta:
-                    await vote.reply(f"'{optionb}' hat gewonnen mit {votecountb} zu {votecounta} Punkten!")
+            if int(winner_amount) == 0:
+                await ctx.channel.send("Niemand hat gewählt")
 
-                else:
-                    await vote.reply(f"Es ist Gleichstand ({votecounta}:{votecountb})")
-
+            elif len(winner) > 1:
+                await ctx.channel.send(f"""Gleichstand. """
+                                       f"""'{"', ".join(winner[:-1])}' und '{winner[-1]}' haben je {winner_amount} """
+                                       f"""Votes bekommen.""")
             else:
-                await vote.reply("Niemand hat gewählt")
+                await ctx.channel.send(f"'{winner[0]}' hat mit {winner_amount} zu "
+                                       f"{':'.join([str(votes.count(i)) for i in options if i != winner[0]])} gewonnen")
+
+            await electionmsg.delete()
 
         except IndexError:
-            await ctx.reply("Invalide syntax. Optionen müssen in der form [A][B] angegeben werden")
+            await ctx.reply("Invalide Syntax. Syntax ist !poll <Frage> (<Dauer>) [<Option>][<Option>][<Option>]...")
 
         except nextcord.errors.HTTPException:
             await ctx.reply("Nachricht ist zu lang. Darf nur 80 Zeichen lang sein.")
