@@ -74,19 +74,8 @@ async def briefing():
 
 @tasks.loop(seconds=30)
 async def remind():
-    zeit = datetime.now().time()
-    reminders = cs.execute("SELECT user_id, message FROM reminder WHERE time LIKE ?",
-                           (f"{zeit.hour:02}:{zeit.minute:02}%", )).fetchall()
-
-    for i in reminders:
-        user =client.get_user(i[0])
-        await user.send(embed = nextcord.Embed(title="Du hast einen Reminder!",
-                                               description=i[1]))
-
-    cs.execute("DELETE FROM reminder WHERE time == ?", (f"{zeit.hour:02}:{zeit.minute:02}:00", ))
-    database.commit()
-
-    if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute==0 and zeit.second < 30:
+    zeit = (datetime.utcnow()+timedelta(hours=1)).time()
+    if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute<30:
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
         await FuncLibrary.covid_embed(covid_channel, None)
 
