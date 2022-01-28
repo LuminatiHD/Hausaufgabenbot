@@ -4,7 +4,7 @@ import sqlite3
 import covid_despair
 
 Itemfile = "ItemFiles.db"
-database = sqlite3.connect(Itemfile)
+database = sqlite3.connect(Itemfile, timeout=10)
 cs = database.cursor()
 
 

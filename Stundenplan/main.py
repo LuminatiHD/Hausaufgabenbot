@@ -9,7 +9,7 @@ from nextcord.ext.commands.context import Context
 from datetime import date, time, timedelta, datetime
 
 Itemfile = r"ItemFiles.db"
-database = sqlite3.connect(Itemfile)
+database = sqlite3.connect(Itemfile, timeout=10)
 table = "Stundenplan_23b"
 week = ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag")
 weekcol = [0xba2929, 0xeb7c28, 0xd6aa18, 0x237a06, 0x086fcf]

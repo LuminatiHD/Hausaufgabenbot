@@ -6,9 +6,10 @@ import Buttons
 import FuncLibrary
 from datetime import date, datetime, timedelta, time
 from News import news_scraper
+from main import db_timeout
 
 Itemfile = "ItemFiles.db"
-database = sqlite3.connect(Itemfile)
+database = sqlite3.connect(Itemfile, timeout=db_timeout)
 cs = database.cursor()
 Itemtable = "items"
 

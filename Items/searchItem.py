@@ -7,13 +7,15 @@ from datetime import date
 import Buttons
 from Items.editItem import editItem
 import FuncLibrary
+from main import db_timeout
+
 Itemfile = "ItemFiles.db"
 Alltables = "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access", "rowid")
 Itemkategorien = ("Test", "Aufgabe", "")
 
-database = sqlite3.connect(Itemfile)
+database = sqlite3.connect(Itemfile, timeout=db_timeout)
 
 
 class Itemsearch(commands.Cog):

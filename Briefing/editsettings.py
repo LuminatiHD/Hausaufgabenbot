@@ -3,7 +3,8 @@ from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import Buttons
 import sqlite3
-database = sqlite3.connect("ItemFiles.db")
+
+database = sqlite3.connect("ItemFiles.db", timeout=10)
 cs = database.cursor()
 
 weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]

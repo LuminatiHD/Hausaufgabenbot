@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 import FuncLibrary
 from Briefing import editsettings
 
-database = sqlite3.connect("ItemFiles.db")
+database = sqlite3.connect("ItemFiles.db", timeout=10)
 table = "briefing"
 tableschema = "user_id, mo, di, mi, do , fr, sa, so"
 week = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]

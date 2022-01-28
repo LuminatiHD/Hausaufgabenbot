@@ -13,7 +13,8 @@ Alltables = "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access")
 Itemfile = "ItemFiles.db"
-database = sqlite3.connect(Itemfile)
+db_timeout = 10
+database = sqlite3.connect(Itemfile, timeout=db_timeout)
 cs = database.cursor()
 
 
