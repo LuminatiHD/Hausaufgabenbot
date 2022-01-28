@@ -3,8 +3,6 @@ import sqlite3
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import Buttons
-import FuncLibrary
-from main import db_timeout
 
 Itemfile = "ItemFiles.db"
 Alltables = "items"
@@ -14,7 +12,7 @@ tablecategories = ("datum", "kagegorie", "fach", "aufgabe", "access")
 # es git vor datetime-library ä command wo tuet dr wuchetag vomne datum zrüggäh,
 # allerdings nur aus integer. Ds isch für ds formatting.
 
-database = sqlite3.connect(Itemfile, timeout=db_timeout)
+database = sqlite3.connect(Itemfile, timeout=10)
 
 
 class newItem(commands.Cog):
