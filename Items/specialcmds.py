@@ -108,11 +108,6 @@ class extracmds(commands.Cog):
     async def briefing(self, ctx:Context):
         await ctx.channel.send(embed=FuncLibrary.outputbriefing(ctx.author, "all", "all", "all", "all"))
 
-    @commands.command(name="!memlist")
-    async def members(self, ctx:Context):
-        for i in self.bot.guilds[0].members:
-            print(f"{i.name:15}{i.id:12}\n"+"-"*40)
-
     @commands.command(name="!sus")
     async def sussy(self, ctx:Context):
         await ctx.reply("STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! "

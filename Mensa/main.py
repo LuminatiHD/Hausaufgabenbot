@@ -42,7 +42,8 @@ class Menu(commands.Cog):
         except IndexError:
             await output.edit(content="Es wurde kein Menu gefunden, wahrscheinlich sind Ferien")
 
-    @commands.command(name = "wochenplan", aliases=["Wochenplan", "wp", "WP"], help="Gibt das Menu der momentanen Woche zurück")
+    @commands.command(name = "wochenplan", aliases=["Wochenplan", "wp", "WP"],
+                      help="Gibt das Menu der momentanen Woche zurück")
     async def weekly(self, ctx:Context):
         datum = (datetime.utcnow()+timedelta(hours=1)).date()
         output = await ctx.channel.send("Einen Moment...")

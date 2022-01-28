@@ -44,7 +44,8 @@ class Stundenplan(commands.Cog):
         if output:
             zeit = output[1].split("-")[0]
             zeit = datetime.combine(date.today(),
-                                     time(int(zeit.split(":")[0]), int(zeit.split(":")[1])))-datetime.now()
+                                     time(int(zeit.split(":")[0]), int(zeit.split(":")[1])))-\
+                   (datetime.utcnow()+timedelta(hours=1))
 
             hours = zeit.seconds//3600
             minutes = (zeit.seconds//60)%60

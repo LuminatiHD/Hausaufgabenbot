@@ -98,8 +98,9 @@ async def editdates(ctx:Context):
 
         choiceforday.sort(key=lambda time:int(time.split(":")[0]))
 
-        cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday),))
-        database.commit()
+        if choiceforday: # we me bide zite nüt uswäut, de würd ds problem gäh
+            cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", (str(choiceforday),))
+            database.commit()
 
     await editor_message.edit(content="Änderungen wurden vorgenommen", view=None, delete_after=20)
 

@@ -73,7 +73,7 @@ async def briefing():
                 await client.get_user(user[0]).send(embed=main.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
 
 
-@tasks.loop(seconds=30)
+@tasks.loop(hours=30)
 async def remind():
     zeit = (datetime.utcnow()+timedelta(hours=1)).time()
     if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute<30:
