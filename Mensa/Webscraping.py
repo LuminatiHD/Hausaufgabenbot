@@ -11,7 +11,7 @@ def menuoutput(output):
     menuselect = 1
     output = []
 
-    if datetime.now().time() > time(hour=14, minute=30) and weekday <5:
+    if (datetime.utcnow()+timedelta(hours=1)).time() > time(hour=14, minute=30) and weekday <5:
         menuselect=2
         weekday = (date.today()+timedelta(1)).weekday()
 

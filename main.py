@@ -57,7 +57,6 @@ client.load_extension("Items.specialcmds")
 client.load_extension("Stundenplan.main")
 client.load_extension("Briefing.main")
 client.load_extension("Mensa.main")
-client.load_extension("reminders")
 
 
 @tasks.loop(minutes = 10)
@@ -66,7 +65,8 @@ async def briefing():
         zeit = (datetime.now()+timedelta(hours=24-17)).date()
         weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
         users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
-                           f"{weekdays[zeit.weekday()]} LIKE ?", (f"%{datetime.now().hour:02}:00%",))
+                           f"{weekdays[zeit.weekday()]} LIKE ?",
+                           (f"%{(datetime.utcnow()+timedelta(hours=1)).hour:02}:00%",))
         if users:
             for user in users:
                 await client.get_user(user[0]).send(embed=main.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
@@ -92,7 +92,7 @@ async def download_pdf():
 
 @tasks.loop(hours=1)
 async def news():
-    if datetime.now().hour == 10:
+    if (datetime.utcnow()+timedelta(hours=1)).hour == 10:
         await news_scraper.post_news(client)
 
 

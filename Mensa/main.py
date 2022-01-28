@@ -15,10 +15,10 @@ class Menu(commands.Cog):
     @commands.command(name="menu", aliases=["Menu", "m", "M"], help="Gibt das heutige Menu in der Mensa zurück")
     async def menu(self, ctx:Context):
 
-        datum = date.today()
+        datum = (datetime.utcnow()+timedelta(hours=1)).date()
 
-        if datetime.now().time() > time(hour=14, minute=30):
-            datum = date.today() + timedelta(1)
+        if (datetime.utcnow()+timedelta(hours=1)).time() > time(hour=14, minute=30):
+            datum = datum + timedelta(1)
 
         if datum.weekday() > 4:
             datum += timedelta(7-datum.weekday())
@@ -44,7 +44,7 @@ class Menu(commands.Cog):
 
     @commands.command(name = "wochenplan", aliases=["Wochenplan", "wp", "WP"], help="Gibt das Menu der momentanen Woche zurück")
     async def weekly(self, ctx:Context):
-        datum = date.today()
+        datum = (datetime.utcnow()+timedelta(hours=1)).date()
         output = await ctx.channel.send("Einen Moment...")
         weekm = await Webscraping.menuweekly(output)
 

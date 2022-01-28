@@ -2,11 +2,13 @@ import Buttons
 import sqlite3
 import datetime
 import FuncLibrary
+
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
 Itemtable = "items"
 tablecategories = ("datum", "kategorie", "fach", "aufgabe", "access")
-database = sqlite3.connect(Itemfile)
+
+database = sqlite3.connect(Itemfile, timeout=10)
 Itemkategorien = ("Test", "Aufgabe")
 
 

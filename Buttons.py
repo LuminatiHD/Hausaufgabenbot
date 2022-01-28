@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext.commands.context import Context
-from datetime import date
+from datetime import date, datetime, timedelta
 import json
 
 maxdayspermonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -647,39 +647,6 @@ class DayDropdown(nextcord.ui.Select):
             self.menu.stop()
 
 
-class TimeForReminder(nextcord.ui.View):
-    def __init__(self, ctx):
-        self.ctx = ctx
-        super().__init__(timeout = 120)
-
-        self.hour = None
-        self.minute = None
-
-        hours = Dropdown()
-        hours.placeholder = "Stunden"
-        hours.options = [nextcord.SelectOption(label=str(i%24)) for i in range(7, 24+7)]
-        hours.custom_id = "hour"
-
-        minutes = Dropdown()
-        minutes.placeholder = "Minuten"
-        minutes.options = [nextcord.SelectOption(label=str(i)) for i in range(0, 60, 3)]
-        minutes.custom_id = "minute"
-
-        self.add_item(hours)
-        self.add_item(minutes)
-
-    @nextcord.ui.button(label="bestätigen", style=nextcord.ButtonStyle.primary)
-    async def confirm(self, button:nextcord.Button, interaction:nextcord.Interaction):
-        if await testinter(interaction, self.ctx) and self.children[1].values and self.children[2].values:
-            self.hour = int(self.children[1].values[0])
-            self.minute = int(self.children[2].values[0])
-            self.stop()
-
-    @nextcord.ui.button(label="zurück", style=nextcord.ButtonStyle.red)
-    async def exit(self, button:nextcord.Button, interaction:nextcord.Interaction):
-        self.stop()
-
-
 class ChooseDatum(nextcord.ui.View):
     def __init__(self, ctx, day=None, month=None, year=None):
         self.exit = False
@@ -692,6 +659,8 @@ class ChooseDatum(nextcord.ui.View):
         self.month = month
         self.year = year
 
+        today = (datetime.utcnow()+timedelta(hours=1))
+
         dayselect = DayDropdown(self, self.day)
         dayselect.custom_id = "day"
 
@@ -702,7 +671,7 @@ class ChooseDatum(nextcord.ui.View):
 
         yearselect = Dropdown()
         yearselect.placeholder = "Jahr:"
-        yearselect.options = [nextcord.SelectOption(label=str(i)) for i in range(date.today().year, date.today().year+3)]
+        yearselect.options = [nextcord.SelectOption(label=str(i)) for i in range(today.year, today.year+3)]
         yearselect.custom_id = "year"
 
         self.add_item(dayselect)

@@ -76,11 +76,12 @@ def setup(client):
 
 def outputbriefing(user, ef, sf, kf, mint):
     weekdays = FuncLibrary.weekdays
-    output = nextcord.Embed(title=f"{weekdays[date.today().weekday()]}, "
-                                  f"{date.today().day}.{date.today().month}.{str(date.today().year)[2:]} "
-                                  f"({datetime.now().hour}:{datetime.now().minute:02})")
+    today = (datetime.utcnow()+timedelta(hours=1))
+    output = nextcord.Embed(title=f"{weekdays[today.weekday()]}, "
+                                  f"{today.day}.{today.month}.{str(today.year)[2:]} "
+                                  f"({today.hour}:{today.minute:02})")
 
-    timeset = date.today()+timedelta(days=7)
+    timeset = today+timedelta(days=7)
     items = cs.execute(f"SELECT * FROM items WHERE datum <= ? AND (access = 'all' " \
                                       f"OR access = ? OR access = ? " \
                                       f"OR access = ? OR access = ?) ORDER BY datum",
