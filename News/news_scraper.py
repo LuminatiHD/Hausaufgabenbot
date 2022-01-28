@@ -38,6 +38,7 @@ def get_news(select, pool):
 
 async def post_news(bot, ctx=None):
     now = datetime.now()
+    rolle = ""
     if not ctx:
         channel = bot.get_channel(688135334277414977)
         try:
@@ -45,10 +46,9 @@ async def post_news(bot, ctx=None):
                 if role.name == "news":
                     rolle = role
         except AttributeError:
-            rolle = ""
+            pass
     else:
         channel = ctx.channel
-        rolle = ""
 
     articles = {i["title"]:{"link":i["link"], "flair":i["flair"]} for i in get_news(10, 100)}
     articles_short = {i["title"][:100]:{"link":i["link"], "flair":i["flair"]} for i in get_news(10, 100)}
@@ -72,6 +72,6 @@ async def post_news(bot, ctx=None):
                           view=select)
         await select.wait()
 
-        vote_btns = Buttons.Vote_btns(articles_short[select.choice]["flair"], votes[select.choice])
+        vote_btns = Buttons.Vote_btns(articles_short[select.choice]["flair"], votes[translate[select.choice]])
         await output.edit(content=f"\"{translate[select.choice]}\"\n{articles_short[select.choice]['link']}", view=vote_btns)
         await vote_btns.wait()
