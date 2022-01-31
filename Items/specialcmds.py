@@ -122,7 +122,7 @@ class extracmds(commands.Cog):
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
-        pass
+        await news_scraper.post_news(self.bot, ctx)
 
 
 def setup(client):

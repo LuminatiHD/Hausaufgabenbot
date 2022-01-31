@@ -3,6 +3,7 @@ import sqlite3
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import Buttons
+import FuncLibrary
 
 Itemfile = "ItemFiles.db"
 Alltables = "items"

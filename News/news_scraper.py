@@ -2,7 +2,7 @@ import requests
 import json
 import nextcord
 import Buttons
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def get_news(select, pool):
@@ -37,14 +37,15 @@ def get_news(select, pool):
 
 
 async def post_news(bot, ctx=None):
-    now = datetime.now()
+    now = datetime.utcnow()+timedelta(hours=1)
     rolle = ""
     if not ctx:
         channel = bot.get_channel(688135334277414977)
         try:
             for role in bot.get_guild(688050375747698707).roles:
                 if role.name == "news":
-                    rolle = role
+                    rolle = f"<@&{role.id}>"
+                    break
         except AttributeError:
             pass
     else:
