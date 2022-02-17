@@ -64,23 +64,25 @@ class newItem(commands.Cog):
 # ======================================== FACH =========================================================
 
             if not exitcommand:
-                allaskmessages.append(await ctx.reply("Welches Fach? "))
-                fach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+                allaskmessages.append(await ctx.reply("Welches Fach?"))
+                fach = await self.bot.wait_for("message",
+                                               check=lambda msg: msg.author == ctx.author and msg.content)
                 fach = FuncLibrary.changefachname(fach.content)
                 exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
 # ======================================== AUFGABE =========================================================
             if category != "Test" and not exitcommand:
-                allaskmessages.append(await ctx.reply("Was zu tun ist: "))
+                allaskmessages.append(await ctx.reply("Was zu tun ist:"))
 
-                aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+                aufgabe = await self.bot.wait_for("message",
+                                                  check=lambda msg: msg.author == ctx.author and msg.content)
                 aufgabe = aufgabe.content
 
                 exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
 
             elif not exitcommand:
                 yesno = Buttons.Confirm(ctx)
-                asklernziele = await ctx.reply("Schon Lernziele? ", view=yesno)
+                asklernziele = await ctx.reply("Schon Lernziele?", view=yesno)
 
                 await yesno.wait()
                 for i in yesno.children:
@@ -92,7 +94,8 @@ class newItem(commands.Cog):
                 if yesno.confirm:
                     allaskmessages.append(await ctx.reply("Lernziele:"))
 
-                    aufgabe = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+                    aufgabe = await self.bot.wait_for("message",
+                                                      check=lambda msg: msg.author == ctx.author and msg.content)
                     aufgabe = aufgabe.content
                     exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
                 else:
