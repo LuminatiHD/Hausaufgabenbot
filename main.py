@@ -78,7 +78,7 @@ async def remind():
     zeit = (datetime.utcnow()+timedelta(hours=1)).time()
     if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute<30:
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
-        await FuncLibrary.covid_embed(covid_channel, None)
+        await FuncLibrary.covid_embed(covid_channel, 3600*24*2)
 
 
 @tasks.loop(hours=6)
