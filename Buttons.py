@@ -713,17 +713,22 @@ class ChooseDatum(nextcord.ui.View):
 
 
 class Poll_Button(nextcord.ui.Button):
-    def __init__(self, label, view_obj):
+    def __init__(self, label, view_obj, duration):
         super().__init__()
         self.label = label
+        self.over = datetime.now()+timedelta(seconds=duration)
         self.style = nextcord.ButtonStyle.blurple
         self.view_obj = view_obj
 
     async def callback(self, interaction: nextcord.Interaction):
-        if interaction.user.id in self.view_obj.voters.keys():
+        if interaction.user.id in self.view_obj.voters.keys() \
+                and self.view_obj.voters[interaction.user.id] != self.label:
             await interaction.response.send_message("Dein Vote wurde geändert", ephemeral=True)
 
         self.view_obj.voters[interaction.user.id] = self.label
+
+        if datetime.now()> self.over:
+            self.view_obj.stop()
 
 
 class Poll_ViewObj(nextcord.ui.View):
@@ -731,7 +736,7 @@ class Poll_ViewObj(nextcord.ui.View):
         super().__init__(timeout=duration)
         self.voters = {}
         for opt in options:
-            self.add_item(Poll_Button(label=opt, view_obj=self))
+            self.add_item(Poll_Button(label=opt, view_obj=self, duration=duration))
 
 
 class Vote_btns(nextcord.ui.View):
