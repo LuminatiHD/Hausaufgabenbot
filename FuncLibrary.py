@@ -1,6 +1,7 @@
 import nextcord
 from datetime import timedelta, date, datetime
 import sqlite3
+import Buttons
 import covid_despair
 
 Itemfile = "ItemFiles.db"
@@ -224,23 +225,53 @@ def outputbriefing(user, ef, sf, kf, mint):
 
 
 async def covid_embed(channel, delete_after):
-    all_data = list(i for i in covid_despair.get_cases())
-    buttons = nextcord.ui.View()
-    graph_name = covid_despair.get_graph()
-    buttons.add_item(nextcord.ui.Button(label="Source [1]",
-                                        url="https://www.covid19.admin.ch/de/overview"))
-    buttons.add_item(nextcord.ui.Button(label="Source [2]\n",
-                                        url="https://www.worldometers.info/coronavirus/"))
+    output = await channel.send("Get covid data...")
 
-    embed = nextcord.Embed(title="+++COVID-NEWS+++", description=f"Stand {all_data[8]}", color=0xfff700) \
-        .add_field(name="SCHWEIZ:", value=f"**Cases**: {all_data[0]} [2] "
-                                          f"(+{all_data[2]} [1])\n"
-                                          f"**Tode:**: {all_data[1]} [2] "
-                                          f"(+{all_data[3]} [1])", inline=False) \
-        .add_field(name="WELTWEIT:", value=f"**Cases**: {all_data[4]} [2] "
-                                           f"(+{all_data[6]} [2])\n"
-                                           f"**Tode:**: {all_data[5]} [2] "
-                                           f"(+{all_data[7]} [2])", inline=False) \
-        .set_image(url=f"attachment://{graph_name}")
-    await channel.send(content=None, embed=embed, view=buttons, file=nextcord.File(graph_name),
-                       delete_after=delete_after)
+    all_data = list(i for i in covid_despair.get_cases())
+    await output.edit(content="Get graph...")
+
+    then = datetime.now()
+
+    graph_name = covid_despair.get_graph()
+    collapse = False
+
+    while then + timedelta(seconds=delete_after) > datetime.now():
+        await output.delete()
+        if not collapse:
+            buttons = nextcord.ui.View()
+            collapse_btn = Buttons.CollapseBtn()
+
+            buttons.add_item(nextcord.ui.Button(label="Source [1]",
+                                                url="https://www.covid19.admin.ch/de/overview"))
+            buttons.add_item(nextcord.ui.Button(label="Source [2]\n",
+                                                url="https://www.worldometers.info/coronavirus/"))
+
+            buttons.add_item(collapse_btn)
+
+            embed = nextcord.Embed(title="+++COVID-NEWS+++", description=f"Stand {all_data[8]}", color=0xfff700) \
+                .add_field(name="SCHWEIZ:", value=f"**Cases**: {all_data[0]} [2] "
+                                                  f"(+{all_data[2]} [1])\n"
+                                                  f"**Tode:**: {all_data[1]} [2] "
+                                                  f"(+{all_data[3]} [1])", inline=False) \
+                .add_field(name="WELTWEIT:", value=f"**Cases**: {all_data[4]} [2] "
+                                                   f"(+{all_data[6]} [2])\n"
+                                                   f"**Tode:**: {all_data[5]} [2] "
+                                                   f"(+{all_data[7]} [2])", inline=False) \
+                .set_image(url=f"attachment://{graph_name}")
+
+            output = await channel.send(content=None, embed=embed, view=buttons, file=nextcord.File(graph_name))
+            await buttons.wait()
+            collapse = collapse_btn.collapse
+
+        else:
+            buttons = nextcord.ui.View(timeout=delete_after)
+            collapse_btn = Buttons.CollapseBtn()
+            collapse_btn.label = "Ausklappen"
+            buttons.add_item(collapse_btn)
+
+            output = await channel.send(content="Wurde eingeklappt", view=buttons)
+            await buttons.wait()
+            collapse = not collapse_btn.collapse
+
+    await channel.send(content="wurde gelöscht")
+

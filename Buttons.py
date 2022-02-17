@@ -803,3 +803,13 @@ class menu(nextcord.ui.Select):
     async def callback(self, interaction: nextcord.Interaction):
             self.view_obj.choice = self.values[0]
             self.view_obj.stop()
+
+
+class CollapseBtn(nextcord.ui.Button):
+    def __init__(self):
+        super().__init__(style=nextcord.ButtonStyle.primary, label="Einklappen", row=2)
+        self.collapse = False
+
+    async def callback(self, interaction: nextcord.Interaction):
+        self.collapse = True
+        self.view.stop()
