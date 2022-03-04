@@ -42,7 +42,6 @@ async def on_ready():
 
     try: # we sech dr bot mues reconnecte, denn motzter wöuder d tasks scho gstartet het.
         remind.start()
-        download_pdf.start()
         briefing.start()
         news.start()
 
