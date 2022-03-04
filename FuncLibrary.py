@@ -225,6 +225,8 @@ def outputbriefing(user, ef, sf, kf, mint):
 
 
 async def covid_embed(channel, delete_after):
+    now = datetime.utcnow() + timedelta(hours=1)
+
     output = await channel.send("Get covid data...")
 
     all_data = list(i for i in covid_despair.get_cases())
@@ -238,7 +240,7 @@ async def covid_embed(channel, delete_after):
     while then + timedelta(seconds=delete_after) > datetime.now():
         await output.delete()
         if not collapse:
-            buttons = nextcord.ui.View()
+            buttons = nextcord.ui.View(timeout=600)
             collapse_btn = Buttons.CollapseBtn()
 
             buttons.add_item(nextcord.ui.Button(label="Source [1]",
@@ -261,7 +263,7 @@ async def covid_embed(channel, delete_after):
 
             output = await channel.send(content=None, embed=embed, view=buttons, file=nextcord.File(graph_name))
             await buttons.wait()
-            collapse = collapse_btn.collapse
+            collapse = True
 
         else:
             buttons = nextcord.ui.View(timeout=delete_after)
@@ -269,9 +271,8 @@ async def covid_embed(channel, delete_after):
             collapse_btn.label = "Ausklappen"
             buttons.add_item(collapse_btn)
 
-            output = await channel.send(content="Wurde eingeklappt", view=buttons)
+            output = await channel.send(content=f"COVID Stats (aufgerufen am {now.day}.{now.month}. um {now.hour}:{now.minute})", view=buttons)
             await buttons.wait()
             collapse = not collapse_btn.collapse
 
-    await channel.send(content="wurde gelöscht")
 
