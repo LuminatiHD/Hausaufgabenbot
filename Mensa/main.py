@@ -72,13 +72,5 @@ class Menu(commands.Cog):
         else:
             await output.edit(content="Es sind Ferien")
 
-    @commands.command(name = "wochepdf", aliases=["Wocheypdf", "wpdf", "WPDF", "Wpdf"],
-                      help="Gibt ein PDF des momentanen Mensa-Wochenplan zurück.")
-    async def weeklypdf(self, ctx:Context):
-        output = await ctx.channel.send(content="Einen Moment...")
-        await ctx.channel.send(content="Das PDF ist manchmal outdated.", file=nextcord.File(r"Mensa/menu.png"))
-        await output.delete()
-
-
 def setup(client):
     client.add_cog(Menu(client))

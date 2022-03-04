@@ -81,16 +81,6 @@ async def remind():
         await FuncLibrary.covid_embed(covid_channel, 3600*24*2)
 
 
-@tasks.loop(hours=6)
-async def download_pdf():
-    try:
-        await Webscraping.weeklypdf(client=client)
-    except IndexError:
-        print("Website down or other error")
-
-    await client.change_presence(activity=nextcord.Game(name="!help"))
-
-
 @tasks.loop(hours=1)
 async def news():
     if (datetime.utcnow()+timedelta(hours=1)).hour == 10:
