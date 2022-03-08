@@ -3,6 +3,7 @@ import json
 import nextcord
 import Buttons
 from datetime import datetime, timedelta
+import os
 
 
 def get_news(select, pool):
@@ -52,10 +53,13 @@ async def post_news(bot, ctx=None):
         channel = ctx.channel
 
     articles = {i["title"]:{"link":i["link"], "flair":i["flair"]} for i in get_news(10, 100)}
-    articles_short = {i["title"][:100]:{"link":i["link"], "flair":i["flair"]} for i in get_news(10, 100)}
+
+    articles_short = dict((i[0][:100], i[1]) for i in articles.items())
+
     translate = dict(zip(articles_short.keys(), articles.keys()))
 
-    votes = {i:dict() for i in articles.keys()}
+    votes = {i:dict() for i in translate.values()}
+
     select = Buttons.Select_article(articles_short)
     output = await channel.send(content=f"{rolle} news vom "
                                         f"{now.day}."
@@ -63,7 +67,7 @@ async def post_news(bot, ctx=None):
                                         f"{now.year}"
                                         f" ({now.hour}:{now.minute} Uhr)",
                                 view=select)
-    while True:
+    while now > datetime.utcnow()+timedelta(hours=1):
         select = Buttons.Select_article(articles_short)
         await output.edit(content=f"{rolle} news vom "
                                         f"{now.day}."
@@ -76,3 +80,13 @@ async def post_news(bot, ctx=None):
         vote_btns = Buttons.Vote_btns(articles_short[select.choice]["flair"], votes[translate[select.choice]])
         await output.edit(content=f"\"{translate[select.choice]}\"\n{articles_short[select.choice]['link']}", view=vote_btns)
         await vote_btns.wait()
+
+    txt_name = f"news_{now.year}-{now.month}-{now.day}_{now.hour}-{now.minute}"
+
+    with open(txt_name, "w") as file:
+        for i in articles.items():
+            file.write(f"'{i[0]}': {i[1]['link']}\n")
+
+    await output.delete()
+    await channel.send(file=nextcord.File(txt_name))
+    os.remove(txt_name)
