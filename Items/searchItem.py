@@ -174,10 +174,9 @@ class Itemsearch(commands.Cog):
                             await outputmsg.delete()
 
                         database.commit()
-
-
                     else:
-                        await outputmsg.edit(content="Wurde ausgeführt", view=None, embed=None)
+                        await outputmsg.delete()
+                        await ctx.message.add_reaction("✅")
                         break
                 else:
                     try:
