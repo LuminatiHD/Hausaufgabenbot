@@ -24,49 +24,41 @@ class newItem(commands.Cog):
                            "'exit' oder 'stop' kannst du die Erstellung direkt abbrechen)")
     async def new(self, ctx: Context):
         if self.bot.user != ctx.author:
-            allaskmessages = []
-
             button = Buttons.TestOrHA(ctx)
             categorymsg = await ctx.reply("welche Kategorie?", view=button)
 
             await button.wait()
-            category = button.choice
 
-            for i in button.children:
-                i.disabled = True
-            await categorymsg.edit(view=button)
-
-            allaskmessages.append(categorymsg)
-
-            exitcommand = False  # isch da für weme möcht abbräche
-            exitoutput = False
-
-# ====================================== DATUM ==================================================
-            menu = Buttons.ChooseDatum(ctx)
-            menumsg = await ctx.channel.send("Wann ist der Test oder die Aufgabe fällig?", view=menu)
-            allaskmessages.append(menumsg)
-
-            while not menu.over:
-                menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
-                await menumsg.edit(view=menu)
-                await menu.wait()
-
-            exitcommand = menu.exit
-
-            for i in menu.children:
-                i.disabled = True
-
-            await menumsg.edit(view=menu)
+            exitcommand = button.exit  # isch da für weme möcht abbräche
 
             if not exitcommand:
-                date = f"{menu.year}-{int(menu.month):02}-{int(menu.day):02}"
+                category = button.choice
+            else:
+                await categorymsg.delete()
+                category = ""
+# ====================================== DATUM ==================================================
+            if not exitcommand:
+                menu = Buttons.ChooseDatum(ctx)
+
+                await categorymsg.edit(content="Wann ist der Test oder die Aufgabe fällig?", view=menu)
+                menumsg = categorymsg
+
+                while not menu.over:
+                    menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
+                    await menumsg.edit(view=menu)
+                    await menu.wait()
+
+                exitcommand = menu.exit
+
+                if not exitcommand:
+                    date = f"{menu.year}-{int(menu.month):02}-{int(menu.day):02}"
 
                 await menumsg.delete()
 
 # ======================================== FACH =========================================================
 
             if not exitcommand:
-                allaskmessages.append(await ctx.reply("Welches Fach?"))
+                fach_msg = await ctx.reply("Welches Fach? (Schreibe 'break', um die Erstellung abzubrechen")
                 fach = await self.bot.wait_for("message",
                                                check=lambda msg: msg.author == ctx.author and msg.content)
                 fach = FuncLibrary.changefachname(fach.content)
@@ -102,9 +94,6 @@ class newItem(commands.Cog):
                 else:
                     aufgabe = None
 
-            elif exitcommand and not exitoutput:
-                await ctx.channel.send("Erstellung wird abgebrochen")
-
 # ========================================= ACCESS =======================================
             if not exitcommand:
                 manageaccess = Buttons.ManageItemAccess(ctx)
@@ -127,12 +116,10 @@ class newItem(commands.Cog):
                 database.cursor().execute(
                     f"INSERT INTO {Itemtable} VALUES (?,?,?,?,?)",
                     (date, category, fach, aufgabe, access))
-                await ctx.channel.send(f"{category} wurde eingetragen")
+
                 database.commit()
 
-# ======================================== CLEANUP ==========================================
-            for i in allaskmessages:
-                await i.delete()
+            await ctx.message.add_reaction("✅")
 
 
 def setup(client):
