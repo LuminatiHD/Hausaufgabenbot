@@ -137,7 +137,7 @@ class extracmds(commands.Cog):
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
-        await news_scraper.post_news(self.bot, ctx)
+        await news_scraper.post_news(self, timedelta(minutes=1), ctx=ctx)
 
 
 def setup(client):
