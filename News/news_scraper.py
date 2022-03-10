@@ -37,7 +37,7 @@ def get_news(select, pool):
         yield {"link":post["url"], "flair":post["link_flair_text"], "title":post["title"]}
 
 
-async def post_news(bot, ctx=None):
+async def post_news(bot, delete_after:timedelta, ctx=None):
     now = datetime.utcnow()+timedelta(hours=1)
     rolle = ""
     if not ctx:
@@ -49,9 +49,9 @@ async def post_news(bot, ctx=None):
                     break
         except AttributeError:
             pass
+
     else:
         channel = ctx.channel
-
     articles = {i["title"]:{"link":i["link"], "flair":i["flair"]} for i in get_news(10, 100)}
 
     articles_short = dict((i[0][:100], i[1]) for i in articles.items())
@@ -67,7 +67,7 @@ async def post_news(bot, ctx=None):
                                         f"{now.year}"
                                         f" ({now.hour}:{now.minute} Uhr)",
                                 view=select)
-    while now > datetime.utcnow()+timedelta(hours=1):
+    while datetime.utcnow()+timedelta(hours=1) < now + delete_after:
         select = Buttons.Select_article(articles_short)
         await output.edit(content=f"{rolle} news vom "
                                         f"{now.day}."
@@ -76,10 +76,10 @@ async def post_news(bot, ctx=None):
                                         f" ({now.hour}:{now.minute} Uhr)",
                           view=select)
         await select.wait()
-
-        vote_btns = Buttons.Vote_btns(articles_short[select.choice]["flair"], votes[translate[select.choice]])
-        await output.edit(content=f"\"{translate[select.choice]}\"\n{articles_short[select.choice]['link']}", view=vote_btns)
-        await vote_btns.wait()
+        if select.choice:
+            vote_btns = Buttons.Vote_btns(articles_short[select.choice]["flair"], votes[translate[select.choice]])
+            await output.edit(content=f"\"{translate[select.choice]}\"\n{articles_short[select.choice]['link']}", view=vote_btns)
+            await vote_btns.wait()
 
     txt_name = f"news_{now.year}-{now.month}-{now.day}_{now.hour}-{now.minute}"
 
