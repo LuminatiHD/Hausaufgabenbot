@@ -61,6 +61,8 @@ class newItem(commands.Cog):
             if not exitcommand:
                 date = f"{menu.year}-{int(menu.month):02}-{int(menu.day):02}"
 
+                await menumsg.delete()
+
 # ======================================== FACH =========================================================
 
             if not exitcommand:
@@ -70,34 +72,33 @@ class newItem(commands.Cog):
                 fach = FuncLibrary.changefachname(fach.content)
                 exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
+                await fach_msg.delete()
 # ======================================== AUFGABE =========================================================
             if category != "Test" and not exitcommand:
-                allaskmessages.append(await ctx.reply("Was zu tun ist:"))
+                aufg_msg = await ctx.reply("Was zu tun ist:")
 
                 aufgabe = await self.bot.wait_for("message",
                                                   check=lambda msg: msg.author == ctx.author and msg.content)
                 aufgabe = aufgabe.content
 
                 exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
+                await aufg_msg.delete()
 
             elif not exitcommand:
                 yesno = Buttons.Confirm(ctx)
                 asklernziele = await ctx.reply("Schon Lernziele?", view=yesno)
-
                 await yesno.wait()
-                for i in yesno.children:
-                    i.disabled = True
-
-                await asklernziele.edit(view=yesno)
-                allaskmessages.append(asklernziele)
+                await asklernziele.delete()
 
                 if yesno.confirm:
-                    allaskmessages.append(await ctx.reply("Lernziele:"))
+                    aufg_msg = await ctx.reply("Lernziele:")
 
                     aufgabe = await self.bot.wait_for("message",
                                                       check=lambda msg: msg.author == ctx.author and msg.content)
                     aufgabe = aufgabe.content
                     exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
+
+                    await aufg_msg.delete()
                 else:
                     aufgabe = None
 
@@ -108,6 +109,7 @@ class newItem(commands.Cog):
             if not exitcommand:
                 manageaccess = Buttons.ManageItemAccess(ctx)
                 askaccess_msg = await ctx.reply("Für wen soll dieses Item sichtbar sein?", view=manageaccess)
+
                 await manageaccess.wait()
 
                 if manageaccess.access == "all":
@@ -118,12 +120,7 @@ class newItem(commands.Cog):
                 else:
                     access = manageaccess.access
 
-                for i in manageaccess.children:
-                    i.disabled = True
-
-                await askaccess_msg.edit(view=manageaccess)
-
-                allaskmessages.append(askaccess_msg)
+                await askaccess_msg.delete()
 
 # ====================================== EINTRAGEN =====================================
             if not exitcommand:
