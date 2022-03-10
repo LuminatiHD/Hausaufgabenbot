@@ -202,28 +202,6 @@ async def editItem(self, ctx, selecteditem, editor):
             (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
         database.commit()
 
-# ============================================== ACCESS ==============================================
-    elif "access" in editorbtn.edit:
-        confirm = Buttons.Confirm(ctx)
-        while not confirm.confirm:
-            newacc = Buttons.ManageItemAccess(ctx)
-            confirm = Buttons.Confirm(ctx)  # ig tue dr button neu generiere wöu schüsch chasch dr button nümme drücke
-            # de funktioniert z confirme nid.
-            await editor.edit(content="Zugriff: ", view=newacc)
-            await newacc.wait()
-            oldaccess = selecteditem[4]
-            if selecteditem[4].isnumeric():
-                oldaccess = "private"
-            await editor.edit(f"Alter Zugriff: {oldaccess}\nNeuer Zugriff: "
-                               f"{newacc.access}.\nBestätigen?", view=confirm)
-            await confirm.wait()
-            access = newacc.access
-            if newacc.access == "private":
-                access = ctx.author.id
-        database.cursor().execute(
-            f"UPDATE {Itemtable} SET access = '{access}' WHERE rowid = ?", (selecteditem[5],))
-        database.commit()
-
 # ============================================== CLEANUP ==============================================
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()
