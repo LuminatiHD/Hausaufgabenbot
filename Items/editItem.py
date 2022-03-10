@@ -137,51 +137,6 @@ async def editItem(self, ctx, selecteditem, editor):
             (newaufg.content, selecteditem[5]))
         database.commit()
 
-# ============================================== DATUM ==============================================
-    elif "datum" in editorbtn.edit:
-        confirm = Buttons.Confirm(ctx)
-
-        while not confirm.confirm:
-
-            confirm = Buttons.Confirm(ctx)
-
-            menu = Buttons.ChooseDatum(ctx)
-            await editor.edit("Wann ist der Test oder die Aufgabe fällig?", view=menu)
-
-            while not menu.over:
-                menu = Buttons.ChooseDatum(ctx, menu.day, menu.month, menu.year)
-                await editor.edit(view=menu)
-                await menu.wait()
-                if menu.exit:
-                    break
-
-            if menu.exit:
-                break
-
-            for i in menu.children:
-                i.disabled = True
-
-            await editor.edit(view=menu)
-
-            datum = datetime.date(int(menu.year), int(menu.month), int(menu.day))
-
-            olddatum = datetime.date(int(selecteditem[0].split("-")[0]),
-
-                                     int(selecteditem[0].split("-")[1]),
-
-                                     int(selecteditem[0].split("-")[2]))
-
-            confirmmsg = await ctx.reply(f"Altes Datum: {olddatum.day}.{olddatum.month}.{olddatum.year}"
-        
-                                         f"\nNeues Datum: {datum.day}.{datum.month}.{datum.year}\nBestätigen?", view=confirm)
-
-            await confirm.wait()
-            await confirmmsg.delete()
-
-        if not menu.exit:
-            database.cursor().execute(f"UPDATE {Itemtable} SET datum = ? WHERE rowid = ?",
-                                      (str(datum), selecteditem[5]))
-            database.commit()
 
 # ============================================== FACH ==============================================
     if "Fach" in editorbtn.output:
