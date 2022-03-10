@@ -158,9 +158,9 @@ async def editItem(self, ctx, selecteditem, editor):
         database.commit()
 
 # ============================================== CLEANUP ==============================================
+    await editor.delete()
     if not editorbtn.goback:  # weme dr "Zurück"-button drückt de isch goback=True
         database.commit()
-        await ctx.channel.send("Gegebene Änderungen wurden vorgenommen")
+        return await ctx.channel.send("Gegebene Änderungen wurden vorgenommen")
     else:
-        await ctx.channel.send("Editng-mode wird verlassen")
-    await editor.delete()
+        return await ctx.channel.send("Editing-mode wurde verlassen")

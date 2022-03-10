@@ -32,51 +32,13 @@ class Itemsearch(commands.Cog):
         timeset = str((datetime.datetime.utcnow()+datetime.timedelta(hours=1)).date())
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (timeset,))
         database.commit()
-        search = ctx.message.content[len("!todo "):]
-
-        bfore_or_after = ">="
-
-
-# =========================================== PERMISSIONS ===========================================
-        if search.startswith("bis") or search.startswith("ab"):
-            timeset = search[len("ab "):].split(", ")[0].split(".")
-            try:
-                timeset = date(int(timeset[2]), int(timeset[1]), int(timeset[0]))
-                bfore_or_after = "<=" if search.startswith("bis") else ">="
-
-            except IndexError:
-                await ctx.channel.send("Invalider Input. Zeitangaben müssen in der Form \"DD.MM.YY angegeben\" werden.")
-                return
-
-            except ValueError:
-                await ctx.channel.send("Invalider Input.")
-                return
-            try:
-                search = search[search.index(", "):]
-            except ValueError:
-                search = None
-
-        ef, sf, kf, mint = FuncLibrary.get_access_permissions(ctx.author)
-        items = database.cursor().execute(f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} ? AND (access = 'all' " \
-                                          f"OR access = ? OR access = ? "\
-                                          f"OR access = ? OR access = ?) ORDER BY datum",
-                                          (timeset, ctx.author.id, sf, ef, kf)).fetchall()
-
-
-# =========================================== ITEMSUCHE ===========================================
-        if search == "":
-            search = None
-        # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
-        results = items[:]
-        if search is not None:
-            for keyword in search.split(", "):
-                for item in items:
-                    keyword = FuncLibrary.changefachname(keyword.capitalize())  # mues für input und output ou so si
-                    if keyword.lower().capitalize() not in item and item in results:
-                        results.remove(item)
 
         begin = datetime.datetime.now()
         currentpage = 0
+        results = await get_db_items(ctx, timeset)
+        if results is Exception:
+            return
+
         selection = results[:5]
 
 # =========================================== ERSTE SEITE ===========================================
@@ -87,6 +49,8 @@ class Itemsearch(commands.Cog):
                                         view=buttons)
 
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
+                results = await get_db_items(ctx, timeset)
+
                 if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
 
                     buttons = Buttons.PageButtons(results, currentpage, ctx)
@@ -167,8 +131,7 @@ class Itemsearch(commands.Cog):
 
 # ============================================= EDITIEREN ====================================================
                         elif selectbtn.edit:
-                            await editItem(self, ctx, selecteditem, outputmsg)
-                            break
+                            outputmsg = await editItem(self, ctx, selecteditem, outputmsg)
 
                         else:
                             await outputmsg.delete()
@@ -187,6 +150,51 @@ class Itemsearch(commands.Cog):
                         break
         else:
             await ctx.reply(content="Keine Resultate gefunden oder keine vorhanden.", delete_after=60)
+
+
+async def get_db_items(ctx, timeset):
+    search = ctx.message.content[len("!todo "):]
+
+    bfore_or_after = ">="
+
+    if search.startswith("bis") or search.startswith("ab"):
+        timeset = search[len("ab "):].split(", ")[0].split(".")
+        try:
+            timeset = date(int(timeset[2]), int(timeset[1]), int(timeset[0]))
+            bfore_or_after = "<=" if search.startswith("bis") else ">="
+
+        except IndexError:
+            await ctx.channel.send("Invalider Input. Zeitangaben müssen in der Form \"DD.MM.YY angegeben\" werden.")
+            return Exception
+
+        except ValueError:
+            await ctx.channel.send("Invalider Input.")
+            return Exception
+        try:
+            search = search[search.index(", "):]
+        except ValueError:
+            search = None
+    # =========================================== PERMISSIONS ===========================================
+    ef, sf, kf, mint = FuncLibrary.get_access_permissions(ctx.author)
+    items = database.cursor().execute(
+        f"SELECT *, rowid FROM {Itemtable} WHERE datum {bfore_or_after} ? AND (access = 'all' "
+        f"OR access = ? OR access = ? "
+        f"OR access = ? OR access = ?) ORDER BY datum",
+        (timeset, ctx.author.id, sf, ef, kf)).fetchall()
+
+    # =========================================== ITEMSUCHE ===========================================
+    if search == "":
+        search = None
+    # weme ds nid macht de tuetses bi results.remove ds elemänt bi items ou remove ka werum
+    results = items[:]
+    if search is not None:
+        for keyword in search.split(", "):
+            for item in items:
+                keyword = FuncLibrary.changefachname(keyword.capitalize())  # mues für input und output ou so si
+                if keyword.lower().capitalize() not in item and item in results:
+                    results.remove(item)
+
+    return results
 
 
 def setup(client):
