@@ -83,7 +83,7 @@ async def remind():
 @tasks.loop(hours=1)
 async def news():
     if (datetime.utcnow()+timedelta(hours=1)).hour == 10:
-        await news_scraper.post_news(client)
+        await news_scraper.post_news(client, timedelta(days=1))
 
 
 client.run(BOT_TOKEN)

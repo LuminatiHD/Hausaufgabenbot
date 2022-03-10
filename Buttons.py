@@ -261,6 +261,7 @@ class TestOrHA(nextcord.ui.View):
         super().__init__(timeout=120.0)
         self.choice = "Hausaufgabe"
         self.ctx = ctx
+        self.exit = False
 
     @nextcord.ui.button(label="Hausaufgabe", style=nextcord.ButtonStyle.primary)
     async def Hausaufgabe(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -278,6 +279,12 @@ class TestOrHA(nextcord.ui.View):
     async def Nocateg(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.choice = ""
+            self.stop()
+
+    @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red)
+    async def Exit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(ctx=self.ctx, interaction=interaction):
+            self.exit=True
             self.stop()
 
 
@@ -642,9 +649,10 @@ class DayDropdown(nextcord.ui.Select):
         super().__init__(placeholder="Tag:", max_values=1, min_values=1, options=options)
 
     async def callback(self, interaction: nextcord.Interaction):
-        self.menu.day = self.values[0]
-        if self.values[0] == ">24" or self.values[0] == "<25":
-            self.menu.stop()
+        if await testinter(interaction, self.menu.ctx):
+            self.menu.day = self.values[0]
+            if self.values[0] == ">24" or self.values[0] == "<25":
+                self.menu.stop()
 
 
 class ChooseDatum(nextcord.ui.View):
@@ -680,7 +688,6 @@ class ChooseDatum(nextcord.ui.View):
 
     @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.primary, custom_id = "confirm")
     async def confirm(self, button: nextcord.Button, interaction: nextcord.Interaction):
-
         if await testinter(interaction, self.ctx) and all(i.values for i in self.children if
                                                           type(i) == Dropdown or type(i) == DayDropdown):
 
@@ -707,9 +714,10 @@ class ChooseDatum(nextcord.ui.View):
 
     @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red, custom_id="exit")
     async def goback(self, button: nextcord.Button, interaction: nextcord.Interaction):
-        self.over = True
-        self.exit = True
-        self.stop()
+        if await testinter(interaction, self.ctx):
+            self.over = True
+            self.exit = True
+            self.stop()
 
 
 class Poll_Button(nextcord.ui.Button):
@@ -741,7 +749,7 @@ class Poll_ViewObj(nextcord.ui.View):
 
 class Vote_btns(nextcord.ui.View):
     def __init__(self, flair, voters=dict()):
-        super().__init__(timeout=None)
+        super().__init__(timeout=60)
         self.flair = flair
         self.voters = voters
 
@@ -789,7 +797,7 @@ class Vote_btns(nextcord.ui.View):
 
 class Select_article(nextcord.ui.View):
     def __init__(self, posts):
-        super().__init__(timeout=None)
+        super().__init__(timeout=120)
         self.choice = None
         self.add_item(menu(posts, self))
 
@@ -801,8 +809,8 @@ class menu(nextcord.ui.Select):
         self.view_obj = view_obj
 
     async def callback(self, interaction: nextcord.Interaction):
-            self.view_obj.choice = self.values[0]
-            self.view_obj.stop()
+        self.view_obj.choice = self.values[0]
+        self.view_obj.stop()
 
 
 class CollapseBtn(nextcord.ui.Button):
@@ -813,3 +821,26 @@ class CollapseBtn(nextcord.ui.Button):
     async def callback(self, interaction: nextcord.Interaction):
         self.collapse = True
         self.view.stop()
+
+
+class Dropdown_Menu(nextcord.ui.View):
+    def __init__(self, ctx, options, min=1, max=1):
+        super().__init__(timeout=120)
+        self.ctx = ctx
+        self.dropdown = nextcord.ui.Select(min_values=min, max_values=max,
+                                           options = [nextcord.SelectOption(label=i) for i in options])
+        self.add_item(self.dropdown)
+        self.output = []
+        self.goback = False
+
+    @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.primary)
+    async def confirm(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(interaction, self.ctx):
+            self.output = self.dropdown.values
+            self.stop()
+
+    @nextcord.ui.button(label="Abbrechen", style=nextcord.ButtonStyle.red)
+    async def goback(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if await testinter(interaction, self.ctx):
+            self.goback = True
+            self.stop()
