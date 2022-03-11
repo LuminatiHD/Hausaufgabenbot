@@ -76,8 +76,10 @@ class Itemsearch(commands.Cog):
 
 # =========================================== AUSWAHL ===========================================
 
-                    elif buttons.select >-1:
-                        selecteditem = selection[buttons.select]
+                    elif int(buttons.select) >-1:
+                        # buttons.select returns the label of the button, that being
+                        # a) a string and b) starts  with 1 and ends with 5
+                        selecteditem = selection[int(buttons.select)-1]
                         # we dr zuegriff aus userid iigspicheret isch, de versuechters z näh.
                         # weses nid geit, isches nid ä userid.
                         try:
