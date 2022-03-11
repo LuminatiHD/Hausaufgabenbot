@@ -22,6 +22,8 @@ async def editdates(ctx:Context):
 
     else:
         cs.execute(f"INSERT INTO briefing VALUES ({ctx.author.id}, '','','','','','','','','','','')")
+
+# =================================================WOCHENTAGE================================================
     oldchoice = [i for i in chosen]
 
     choicebtns = Buttons.ChooseWeekdays(ctx=ctx)
