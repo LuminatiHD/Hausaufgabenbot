@@ -58,7 +58,7 @@ class newItem(commands.Cog):
 # ======================================== FACH =========================================================
 
             if not exitcommand:
-                fach_msg = await ctx.reply("Welches Fach? (Schreibe 'break', um die Erstellung abzubrechen")
+                fach_msg = await ctx.reply("Welches Fach? (Schreibe 'break', um die Erstellung abzubrechen)")
                 fach = await self.bot.wait_for("message",
                                                check=lambda msg: msg.author == ctx.author and msg.content)
                 fach = FuncLibrary.changefachname(fach.content)
