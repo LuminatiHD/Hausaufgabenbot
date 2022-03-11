@@ -153,5 +153,6 @@ async def edit_classes(ctx:Context):
     cs.execute(f"UPDATE briefing SET sf=?, ef=?, kf=?, mint=? WHERE user_id = {ctx.author.id}", (sf, ef, kf, mint))
     database.commit()
 
-    await editor.edit(content="Wurde eingetragen", view=None, delete_after=20)
+    await editor.delete()
+    await ctx.message.add_reaction("✅")
 
