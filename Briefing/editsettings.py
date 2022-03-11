@@ -42,10 +42,10 @@ async def editdates(ctx:Context):
             # de wächsleter d buttonfarb zu blau.
 
             for button in choicebtns.children:
-                if button.label.lower() in chosen:
-                    if chosen.count(button.label.lower()) > 1:
+                if button.label in chosen:
+                    if chosen.count(button.label) > 1:
 
-                        chosen[:] = [a for a in chosen if a != button.label.lower()]
+                        chosen[:] = [a for a in chosen if a != button.label]
 
                         button.style = nextcord.ButtonStyle.blurple
 
@@ -54,13 +54,14 @@ async def editdates(ctx:Context):
 
         await editor_message.edit(view=choicebtns)
 
-    chosen.sort(key = lambda day:weekdays.index(day))
+    chosen.sort(key = lambda day:weekdays.index(day.lower()))
 
     for i in oldchoice:
         if not i in chosen:
             cs.execute(f"UPDATE briefing SET {i}=? WHERE user_id = {ctx.author.id}", ("",))
             database.commit()
 
+# =================================================ZEITEN================================================
     for i in chosen:
         if olddates:
             choiceforday = cs.execute(f"SELECT {i} FROM briefing WHERE user_id=?",
@@ -82,7 +83,6 @@ async def editdates(ctx:Context):
             for child in button.children:
                 if child.label in choiceforday:
                     if choiceforday.count(child.label) > 1:
-
                         choiceforday[:] = [x for x in choiceforday if x != child.label and x]
 
                         child.style = nextcord.ButtonStyle.blurple
