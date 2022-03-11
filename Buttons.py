@@ -81,70 +81,41 @@ class PageButtons(nextcord.ui.View):  # buttons für d siitene
         # mit [BUTTON].disabled chame d disability vomne button wächsle.
         # das machi hie für dasme nit cha out of bounds gah.
 
+        for i in range(1, 5+1):
+            self.add_item(TimeButton(self, self.ctx, str(i), "select", row=0))
+
         for button in self.children:
             label = button.__str__().split(" ")[5].split("=")[1][1:-1]
             if label not in ["<<", "<","o", ">", ">>"] and int(label) > len(results) - (currentpage * 5):
                 button.disabled = True
-            # wider zum prevente das me out of bounds geit,
-            # i däm fau das me nid iwie ds item 4 selected wo gar nid da isch.
 
-    @nextcord.ui.button(label="1", style=nextcord.ButtonStyle.primary)
-    async def Select1(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.select = 0
-            self.stop()
-
-    @nextcord.ui.button(label="2", style=nextcord.ButtonStyle.primary)
-    async def Select2(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.select = 1
-            self.stop()
-
-    @nextcord.ui.button(label="3", style=nextcord.ButtonStyle.primary)
-    async def Select3(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.select = 2
-            self.stop()
-
-    @nextcord.ui.button(label="4", style=nextcord.ButtonStyle.primary)
-    async def Select4(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.select = 3
-            self.stop()
-
-    @nextcord.ui.button(label="5", style=nextcord.ButtonStyle.primary)
-    async def Select5(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.select = 4
-            self.stop()
-
-    @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.primary, row=1)
     async def bigleft(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.currentpage = 0
             self.left = True
             self.stop()
 
-    @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="<", style=nextcord.ButtonStyle.primary, row=1)
     async def leftbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.currentpage -= 1
             self.left = True
             self.stop()
 
-    @nextcord.ui.button(label="o", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label="o", style=nextcord.ButtonStyle.primary, row=1)
     async def endinteraction(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.stop()
 
-    @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label=">", style=nextcord.ButtonStyle.primary, row=1)
     async def rightbutton(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.currentpage += 1
             self.right = True
             self.stop()
 
-    @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.primary)
+    @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.primary, row=1)
     async def bigright(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.currentpage = int(len(self.results) / 5) + (len(self.results) % 5 > 0) - 1
@@ -352,52 +323,13 @@ class ChooseWeekdays(nextcord.ui.View):
     def __init__(self, ctx: Context, confirmbtn:bool = False):
         super().__init__(timeout=120.0)
         self.ctx = ctx
-        self.choice = []
+        self.choice = None
         self.confirm = False
 
         self.confirmbtn.disabled = confirmbtn
 
-    @nextcord.ui.button(label="Mo", style=nextcord.ButtonStyle.primary, row=1)
-    async def Montag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice="mo"
-            self.stop()
-
-    @nextcord.ui.button(label="Di", style=nextcord.ButtonStyle.primary, row=1)
-    async def Dienstag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice="di"
-            self.stop()
-
-    @nextcord.ui.button(label="Mi", style=nextcord.ButtonStyle.primary, row=1)
-    async def Mittwoch(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice="mi"
-            self.stop()
-
-    @nextcord.ui.button(label="Do", style=nextcord.ButtonStyle.primary, row=1)
-    async def Donnerstag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice="do"
-            self.stop()
-
-    @nextcord.ui.button(label="Fr", style=nextcord.ButtonStyle.primary, row=1)
-    async def Freitag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice="fr"
-            self.stop()
-
-    @nextcord.ui.button(label="Sa", style=nextcord.ButtonStyle.primary, row=2)
-    async def Samstag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice= "sa"
-            self.stop()
-
-    @nextcord.ui.button(label="So", style=nextcord.ButtonStyle.primary, row=2)
-    async def Sonntag(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice = "so"
-            self.stop()
+        for i in ("mo", "di", "mi", "do", "fr", "sa", "so"):
+            self.add_item(TimeButton(self, self.ctx, i.capitalize(), "choice"))
 
     @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.red, row=3)
     async def confirmbtn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -413,101 +345,27 @@ class ChooseTime(nextcord.ui.View):
         self.confirm= False
         self.choice=None
 
-    @nextcord.ui.button(label="6:00", style=nextcord.ButtonStyle.primary, row=1)
-    async def hour_6(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="7:00", style=nextcord.ButtonStyle.primary, row=1)
-    async def hour_7(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="8:00", style=nextcord.ButtonStyle.primary, row=1)
-    async def hour_8(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="9:00", style=nextcord.ButtonStyle.primary, row=1)
-    async def hour_9(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="10:00", style=nextcord.ButtonStyle.primary, row=1)
-    async def hour_10(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="11:00", style=nextcord.ButtonStyle.primary, row=2)
-    async def hour_11(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="12:00", style=nextcord.ButtonStyle.primary, row=2)
-    async def hour_12(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="13:00", style=nextcord.ButtonStyle.primary, row=2)
-    async def hour_13(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="14:00", style=nextcord.ButtonStyle.primary, row=2)
-    async def hour_14(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="15:00", style=nextcord.ButtonStyle.primary, row=2)
-    async def hour_15(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="16:00", style=nextcord.ButtonStyle.primary, row=3)
-    async def hour_16(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="17:00", style=nextcord.ButtonStyle.primary, row=3)
-    async def hour_17(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="18:00", style=nextcord.ButtonStyle.primary, row=3)
-    async def hour_18(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="19:00", style=nextcord.ButtonStyle.primary, row=3)
-    async def hour_19(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
-
-    @nextcord.ui.button(label="20:00", style=nextcord.ButtonStyle.primary, row=3)
-    async def hour_20(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if await testinter(ctx=self.ctx, interaction=interaction):
-            self.choice=button.label
-            self.stop()
+        for i in range(6, 21):
+            self.add_item(TimeButton(self, ctx, f"{i}:00", "choice", row=(i-6)//5))
 
     @nextcord.ui.button(label="Bestätigen", style=nextcord.ButtonStyle.red, row=4)
     async def confirmbtn(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if await testinter(ctx=self.ctx, interaction=interaction):
             self.confirm = True
             self.stop()
+
+
+class TimeButton(nextcord.ui.Button):
+    def __init__(self, view_obj, ctx, label, attr,row=None):
+        super().__init__(style=nextcord.ButtonStyle.primary, label=label, row=row)
+        self.ctx = ctx
+        self.view_obj = view_obj
+        self.attr = attr
+
+    async def callback(self, interaction: nextcord.Interaction):
+        if await testinter(interaction=interaction, ctx=self.ctx):
+            self.view_obj.__setattr__(self.attr, self.label)
+            self.view_obj.stop()
 
 
 class choose_SF(nextcord.ui.View):
