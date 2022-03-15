@@ -40,10 +40,11 @@ async def on_ready():
     if TEST_OR_MAIN == "0":
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
 
-    try: # we sech dr bot mues reconnecte, denn motzter wöuder d tasks scho gstartet het.
-        remind.start()
+    try: # we sech dr bot mues reconnecte denn motzter wöuder d tasks scho gstartet het.
+        covid.start()
         briefing.start()
         news.start()
+        remind_task.start()
 
     except RuntimeError:
         pass
@@ -72,12 +73,36 @@ async def briefing():
                 await client.get_user(user[0]).send(embed=main.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
 
 
-@tasks.loop(hours=30)
-async def remind():
+@tasks.loop(hours=6)
+async def covid():
     zeit = (datetime.utcnow()+timedelta(hours=1)).time()
     if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute<30:
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
         await FuncLibrary.covid_embed(covid_channel, 3600*24*2)
+
+
+@tasks.loop(hours=12)
+async def remind_task():
+    then = (datetime.utcnow() + timedelta(hours=1))
+    cs.execute("DELETE FROM items WHERE datum < ?", (str(then.date()),))
+    database.commit()
+
+    for i in cs.execute("SELECT * FROM items WHERE datum <= ?", (str((then+timedelta(days=1)).date()), )).fetchall():
+        if i[4].isnumeric():
+            channel = client.get_user(i)
+
+        else:
+            channel = FuncLibrary.get_channel(client.guilds[0], i[2])
+            if not channel:
+                channel = client.get_channel(912264818516430849)
+
+        date = i[0].split('-')
+        embed = nextcord.Embed(color=0x64d7fa, title=f"BIS {date[2]}.{date[1]}.{date[0]}:")\
+            .add_field(name="Fach:", value=i[2])\
+            .add_field(name="Aufgabe:", value=i[3] if i[3] else "keine angegeben :(")
+
+        if channel:
+            await channel.send(embed=embed)
 
 
 @tasks.loop(hours=1)
