@@ -137,7 +137,8 @@ class extracmds(commands.Cog):
 
     @commands.command(name="!test")
     async def test(self, ctx:Context):
-        await news_scraper.post_news(self, timedelta(minutes=1), ctx=ctx)
+        for i in ctx.guild.members:
+            print(i.name, ctx.channel.permissions_for(i).view_channel)
 
 
 def setup(client):
