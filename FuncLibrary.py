@@ -1,4 +1,5 @@
 import nextcord
+import nextcord.ext
 from datetime import timedelta, date, datetime
 import sqlite3
 import Buttons
@@ -41,7 +42,6 @@ StP_colors = {"deutsch":0xffdd00,
               "ef info":0x10e0c5,
               "ef pp":0xe0103a,
               "ef philo":0xb80b6a,
-
              }
 
 
@@ -274,5 +274,13 @@ async def covid_embed(channel, delete_after):
             output = await channel.send(content=f"COVID Stats (aufgerufen am {now.day}.{now.month}. um {now.hour}:{now.minute})", view=buttons)
             await buttons.wait()
             collapse = not collapse_btn.collapse
+
+
+def get_channel(guild:nextcord.Guild, name) -> nextcord.TextChannel:
+    for i in guild.channels:
+        if i.name == name and type(i) == nextcord.TextChannel:
+            return i
+
+    return None
 
 

@@ -1,5 +1,6 @@
 import datetime
 import sqlite3
+import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 import Buttons
@@ -23,6 +24,15 @@ class newItem(commands.Cog):
     @commands.command(help="Trage neue Elemente ein. Die kann man mit 'todo' ansehen und bearbeiten. (Tipp: Mit "
                            "'exit' oder 'stop' kannst du die Erstellung direkt abbrechen)")
     async def new(self, ctx: Context):
+        try:
+            faecher = tuple(i for i in ctx.guild.channels
+                       if type(i) == nextcord.TextChannel
+                        and i.permissions_for(ctx.author).view_channel
+                         and self.bot.get_channel(i.category_id).name.lower() == "fächer")
+
+        except AttributeError:
+            faecher = tuple()
+
         if self.bot.user != ctx.author:
             button = Buttons.TestOrHA(ctx)
             categorymsg = await ctx.reply("welche Kategorie?", view=button)
@@ -58,11 +68,25 @@ class newItem(commands.Cog):
 # ======================================== FACH =========================================================
 
             if not exitcommand:
-                fach_msg = await ctx.reply("Welches Fach? (Schreibe 'break', um die Erstellung abzubrechen)")
-                fach = await self.bot.wait_for("message",
-                                               check=lambda msg: msg.author == ctx.author and msg.content)
-                fach = FuncLibrary.changefachname(fach.content)
-                exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
+                fach_msg = menumsg
+                if faecher:
+                    choose = Buttons.Dropdown_Menu(ctx, tuple(i.name for i in faecher)+("andere...",))
+                    await fach_msg.edit(content="Welches Fach?", view=choose)
+                    await choose.wait()
+
+                    exitcommand = choose.goback
+                    if not exitcommand:
+                        fach = choose.output[0]
+
+                if not faecher or (locals().get("fach") and fach == "andere..."):
+                    fach_msg = await fach_msg.edit(
+                        content="Welches Fach? (Schreibe 'break', um die Erstellung abzubrechen)", view=None)
+
+                    fach = await self.bot.wait_for("message",
+                                                   check=lambda msg: msg.author == ctx.author and msg.content
+                                                                     and not msg.content.startswith("!"))
+                    fach = FuncLibrary.changefachname(fach.content)
+                    exitcommand = fach in ["Break", "Exit", "Stop"] or fach.startswith("!")
 
                 await fach_msg.delete()
 # ======================================== AUFGABE =========================================================
