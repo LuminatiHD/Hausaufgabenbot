@@ -89,7 +89,7 @@ async def remind_task():
 
     for i in cs.execute("SELECT * FROM items WHERE datum <= ?", (str((then+timedelta(days=1)).date()), )).fetchall():
         if i[4].isnumeric():
-            channel = client.get_user(i)
+            channel = client.get_user(int(i[4]))
 
         else:
             channel = FuncLibrary.get_channel(client.guilds[0], i[2])
