@@ -2,6 +2,7 @@ import Buttons
 import sqlite3
 import datetime
 import FuncLibrary
+import nextcord
 
 Itemfile = "ItemFiles.db"
 Alltables = "testitems", "items"
@@ -13,6 +14,15 @@ Itemkategorien = ("Test", "Aufgabe")
 
 
 async def editItem(self, ctx, selecteditem, editor):
+    try:
+        faecher = tuple(i for i in ctx.guild.channels
+                        if type(i) == nextcord.TextChannel
+                        and i.permissions_for(ctx.author).view_channel
+                        and self.bot.get_channel(i.category_id).name.lower() == "fächer")
+
+    except AttributeError:
+        faecher = tuple()
+
     await editor.edit("Was genau möchtest du editieren?")
 
     editorbtn = Buttons.Dropdown_Menu(ctx, [i.capitalize() for i in tablecategories], min=1, max=len(tablecategories))
@@ -34,7 +44,12 @@ async def editItem(self, ctx, selecteditem, editor):
 
             await editor.edit(content="Neue Kategorie: ", view=newcategorychoice)
             await newcategorychoice.wait()
+
             newcategory = newcategorychoice.choice
+
+            if newcategorychoice.exit:
+                break
+
             if not category:
                 category = "Unspezifisch"
             await editor.edit(
@@ -142,19 +157,33 @@ async def editItem(self, ctx, selecteditem, editor):
     if "Fach" in editorbtn.output:
         confirm = Buttons.Confirm(ctx)
         while not confirm.confirm:
-            confirm = Buttons.Confirm(ctx)
-            askmsg = await ctx.reply("Fach: ")
-            newfach = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+            if faecher:
+                choose = Buttons.Dropdown_Menu(ctx, tuple(i.name for i in faecher) + ("andere...",))
+                askmsg = await ctx.reply(content="Welches Fach?", view=choose)
+                await choose.wait()
+                newfach = choose.output[0]
 
-            await askmsg.delete()
-            confirmmsg = await newfach.reply(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
-                                f"{FuncLibrary.changefachname(newfach.content)}.\nBestätigen?", view=confirm)
+                if newfach=="andere...":
+                    await askmsg.delete()
+
+            if not faecher or (locals().get("newfach") and newfach == "andere..."):
+                confirm = Buttons.Confirm(ctx)
+                askmsg = await ctx.reply("Fach: ")
+                newfach_msg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
+
+                newfach = newfach_msg.content
+                await askmsg.delete()
+
+                askmsg = await ctx.reply("...")
+
+            confirmmsg = await askmsg.edit(f"Altes Fach: {selecteditem[2]}\nNeues Fach: "
+                                f"{FuncLibrary.changefachname(newfach)}.\nBestätigen?", view=confirm)
             await confirm.wait()
             await confirmmsg.delete()
 
         database.cursor().execute(
             f"UPDATE {Itemtable} SET fach = ? WHERE rowid = ?",
-            (FuncLibrary.changefachname(newfach.content), selecteditem[5]))
+            (FuncLibrary.changefachname(newfach), selecteditem[5]))
         database.commit()
 
 # ============================================== CLEANUP ==============================================
