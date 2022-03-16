@@ -50,7 +50,7 @@ class Itemsearch(commands.Cog):
 
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
                 results = await get_db_items(ctx, timeset)
-                selection = results[:5]
+                selection = results[currentpage * 5:(currentpage + 1) * 5]
 
                 if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
 
