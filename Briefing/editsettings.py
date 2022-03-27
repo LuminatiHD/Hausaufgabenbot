@@ -13,11 +13,10 @@ weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
 async def editdates(ctx:Context):
     chosen = []
 
-    olddates = cs.execute("SELECT mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id = ?", (ctx.author.id,)).fetchall()
-
+    olddates = cs.execute("SELECT mo, di, mi, do, fr, sa, so FROM briefing WHERE user_id = ?", (ctx.author.id,)).fetchone()
     if olddates:
-        for i in range(len(olddates[0])):
-            if olddates[0][i]:
+        for i in range(len(olddates)):
+            if olddates[i]:
                 chosen.append(weekdays[i])
 
     else:
@@ -37,23 +36,22 @@ async def editdates(ctx:Context):
     while not choicebtns.confirm:
         await choicebtns.wait()
         if not choicebtns.confirm:
-            chosen.append(choicebtns.choice)
+            chosen.append(choicebtns.choice.lower())
             choicebtns = Buttons.ChooseWeekdays(ctx=ctx)
 
             # Luegt öb ä button isch drückt worde. Wenn ja, denn wirder grau. Wener aber 2mau isch drückt worde,
             # de wächsleter d buttonfarb zu blau.
 
             for button in choicebtns.children:
-                if button.label in chosen:
-                    if chosen.count(button.label) > 1:
-
-                        chosen[:] = [a for a in chosen if a != button.label]
-
+                if button.label.lower() in chosen:
+                    if chosen.count(button.label.lower()) > 1:
+                        chosen[:] = [a for a in chosen if a != button.label.lower()]
                         button.style = nextcord.ButtonStyle.blurple
 
                     else:
                         button.style = nextcord.ButtonStyle.grey
 
+        print(chosen)
         await editor_message.edit(view=choicebtns)
 
     chosen.sort(key = lambda day:weekdays.index(day.lower()))
