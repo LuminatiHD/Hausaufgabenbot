@@ -62,6 +62,8 @@ class newItem(commands.Cog):
 
                 if not exitcommand:
                     date = f"{menu.year}-{int(menu.month):02}-{int(menu.day):02}"
+                else:
+                    await menumsg.delete()
 
 # ======================================== FACH =========================================================
 
