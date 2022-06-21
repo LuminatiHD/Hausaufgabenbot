@@ -8,6 +8,8 @@ from Briefing import main
 import FuncLibrary
 from Mensa import Webscraping
 from News import news_scraper
+import traceback
+from time import sleep
 
 Alltables = "items"
 Itemtable = "items"
@@ -110,5 +112,34 @@ async def news():
     if (datetime.utcnow()+timedelta(hours=1)).hour == 10:
         await news_scraper.post_news(client, timedelta(days=1))
 
+
+@client.event
+async def on_command_error(ctx:commands.context.Context, error:Exception):
+    """Error Handler."""
+    if not type(error) == nextcord.ext.commands.CommandNotFound:
+        now = datetime.utcnow() + timedelta(hours=2)
+        print("\n"+"="*100+f"\nError from {now.day}.{now.month}.{now.year} on {now.hour:02}:{now.minute:02}:{now.second:02}")
+        sleep(0.001) # without this, the error message occasionally gets sent before the timestamp (idk why)
+        traceback.print_exception(error)
+        # prints the exception with a timestamp
+
+        # sends a notification to LuminatiHD
+        owner = client.get_user(633733324447416331)
+        out = nextcord.Embed(
+            title=f"Error from {now.day}.{now.month}.{now.year} on {now.hour:02}:{now.minute:02}:{now.second:02}",
+            description=FuncLibrary.linebreaks(error.args[0], n=40),
+            colour=int("7d0410", 16)) \
+            .add_field(name="message:", value=ctx.message.content, inline=False) \
+            .add_field(name="author:",  value=ctx.author.display_name, inline=False)\
+            .add_field(name="channel:", value=ctx.channel, inline=False)
+
+        # if the ctx is in a DM-channel, then specifying the server makes no sense.
+        if type(ctx.channel) != nextcord.DMChannel:
+            out.add_field(name="guild:", value=ctx.guild.name, inline=False)
+        await owner.send(embed=out)
+
+    else:
+        await ctx.message.add_reaction("❓")
+        await ctx.channel.send("I don't know this command. Type '!help' to see all available commands.")
 
 client.run(BOT_TOKEN)

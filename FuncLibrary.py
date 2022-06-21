@@ -284,3 +284,14 @@ def get_channel(guild:nextcord.Guild, name) -> nextcord.TextChannel:
     return None
 
 
+def linebreaks(string:str, n:int)->str:
+    out = []
+    elem = string.split(" ")[0]
+    for i in string.split(" ")[1:]:
+        if len(elem) + len(i) + len(" ") > n:
+            out.append(elem)
+            elem = i
+        else:
+            elem += " "+i
+    out.append(elem)
+    return "\n".join(out)
