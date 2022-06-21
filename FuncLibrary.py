@@ -276,7 +276,7 @@ async def covid_embed(channel, delete_after):
             collapse = not collapse_btn.collapse
 
 
-def get_channel(guild:nextcord.Guild, name) -> nextcord.TextChannel:
+def get_channel(guild:nextcord.Guild, name) -> nextcord.TextChannel | None:
     for i in guild.channels:
         if i.name == name and type(i) == nextcord.TextChannel:
             return i
