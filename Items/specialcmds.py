@@ -29,7 +29,7 @@ class extracmds(commands.Cog):
 
         if not suggestion.lower().replace(" ", "") in ["ligma", "sugma", "you suck", "u suck", "ligmaballs"]:
             confirm = await ctx.channel.send("Wird eingetragen...")
-            time = datetime.utcnow()+timedelta(hours=1)
+            time = datetime.utcnow()+timedelta(hours=2)
             time = f"{time.hour:02}:{time.minute:02}:{time.second:02}, {time.day:02}.{time.month:02}.{str(time.year)[-2::]}"
             # ds {time.x:02} isch eifach nur da für weme z.B. ä uhrzit vo 9:16:1 het, dass drus när 09:16:1 wird.
             # So isch ds Layout nicer.

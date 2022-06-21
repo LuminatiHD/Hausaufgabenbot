@@ -76,7 +76,7 @@ def setup(client):
 
 def outputbriefing(user, ef, sf, kf, mint):
     weekdays = FuncLibrary.weekdays
-    today = (datetime.utcnow()+timedelta(hours=1))
+    today = (datetime.utcnow()+timedelta(hours=2))
     output = nextcord.Embed(title=f"{weekdays[today.weekday()]}, "
                                   f"{today.day}.{today.month}.{str(today.year)[2:]} "
                                   f"({today.hour}:{today.minute:02})")

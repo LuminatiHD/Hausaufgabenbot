@@ -25,7 +25,7 @@ class Stundenplan(commands.Cog):
     @commands.command(name="nextlesson", aliases=["nl"],
                       help="Gibt einem die nächste Lektion zurück, falls heue noch welche anstehen.")
     async def next(self, ctx:Context):
-        tag = datetime.utcnow()+timedelta(hours=1)
+        tag = datetime.utcnow()+timedelta(hours=2)
         zeit = tag.time()
         sf, ef, kf, mint= access(ctx.author)
 
@@ -45,7 +45,7 @@ class Stundenplan(commands.Cog):
             zeit = output[1].split("-")[0]
             zeit = datetime.combine(date.today(),
                                      time(int(zeit.split(":")[0]), int(zeit.split(":")[1])))-\
-                   (datetime.utcnow()+timedelta(hours=1))
+                   (datetime.utcnow()+timedelta(hours=2))
 
             hours = zeit.seconds//3600
             minutes = (zeit.seconds//60)%60
@@ -68,7 +68,7 @@ class Stundenplan(commands.Cog):
     @commands.command(name = "tagesplan", aliases = ["t", "T"], help="Gibt alle heutigen Lektionen zurück.")
     async def day(self, ctx:Context):
         table = "Stundenplan_23b"
-        currdate = ((datetime.utcnow()+timedelta(hours=1))+timedelta(hours=24-17)).date()
+        currdate = ((datetime.utcnow()+timedelta(hours=2))+timedelta(hours=24-17)).date()
         tag = currdate.weekday()
 
         if tag>4:

@@ -525,7 +525,7 @@ class ChooseDatum(nextcord.ui.View):
         self.month = month
         self.year = year
 
-        today = (datetime.utcnow()+timedelta(hours=1))
+        today = (datetime.utcnow()+timedelta(hours=2))
 
         dayselect = DayDropdown(self, self.day)
         dayselect.custom_id = "day"

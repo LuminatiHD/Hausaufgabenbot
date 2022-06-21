@@ -68,7 +68,7 @@ async def briefing():
         weekdays = ["mo", "di", "mi", "do", "fr", "sa", "so"]
         users = cs.execute(f"SELECT user_id, sf, ef, kf, mint FROM briefing WHERE "\
                            f"{weekdays[zeit.weekday()]} LIKE ?",
-                           (f"%{(datetime.utcnow()+timedelta(hours=1)).hour:02}:00%",))
+                           (f"%{(datetime.utcnow()+timedelta(hours=2)).hour:02}:00%",))
         if users:
             for user in users:
                 await client.get_user(user[0]).send(embed=main.outputbriefing(client.get_user(user[0]), user[1], user[2], user[3], user[4]))
@@ -76,7 +76,7 @@ async def briefing():
 
 @tasks.loop(hours=6)
 async def covid():
-    zeit = (datetime.utcnow()+timedelta(hours=1)).time()
+    zeit = (datetime.utcnow()+timedelta(hours=2)).time()
     if TEST_OR_MAIN == "0" and zeit.hour%8==0 and zeit.minute<30:
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
         await FuncLibrary.covid_embed(covid_channel, 3600*24*2)
@@ -109,7 +109,7 @@ async def remind_task():
 
 @tasks.loop(hours=1)
 async def news():
-    if (datetime.utcnow()+timedelta(hours=1)).hour == 10:
+    if (datetime.utcnow()+timedelta(hours=2)).hour == 10:
         await news_scraper.post_news(client, timedelta(days=1))
 
 

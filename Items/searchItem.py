@@ -29,7 +29,7 @@ class Itemsearch(commands.Cog):
 )
     async def todo(self, ctx: Context):
         # aui Elemänt wo scho düre si wärde glöschet.
-        timeset = str((datetime.datetime.utcnow()+datetime.timedelta(hours=1)).date())
+        timeset = str((datetime.datetime.utcnow()+datetime.timedelta(hours=2)).date())
         database.cursor().execute(f"DELETE FROM {Itemtable} WHERE datum<?", (timeset,))
         database.commit()
 

@@ -225,7 +225,7 @@ def outputbriefing(user, ef, sf, kf, mint):
 
 
 async def covid_embed(channel, delete_after):
-    now = datetime.utcnow() + timedelta(hours=1)
+    now = datetime.utcnow() + timedelta(hours=2)
 
     output = await channel.send("Get covid data...")
 

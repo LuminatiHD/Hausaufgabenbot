@@ -38,7 +38,7 @@ def get_news(select, pool):
 
 
 async def post_news(bot, delete_after:timedelta, ctx=None):
-    now = datetime.utcnow()+timedelta(hours=1)
+    now = datetime.utcnow()+timedelta(hours=2)
     rolle = ""
     if not ctx:
         channel = bot.get_channel(688135334277414977)
@@ -67,7 +67,7 @@ async def post_news(bot, delete_after:timedelta, ctx=None):
                                         f"{now.year}"
                                         f" ({now.hour}:{now.minute} Uhr)",
                                 view=select)
-    while datetime.utcnow()+timedelta(hours=1) < now + delete_after:
+    while datetime.utcnow()+timedelta(hours=2) < now + delete_after:
         select = Buttons.Select_article(articles_short)
         await output.edit(content=f"{rolle} news vom "
                                         f"{now.day}."
