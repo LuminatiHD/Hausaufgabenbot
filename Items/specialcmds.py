@@ -110,7 +110,7 @@ class extracmds(commands.Cog):
     async def despair_time(self, ctx:Context):
         await FuncLibrary.covid_embed(ctx.channel, 3600*24*2)
 
-    @commands.command(name="bugreport")
+    @commands.command(name="!bugreport")
     async def bugreport(self, ctx:Context):
         github_token = "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"
         user = "LuminatiHD"
