@@ -356,7 +356,7 @@ class ChooseTime(nextcord.ui.View):
 
 
 class TimeButton(nextcord.ui.Button):
-    def __init__(self, view_obj, ctx, label, attr,row=None):
+    def __init__(self, view_obj, ctx, label, attr, row=None):
         super().__init__(style=nextcord.ButtonStyle.primary, label=label, row=row)
         self.ctx = ctx
         self.view_obj = view_obj

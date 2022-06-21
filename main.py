@@ -37,7 +37,6 @@ with open("TOKEN.txt", "r") as file:
 async def on_ready():
     await client.change_presence(status=nextcord.Status.online)
     print('Ready')
-    samed = client.get_user(421756815118958592)
 
     if TEST_OR_MAIN == "0":
         covid_channel = client.get_guild(688050375747698707).get_channel(929704436538933278)
