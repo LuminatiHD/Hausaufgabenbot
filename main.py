@@ -84,26 +84,27 @@ async def covid():
 
 @tasks.loop(hours=12)
 async def remind_task():
-    then = (datetime.utcnow() + timedelta(hours=1))
+    then = (datetime.utcnow() + timedelta(hours=2))
     cs.execute("DELETE FROM items WHERE datum < ?", (str(then.date()),))
     database.commit()
 
-    for i in cs.execute("SELECT * FROM items WHERE datum <= ?", (str((then+timedelta(days=1)).date()), )).fetchall():
-        if i[4].isnumeric():
-            channel = client.get_user(int(i[4]))
-
-        else:
-            channel = FuncLibrary.get_channel(client.guilds[0], i[2])
-            if not channel:
-                channel = client.get_channel(912264818516430849)
-
+    for i in cs.execute("SELECT * FROM items WHERE datum <= ?", (str((then+timedelta(days=7)).date()), )).fetchall():
         date = i[0].split('-')
-        embed = nextcord.Embed(color=0x64d7fa, title=f"BIS {date[2]}.{date[1]}.{date[0]}:")\
-            .add_field(name="Fach:", value=i[2])\
-            .add_field(name="Aufgabe:", value=i[3] if i[3] else "keine angegeben :(")
+        date = datetime(date[0], date[1], date[2], 0, 0, 0)
+        if (date-then).days ==7 or (date-then).days <= 1:
+            if i[4].isnumeric():
+                channel = client.get_user(int(i[4]))
+            else:
+                channel = FuncLibrary.get_channel(client.guilds[0], i[2])
+                if not channel:
+                    channel = client.get_channel(912264818516430849)
 
-        if channel:
-            await channel.send(embed=embed)
+            embed = nextcord.Embed(color=0x64d7fa, title=f"{i[1].upper()} AM {date.day}.{date.month}.{date.year}:")\
+                .add_field(name="Fach:", value=i[2])\
+                .add_field(name="Aufgabe:", value=i[3] if i[3] else "keine angegeben :(")
+
+            if channel:
+                await channel.send(embed=embed)
 
 
 @tasks.loop(hours=1)
