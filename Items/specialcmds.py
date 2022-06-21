@@ -110,6 +110,38 @@ class extracmds(commands.Cog):
     async def despair_time(self, ctx:Context):
         await FuncLibrary.covid_embed(ctx.channel, 3600*24*2)
 
+    @commands.command(name="bugreport")
+    async def bugreport(self, ctx:Context):
+        github_token = "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"
+        user = "LuminatiHD"
+        pswd = "hvYqml007mI1"
+        repo = "Hausaufgabenbot"
+
+        ses = requests.Session()
+        ses.auth = (user, pswd)
+
+        issue = {
+            "title": "Test",
+            "body": "ignore pls",
+            "assignee": user,
+            "milestone": None,
+            "labels": ["bug"]
+        }
+
+        issue_url = "https://api.github.com/repos/" + user + "/" + repo + "/issues"
+
+        r = ses.post(issue_url, data=issue)
+        print(r)
+
+    @commands.command(name="birthday")
+    async def birthday(self, ctx:Context):
+        await birthdays.add_birthday(self.bot, ctx)
+
+    @commands.command(name="end_notifs")
+    async def end_notifs(self, ctx:Context):
+        birthdays.notification_off(ctx.author.id)
+        await ctx.message.add_reaction("✅")
+
     @commands.command(name="!stcol")
     async def stcol(self, ctx:Context):
         liste = list(FuncLibrary.StP_colors.keys())

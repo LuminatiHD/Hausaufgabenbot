@@ -3,6 +3,8 @@ import nextcord
 from nextcord.ext import commands
 from nextcord.ext.commands.context import Context
 from datetime import date, timedelta, datetime, time
+import birthdays as bday
+
 wochentage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"]
 
 embedcol = [0xba2929, 0xeb7c28, 0xd6aa18, 0x237a06, 0x086fcf]
@@ -36,7 +38,7 @@ class Menu(commands.Cog):
                     title +=f" ({item['label'].upper()})"
                 menu.add_field(name=title, value=item["desc"])
 
-            await ctx.channel.send(embed=menu)
+            await ctx.channel.send(content = bday.notifs(ctx.author.id), embed=menu)
             await output.delete()
 
         except IndexError:

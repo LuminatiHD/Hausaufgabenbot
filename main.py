@@ -107,6 +107,20 @@ async def remind_task():
                 await channel.send(embed=embed)
 
 
+@tasks.loop(hours = 23)
+async def next_birthdays():
+    for user in cs.execute("SELECT year, month, date, id FROM birthdays WHERE visible"):
+        if datetime.now().date == date(user[0], user[1], user[2]):
+            now = (datetime.utcnow() + timedelta(hours=2)).date()
+            b_date = date(now.year+1, user[1], user[2])
+
+            fach = client.get_channel(912264818516430849).name
+
+            cs.execute(f"INSERT INTO items VALUES ({str(b_date)}, '', ?, ?, all)",
+                       (fach, f'Geburtstag {client.get_user(user[3]).name}'))
+            database.commit()
+
+
 @tasks.loop(hours=1)
 async def news():
     if (datetime.utcnow()+timedelta(hours=2)).hour == 10:

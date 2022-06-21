@@ -7,6 +7,7 @@ from datetime import date
 import Buttons
 from Items.editItem import editItem
 import FuncLibrary
+import birthdays as bday
 
 Itemfile = "ItemFiles.db"
 Alltables = "items"
@@ -44,9 +45,10 @@ class Itemsearch(commands.Cog):
 # =========================================== ERSTE SEITE ===========================================
         if results:  # aaschiinend giut ä lääri lischte aus ä boolean, ka bro
             buttons = Buttons.PageButtons(results, 0, ctx)
-            outputmsg = await ctx.channel.send(embed=FuncLibrary.layout(selection,
-                                                                 footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
-                                        view=buttons)
+            outputmsg = await ctx.channel.send(content = bday.notifs(ctx.author.id),
+                                               embed=FuncLibrary.layout(selection,
+                                                                        footer=f"Seite {1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                               view=buttons)
 
             while datetime.datetime.now() < begin + datetime.timedelta(minutes=2):
                 results = await get_db_items(ctx, timeset)
@@ -56,9 +58,10 @@ class Itemsearch(commands.Cog):
 
                     buttons = Buttons.PageButtons(results, currentpage, ctx)
 
-                    await outputmsg.edit(embed=FuncLibrary.layout(selection,
-                                                                         footer=f"Seite {currentpage+1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
-                                                view=buttons)
+                    await outputmsg.edit(content = bday.notifs(ctx.author.id),
+                                         embed=FuncLibrary.layout(selection,
+                                                                  footer=f"Seite {currentpage+1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
+                                         view=buttons)
                     # ds wartet druf das öppis drücket wird. ds geit bim Button mitem self.stop(). Problem isch aber,
                     # dass me dr button när nümme cha bruuche, auso muesme ä neue generiere.
                     await buttons.wait()
@@ -71,7 +74,8 @@ class Itemsearch(commands.Cog):
                         buttons = Buttons.PageButtons(results, currentpage, ctx)
 
                         # es isch übersichtlecher, d message ds editiere aus se neu d schicke.
-                        await outputmsg.edit(embed=FuncLibrary.layout(selection,
+                        await outputmsg.edit(content = bday.notifs(ctx.author.id),
+                                             embed=FuncLibrary.layout(selection,
                                              footer=f"Seite {currentpage + 1}/{int(len(results) / 5) + (len(results) % 5 > 0)}"),
                                              view=buttons)
 

@@ -514,7 +514,8 @@ class DayDropdown(nextcord.ui.Select):
 
 
 class ChooseDatum(nextcord.ui.View):
-    def __init__(self, ctx, day=None, month=None, year=None):
+    def __init__(self, ctx, day=None, month=None, year=None,
+                 year_bounds:tuple[int, int] = (datetime.now().year, datetime.now().year+3)):
         self.exit = False
         self.ctx = ctx
         self.update = True
@@ -537,7 +538,7 @@ class ChooseDatum(nextcord.ui.View):
 
         yearselect = Dropdown()
         yearselect.placeholder = "Jahr:"
-        yearselect.options = [nextcord.SelectOption(label=str(i)) for i in range(today.year, today.year+3)]
+        yearselect.options = [nextcord.SelectOption(label=str(i)) for i in range(*year_bounds)]
         yearselect.custom_id = "year"
 
         self.add_item(dayselect)
