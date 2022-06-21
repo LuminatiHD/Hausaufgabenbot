@@ -6,6 +6,10 @@ import Buttons
 import FuncLibrary
 from datetime import date, datetime, timedelta, time
 from News import news_scraper
+import requests
+import json
+
+import birthdays
 
 Itemfile = "ItemFiles.db"
 database = sqlite3.connect(Itemfile, timeout=10)
