@@ -45,7 +45,7 @@ async def add_birthday(client:nextcord.Client, ctx:Context) -> None:
         now = (datetime.utcnow() + timedelta(hours=2)).date()
         b_date = date(now.year, msg_view.month, msg_view.day)
         if now > b_date:
-            b_date.replace(year=b_date.year+1)
+            b_date = b_date.replace(year=b_date.year+1)
 
         fach = client.get_channel(912264818516430849).name
 
