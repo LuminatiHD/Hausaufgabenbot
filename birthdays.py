@@ -49,8 +49,8 @@ async def add_birthday(client:nextcord.Client, ctx:Context) -> None:
 
         fach = client.get_channel(912264818516430849).name
 
-        cs.execute(f"INSERT INTO items VALUES ({str(b_date)}, '', ?, ?, 'all')",
-                   (fach, f'Geburtstag {ctx.author.name}'))
+        cs.execute(f"INSERT INTO items VALUES (?, '', ?, ?, 'all')",
+                   (str(b_date), fach, f'Geburtstag {ctx.author.name}'))
         db.commit()
         db.close()
 
