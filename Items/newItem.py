@@ -90,33 +90,39 @@ class newItem(commands.Cog):
 
                 await fach_msg.delete()
 # ======================================== AUFGABE =========================================================
-            if category != "Test" and not exitcommand:
-                aufg_msg = await ctx.reply("Was zu tun ist:")
 
-                aufgabe = await self.bot.wait_for("message",
-                                                  check=lambda msg: msg.author == ctx.author and msg.content)
-                aufgabe = aufgabe.content
+            ask_aufgabe = False
+            if not exitcommand:
+                if category == "Test":
+                    yesno = Buttons.Confirm(ctx)
+                    aufg_msg = await ctx.reply("Schon Lernziele?", view=yesno)
+                    await yesno.wait()
+                    ask_aufgabe = yesno.confirm
+                    if ask_aufgabe:
+                        await aufg_msg.delete()
+                        aufg_msg = await ctx.reply("Schreibe bitte die Lernziele hin:")
 
-                exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
-                await aufg_msg.delete()
+                else:
+                    aufg_msg = await ctx.reply("Was zu tun ist:")
+                    ask_aufgabe = True
 
-            elif not exitcommand:
-                yesno = Buttons.Confirm(ctx)
-                asklernziele = await ctx.reply("Schon Lernziele?", view=yesno)
-                await yesno.wait()
-                await asklernziele.delete()
+                if ask_aufgabe:
+                    aufg_isvalid = False
+                    while not aufg_isvalid:
+                        aufgabe = await self.bot.wait_for("message",
+                                                          check=lambda msg: msg.author == ctx.author and msg.content)
 
-                if yesno.confirm:
-                    aufg_msg = await ctx.reply("Lernziele:")
+                        aufgabe = aufgabe.content
+                        exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
+                        if len(aufgabe) > 1024:
+                            await aufg_msg.edit(content="Sorry, aber leider ist das zu lang. Versuche es nochmal.")
+                        else:
+                            aufg_isvalid = True
 
-                    aufgabe = await self.bot.wait_for("message",
-                                                      check=lambda msg: msg.author == ctx.author and msg.content)
-                    aufgabe = aufgabe.content
-                    exitcommand = aufgabe in ["break", "exit", "stop"] or aufgabe.startswith("!")
-
-                    await aufg_msg.delete()
                 else:
                     aufgabe = None
+
+                await aufg_msg.delete()
 
 # ========================================= ACCESS =======================================
             if not exitcommand:

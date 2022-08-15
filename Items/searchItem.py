@@ -99,7 +99,11 @@ class Itemsearch(commands.Cog):
                         selected = nextcord.Embed(title=f"{selecteditem[1]} {selecteditem[2]} ",
                                                   color=embedcolor)
 
-                        selected.add_field(name="Aufgabe:", value=selecteditem[3] if selecteditem[3] else "None", inline=False)
+                        aufgabe = selecteditem[3]
+                        if len(str(aufgabe)) > 1024:
+                            aufgabe = aufgabe[:1024]
+
+                        selected.add_field(name="Aufgabe:", value=aufgabe if aufgabe else "None", inline=False)
                         selected.add_field(name="Zugriff: ", value=access, inline=False)
                         (year, month, day) = selecteditem[0].split("-")
                         selected.set_footer(text=f"Fällig bis: "

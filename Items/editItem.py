@@ -137,16 +137,23 @@ async def editItem(self, ctx, selecteditem, editor):
 # ============================================== AUFGABE ==============================================
     if "Aufgabe" in editorbtn.output:
         confirm = Buttons.Confirm(ctx)
-        while not confirm.confirm:
+        aufg_isvalid = False
+        while not confirm.confirm and not aufg_isvalid:
             confirm = Buttons.Confirm(ctx)
-            askmsg = await ctx.reply("Aufgabe: ")
+            askmsg = await ctx.reply("Aufgabe:")
             newaufg = await self.bot.wait_for("message", check=lambda msg: msg.author == ctx.author)
 
-            await askmsg.delete()
-            confirmmsg = await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}\nBestätigen?",
-                                view=confirm)
-            await confirm.wait()
-            await confirmmsg.delete()
+            if len(newaufg.content) <= 1024:
+                await askmsg.delete()
+                confirmmsg = await newaufg.reply(f"Alte Aufgabe: {selecteditem[3]}\nNeue Aufgabe: {newaufg.content}\nBestätigen?",
+                                    view=confirm)
+                await confirm.wait()
+                await confirmmsg.delete()
+                aufg_isvalid = True
+            else:
+                await askmsg.edit("Das ist leider zu lang. versuch es nochmals:")
+                await askmsg.delete(delay=30)
+
         database.cursor().execute(
             f"UPDATE {Itemtable} SET aufgabe = ? WHERE rowid = ?",
             (newaufg.content, selecteditem[5]))
