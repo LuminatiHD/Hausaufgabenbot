@@ -70,7 +70,7 @@ class newItem(commands.Cog):
             if not exitcommand:
                 fach_msg = menumsg
                 if faecher:
-                    choose = Buttons.Dropdown_Menu(ctx, tuple(i.name for i in faecher)+("andere...",))
+                    choose = Buttons.Dropdown_Menu(ctx, tuple(i.name for i in faecher[:25+1])+("andere...",))
                     await fach_msg.edit(content="Welches Fach?", view=choose)
                     await choose.wait()
 
