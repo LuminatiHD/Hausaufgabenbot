@@ -49,7 +49,7 @@ def get_cases():
     sw_sourcecode = requests.get(sw_url, "html-parser").text
 
     sw_all_cases = sw_sourcecode\
-        .split("<h1>Coronavirus Cases:</h1>\n""<div class=\""
+        .split("<h1>Coronavirus Cases:</h1>"
                "maincounter-number\""">\n<span style=\"color:#aaa\">")[1]\
         .split(" </span>")[0].replace(",", "")
 
